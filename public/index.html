@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlogBot - YouTube 요약</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #DFFF32;
+      --primary-hover: #C9E82D;
+      --accent: #6663FD;
+      --text-primary: #09090B;
+      --text-secondary: #A1A1AA;
+      --text-muted: #71717A;
+      --border: #E4E4E7;
+      --bg: #FFFFFF;
+      --bg-light: #F4F4F5;
+      --bg-hover: #FAFAFA;
+      --shadow: rgba(0,0,0,0.04);
+      --shadow-hover: rgba(0,0,0,0.08);
+      --accent-glow: rgba(102,99,253,0.11);
+      --gap: 16px;
+      --toolbar: 49px;
+      --container: 1000px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Glassmorphic Navbar ── */
+    .navbar-wrapper {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+    }
+    .navbar {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 8px 8px 8px 20px;
+      background: rgba(255, 255, 255, 0.40);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 100px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      height: var(--toolbar);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--text-primary);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .nav-logo-icon {
+      width: 26px;
+      height: 26px;
+      background: var(--accent);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-logo-icon svg { width: 14px; height: 14px; }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .nav-links a {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 400;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text-primary); }
+    .nav-cta {
+      padding: 8px 20px;
+      background: var(--primary);
+      color: #000;
+      border: none;
+      border-radius: 1000px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: filter 0.2s;
+      font-family: inherit;
+    }
+    .nav-cta:hover { filter: brightness(0.95); }
+
+    /* ── Landing Hero ── */
+    .hero {
+      padding-top: 120px;
+      padding-bottom: 60px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    /* ── Input Section ── */
+    .input-section {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .input-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+    .input-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+      background: var(--bg-light);
+      border-radius: 10px;
+      padding: 4px;
+    }
+    .input-tab {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .input-tab.active {
+      background: var(--bg);
+      color: var(--text-primary);
+      box-shadow: 0 1px 3px var(--shadow);
+    }
+    .input-tab svg { width: 15px; height: 15px; }
+    .url-row {
+      display: flex;
+      gap: 10px;
+    }
+    .url-field {
+      flex: 1;
+      position: relative;
+    }
+    .url-field svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      width: 16px;
+      height: 16px;
+    }
+    .url-field input {
+      width: 100%;
+      padding: 12px 14px 12px 40px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-light);
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .url-field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+      background: var(--bg);
+    }
+    .url-field input::placeholder { color: #C4C4C7; }
+    .submit-btn {
+      padding: 12px 28px;
+      background: var(--primary);
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: filter 0.2s, transform 0.1s, box-shadow 0.2s;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .submit-btn:hover {
+      filter: brightness(0.95);
+      box-shadow: 0 2px 8px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ── Features ── */
+    .features {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 48px;
+      padding: 0 20px;
+    }
+    .feat {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .feat-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--bg-light);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    /* ── Loading ── */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .loading-overlay.active { display: flex; }
+    .loader-ring {
+      width: 44px;
+      height: 44px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-bottom: 24px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .loader-sub { font-size: 14px; color: var(--text-secondary); }
+    .loader-steps {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .loader-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      transition: color 0.3s;
+    }
+    .loader-step .icon {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      transition: all 0.3s;
+    }
+    .loader-step.done { color: var(--accent); }
+    .loader-step.done .icon {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+    .loader-step.active-step { color: var(--text-primary); }
+    .loader-step.active-step .icon {
+      border-color: var(--accent);
+      animation: pulse 1.2s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
+      50% { box-shadow: 0 0 0 6px transparent; }
+    }
+
+    /* ── Error ── */
+    .error-toast {
+      display: none;
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 14px 24px;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-radius: 12px;
+      color: #DC2626;
+      font-size: 14px;
+      z-index: 300;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      animation: slideDown 0.3s ease;
+      max-width: 480px;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .error-toast.active { display: block; }
+    @keyframes slideDown { from { opacity: 0; transform: translateX(-50%) translateY(-10px); } }
+
+    /* Source Badge */
+    .source-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 10px;
+      border-radius: 1000px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    .source-badge.subtitle {
+      background: #ECFDF5;
+      color: #059669;
+    }
+    .source-badge.whisper {
+      background: #EFF6FF;
+      color: #2563EB;
+    }
+
+    /* ── Result Layout ── */
+    .result-page {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 50;
+      flex-direction: column;
+    }
+    .result-page.active { display: flex; }
+
+    /* Result Header */
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border);
+      height: 56px;
+      flex-shrink: 0;
+      background: var(--bg);
+    }
+    .result-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: none;
+      border: none;
+      font-size: 14px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: color 0.2s;
+    }
+    .result-back:hover { color: var(--text-primary); }
+    .result-back svg { width: 18px; height: 18px; }
+    .result-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text-primary);
+    }
+    .result-logo .dot {
+      width: 22px;
+      height: 22px;
+      background: var(--accent);
+      border-radius: 6px;
+    }
+    .result-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .r-btn {
+      padding: 7px 14px;
+      border: 1px solid var(--border);
+      border-radius: 1000px;
+      background: var(--bg);
+      font-size: 13px;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .r-btn:hover {
+      box-shadow: 0 2px 8px var(--accent-glow);
+      border-color: #ccc;
+    }
+    .r-btn svg { width: 14px; height: 14px; }
+    .r-btn.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      font-weight: 600;
+    }
+    .r-btn.primary:hover { filter: brightness(0.95); }
+    .r-btn.copied { border-color: #22c55e; color: #16a34a; }
+
+    /* Result Body */
+    .result-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Left Panel */
+    .panel-left {
+      width: 440px;
+      min-width: 380px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+
+    /* YouTube Card */
+    .yt-card {
+      margin: 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .yt-card .video-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #000;
+    }
+    .yt-card iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .yt-info {
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .yt-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg-light);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .yt-details { flex: 1; }
+    .yt-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.4;
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .yt-meta {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* Script Button */
+    .script-btn-wrap {
+      padding: 0 16px 12px;
+      flex-shrink: 0;
+    }
+    .script-btn {
+      width: 100%;
+      padding: 9px 16px;
+      border: 1px solid var(--border);
+      border-radius: 1000px;
+      background: var(--bg);
+      font-size: 13px;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .script-btn:hover { background: var(--bg-light); }
+    .script-btn svg { width: 14px; height: 14px; }
+
+    /* Transcript Panel */
+    .transcript-panel {
+      flex: 1;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 0;
+      display: none;
+    }
+    .transcript-panel.show { display: block; }
+    .transcript-panel::-webkit-scrollbar { width: 4px; }
+    .transcript-panel::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+    .transcript-line {
+      padding: 8px 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      border-left: 3px solid transparent;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .transcript-line:hover { background: var(--bg-light); }
+    .transcript-line.active {
+      border-left-color: var(--accent);
+      color: var(--text-primary);
+      background: #F5F3FF;
+    }
+
+    /* Right Panel */
+    .panel-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    /* Template Tabs */
+    .template-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 28px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+    .tmpl-tab {
+      padding: 7px 16px;
+      border: 1px solid var(--border);
+      border-radius: 1000px;
+      background: var(--bg);
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tmpl-tab:hover { border-color: #ccc; color: var(--text-primary); }
+    .tmpl-tab.active {
+      background: var(--text-primary);
+      color: var(--bg);
+      border-color: var(--text-primary);
+    }
+
+    /* Content Area */
+    .content-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 36px 60px 60px;
+      max-width: 728px;
+    }
+    .content-scroll::-webkit-scrollbar { width: 5px; }
+    .content-scroll::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 5px; }
+
+    .content-pane { display: none; }
+    .content-pane.active { display: block; }
+
+    /* Blog Content Styles */
+    .note-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.4;
+      margin-bottom: 28px;
+    }
+    .note-body {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #3F3F46;
+    }
+    .note-body h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 36px 0 14px;
+      line-height: 1.5;
+    }
+    .note-body h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 32px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.5;
+    }
+    .note-body h3 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 24px 0 10px;
+    }
+    .note-body h1:first-child,
+    .note-body h2:first-child { margin-top: 0; }
+    .note-body p { margin-bottom: 14px; }
+    .note-body strong { color: var(--text-primary); font-weight: 600; }
+    .note-body ul, .note-body ol {
+      margin: 12px 0;
+      padding-left: 24px;
+    }
+    .note-body li {
+      margin-bottom: 6px;
+      line-height: 1.7;
+    }
+    .note-body blockquote {
+      margin: 16px 0;
+      padding: 12px 16px;
+      border-left: 3px solid var(--accent);
+      background: #F5F3FF;
+      border-radius: 0 8px 8px 0;
+      color: #52525B;
+      font-size: 15px;
+    }
+
+    /* Outline (Timeline) Styles */
+    .timeline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .timeline-item {
+      display: flex;
+      gap: 16px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--bg-light);
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-num {
+      width: 32px;
+      height: 32px;
+      background: var(--bg-light);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .timeline-content {
+      flex: 1;
+    }
+    .timeline-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.5;
+      margin-bottom: 4px;
+    }
+    .timeline-expand {
+      margin-top: 10px;
+      width: 100%;
+      padding: 8px;
+      background: var(--primary);
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #000;
+      cursor: pointer;
+      font-family: inherit;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: filter 0.2s;
+    }
+    .timeline-expand:hover { filter: brightness(0.95); }
+
+    /* Summary Styles */
+    .summary-card {
+      background: var(--bg-light);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .summary-card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .summary-card-body {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #3F3F46;
+    }
+    .summary-card-body ul {
+      padding-left: 20px;
+      margin: 8px 0;
+    }
+    .summary-card-body li {
+      margin-bottom: 6px;
+    }
+
+    /* Tags */
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 16px;
+      margin-bottom: 24px;
+    }
+    .tag-badge {
+      padding: 4px 12px;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 1000px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Subtitle */
+    .note-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-top: -20px;
+      margin-bottom: 24px;
+    }
+
+    /* Bottom Status */
+    .result-footer {
+      padding: 10px 28px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      background: var(--bg);
+    }
+    .footer-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      background: var(--bg-light);
+      border-radius: 1000px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .hero h1 { font-size: 28px; }
+      .navbar { padding: 8px 16px; }
+      .nav-links { display: none; }
+      .features { flex-direction: column; align-items: center; gap: 12px; }
+      .result-body { flex-direction: column; }
+      .panel-left {
+        width: 100%;
+        min-width: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        max-height: 50vh;
+      }
+      .content-scroll { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════ Glassmorphic Navbar ══════ -->
+  <div class="navbar-wrapper">
+    <nav class="navbar">
+      <a class="nav-logo" href="#">
+        <div class="nav-logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>
+        </div>
+        BlogBot
+      </a>
+      <div class="nav-links">
+        <a href="#">Pricing</a>
+        <a href="#">Guide</a>
+        <a href="#">Blog</a>
+      </div>
+      <button class="nav-cta" onclick="document.getElementById('urlInput').focus()">Start for Free</button>
+    </nav>
+  </div>
+
+  <!-- ══════ Hero + Input ══════ -->
+  <div class="hero" id="heroSection">
+    <h1>YouTube 영상을<br><span>완벽하게 요약</span>하세요</h1>
+    <p class="hero-sub">1분 안에 핵심 요약노트를 만들어드립니다<br>YouTube URL을 붙여넣으면 AI가 자동으로 분석합니다</p>
+    <div class="input-section">
+      <div class="input-card">
+        <div class="input-tabs">
+          <button class="input-tab active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+            YouTube
+          </button>
+          <button class="input-tab" disabled style="opacity:0.4">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9m-9 9a9 9 0 019-9"/></svg>
+            Web
+          </button>
+          <button class="input-tab" disabled style="opacity:0.4">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            PDF
+          </button>
+          <button class="input-tab" disabled style="opacity:0.4">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+            Audio
+          </button>
+        </div>
+        <div class="url-row">
+          <div class="url-field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+            </svg>
+            <input type="text" id="urlInput" placeholder="YouTube URL을 붙여넣으세요" />
+          </div>
+          <button class="submit-btn" id="submitBtn" onclick="generate()">요약하기</button>
+        </div>
+      </div>
+    </div>
+    <div class="features">
+      <div class="feat"><div class="feat-icon">&#9889;</div> 1분 내 요약 완성</div>
+      <div class="feat"><div class="feat-icon">&#128221;</div> 블로그 자동 생성</div>
+      <div class="feat"><div class="feat-icon">&#128203;</div> 타임라인 구조화</div>
+    </div>
+  </div>
+
+  <!-- ══════ Loading Overlay ══════ -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loader-ring"></div>
+    <div class="loader-text">요약노트를 생성하고 있습니다</div>
+    <div class="loader-sub">잠시만 기다려주세요</div>
+    <div class="loader-steps">
+      <div class="loader-step" id="ls1"><div class="icon">&#10003;</div> YouTube 자막 추출</div>
+      <div class="loader-step" id="ls2"><div class="icon">&#10003;</div> AI 콘텐츠 분석</div>
+      <div class="loader-step" id="ls3"><div class="icon">&#10003;</div> 요약 노트 작성</div>
+    </div>
+  </div>
+
+  <!-- ══════ Error Toast ══════ -->
+  <div class="error-toast" id="errorToast"></div>
+
+  <!-- ══════ Result Page ══════ -->
+  <div class="result-page" id="resultPage">
+    <!-- Header -->
+    <div class="result-header">
+      <button class="result-back" onclick="goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        돌아가기
+      </button>
+      <div class="result-logo">
+        <div class="dot"></div>
+        BlogBot
+      </div>
+      <div class="result-actions">
+        <button class="r-btn" onclick="copyAll(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          복사
+        </button>
+        <button class="r-btn" onclick="exportMarkdown()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          내보내기
+        </button>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="result-body">
+      <!-- Left: Video -->
+      <div class="panel-left">
+        <div class="yt-card">
+          <div class="video-wrap" id="videoWrap"></div>
+          <div class="yt-info">
+            <div class="yt-avatar">YT</div>
+            <div class="yt-details">
+              <div class="yt-title" id="ytTitle">영상 제목</div>
+              <div class="yt-meta" id="ytMeta"></div>
+            </div>
+          </div>
+        </div>
+        <div class="script-btn-wrap">
+          <button class="script-btn" id="scriptBtn" onclick="toggleScript()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            스크립트 보기
+          </button>
+        </div>
+        <div class="transcript-panel" id="transcriptPanel"></div>
+      </div>
+
+      <!-- Right: Content -->
+      <div class="panel-right">
+        <div class="template-bar">
+          <button class="tmpl-tab active" data-tab="blog" onclick="switchTemplate('blog')">블로그 글</button>
+          <button class="tmpl-tab" data-tab="timeline" onclick="switchTemplate('timeline')">타임라인</button>
+          <button class="tmpl-tab" data-tab="summary" onclick="switchTemplate('summary')">핵심 요약</button>
+        </div>
+        <div class="content-scroll">
+          <!-- Blog -->
+          <div class="content-pane active" id="pane-blog">
+            <div class="note-title" id="noteTitle"></div>
+            <div class="note-subtitle" id="noteSubtitle"></div>
+            <div class="tag-list" id="tagList"></div>
+            <div class="note-body" id="noteBody"></div>
+          </div>
+          <!-- Timeline -->
+          <div class="content-pane" id="pane-timeline">
+            <div class="note-title">타임라인</div>
+            <div class="timeline-list" id="timelineList"></div>
+          </div>
+          <!-- Summary -->
+          <div class="content-pane" id="pane-summary">
+            <div class="note-title">핵심 요약</div>
+            <div id="summaryCards"></div>
+          </div>
+        </div>
+        <div class="result-footer">
+          <span id="elapsedTime"></span>
+          <div class="footer-badge">
+            <span style="color:var(--accent);">&#9679;</span> GPT-4o-mini
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const urlInput = document.getElementById('urlInput');
+    urlInput.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+
+    let rawContent = '';
+    let rawTitle = '';
+    let scriptVisible = false;
+
+    function extractVideoId(url) {
+      const m = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      return m ? m[1] : null;
+    }
+
+    async function generate() {
+      const url = urlInput.value.trim();
+      if (!url) { showError('YouTube URL을 입력해주세요.'); return; }
+
+      const btn = document.getElementById('submitBtn');
+      const loading = document.getElementById('loadingOverlay');
+
+      hideError();
+      loading.classList.add('active');
+      btn.disabled = true;
+
+      // Animate steps
+      const steps = ['ls1','ls2','ls3'].map(id => document.getElementById(id));
+      steps.forEach(s => { s.classList.remove('done','active-step'); });
+      steps[0].classList.add('active-step');
+      setTimeout(() => { steps[0].classList.remove('active-step'); steps[0].classList.add('done'); steps[1].classList.add('active-step'); }, 1500);
+      setTimeout(() => { steps[1].classList.remove('active-step'); steps[1].classList.add('done'); steps[2].classList.add('active-step'); }, 4000);
+
+      const start = Date.now();
+
+      try {
+        const res = await fetch('/generate-blog', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ youtubeUrl: url }),
+        });
+        const json = await res.json();
+
+        steps[2].classList.remove('active-step');
+        steps[2].classList.add('done');
+
+        if (!json.success) {
+          await delay(300);
+          loading.classList.remove('active');
+          showError(json.error || '알 수 없는 오류가 발생했습니다.');
+          return;
+        }
+
+        await delay(400);
+        loading.classList.remove('active');
+
+        const { title, subtitle, outline, content, tags, summary } = json.data;
+        const videoId = extractVideoId(url);
+        const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+
+        rawContent = content;
+        rawTitle = title;
+
+        // Video embed
+        if (videoId) {
+          document.getElementById('videoWrap').innerHTML =
+            `<iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>`;
+        }
+
+        // Video info
+        document.getElementById('ytTitle').textContent = title;
+        const source = json.data.source || 'subtitle';
+        const sourceLabel = source === 'whisper' ? 'Whisper STT' : '자막';
+        document.getElementById('ytMeta').innerHTML =
+          `${elapsed}초 소요 <span class="source-badge ${source}">${sourceLabel}</span>`;
+
+        // Transcript
+        const transcriptText = json.data.transcript || '';
+        const panel = document.getElementById('transcriptPanel');
+        if (transcriptText) {
+          const lines = transcriptText.split(/[.!?。]\s*/).filter(l => l.trim());
+          panel.innerHTML = lines.map((line, i) =>
+            `<div class="transcript-line${i === 0 ? ' active' : ''}">${line.trim()}</div>`
+          ).join('');
+        } else {
+          panel.innerHTML = '<div class="transcript-line" style="color:var(--text-secondary);">자막 데이터 없음</div>';
+        }
+
+        // Blog pane
+        document.getElementById('noteTitle').textContent = title;
+        const subtitleEl = document.getElementById('noteSubtitle');
+        subtitleEl.textContent = subtitle || '';
+        subtitleEl.style.display = subtitle ? 'block' : 'none';
+
+        const tagListEl = document.getElementById('tagList');
+        if (tags && tags.length > 0) {
+          tagListEl.innerHTML = tags.map(t => `<span class="tag-badge">#${t}</span>`).join('');
+          tagListEl.style.display = 'flex';
+        } else {
+          tagListEl.style.display = 'none';
+        }
+
+        document.getElementById('noteBody').innerHTML = markdownToHtml(content);
+
+        // Timeline pane
+        const tlList = document.getElementById('timelineList');
+        tlList.innerHTML = outline.map((item, i) =>
+          `<div class="timeline-item">
+            <div class="timeline-num">${i + 1}</div>
+            <div class="timeline-content">
+              <div class="timeline-title">${item}</div>
+            </div>
+          </div>`
+        ).join('');
+
+        // Summary pane
+        const summaryCards = document.getElementById('summaryCards');
+        const summaryText = summary || content.split('\n').slice(0, 10).join('\n');
+        summaryCards.innerHTML = `
+          <div class="summary-card">
+            <div class="summary-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              AI 요약
+            </div>
+            <div class="summary-card-body">${markdownToHtml(summaryText)}</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              핵심 포인트
+            </div>
+            <div class="summary-card-body">
+              <ul>${outline.map(item => `<li>${item}</li>`).join('')}</ul>
+            </div>
+          </div>`;
+
+        // Footer
+        document.getElementById('elapsedTime').textContent = `${elapsed}초 소요`;
+
+        // Show result
+        document.getElementById('heroSection').style.display = 'none';
+        document.getElementById('resultPage').classList.add('active');
+        switchTemplate('blog');
+
+      } catch (e) {
+        loading.classList.remove('active');
+        showError('서버와 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요. (npm start)');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function switchTemplate(name) {
+      document.querySelectorAll('.tmpl-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.content-pane').forEach(p => p.classList.remove('active'));
+      document.querySelector(`.tmpl-tab[data-tab="${name}"]`).classList.add('active');
+      document.getElementById(`pane-${name}`).classList.add('active');
+    }
+
+    function toggleScript() {
+      const panel = document.getElementById('transcriptPanel');
+      const btn = document.getElementById('scriptBtn');
+      scriptVisible = !scriptVisible;
+      panel.classList.toggle('show', scriptVisible);
+      btn.innerHTML = scriptVisible
+        ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg> 스크립트 닫기`
+        : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> 스크립트 보기`;
+    }
+
+    function goBack() {
+      document.getElementById('resultPage').classList.remove('active');
+      document.getElementById('heroSection').style.display = '';
+    }
+
+    function copyAll(btn) {
+      const text = `# ${rawTitle}\n\n${rawContent}`;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.classList.add('copied');
+        const orig = btn.innerHTML;
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> 복사됨`;
+        setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+      });
+    }
+
+    function exportMarkdown() {
+      const text = `# ${rawTitle}\n\n${rawContent}`;
+      const blob = new Blob([text], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${rawTitle || 'blog'}.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('errorToast');
+      el.textContent = msg;
+      el.classList.add('active');
+      setTimeout(() => el.classList.remove('active'), 6000);
+    }
+    function hideError() {
+      document.getElementById('errorToast').classList.remove('active');
+    }
+
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    function markdownToHtml(md) {
+      if (!md) return '';
+      return md
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+        .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+        .replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>\n?)+/gs, '<ul>$&</ul>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>')
+        .replace(/<p><(h[123]|ul|li|blockquote)/g, '<$1')
+        .replace(/<\/(h[123]|ul|li|blockquote)><\/p>/g, '</$1>');
+    }
+  </script>
+</body>
+</html>
