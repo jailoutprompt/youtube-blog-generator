@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: blogbot
+    runtime: docker
+    plan: free
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production

@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { validateYoutubeUrl, getTranscript } from '../services/youtube';
 import { generateFromTranscript } from '../services/blogGenerator';
+import { saveToHistory } from '../services/database';
 import { GenerateBlogRequest, BlogData, ApiResponse } from '../types/index.d';
 
 const router = Router();
@@ -84,7 +85,7 @@ router.post(
   '/generate-blog',
   async (req: Request<object, object, GenerateBlogRequest>, res: Response) => {
     try {
-      const { youtubeUrl } = req.body;
+      const { youtubeUrl, tone, model, template } = req.body;
 
       if (!youtubeUrl || typeof youtubeUrl !== 'string') {
         res.status(400).json({
@@ -114,9 +115,30 @@ router.post(
 
       // 블로그 생성 (재시도 포함)
       const blogData = await withRetry(
-        () => generateFromTranscript(transcript.text),
+        () => generateFromTranscript(transcript.text, { tone, model, template }),
         'blog-gen'
       );
+
+      // DB에 히스토리 저장
+      const videoId = youtubeUrl.match(/(?:v=|youtu\.be\/)([\w-]{11})/)?.[1] || null;
+      try {
+        const historyId = saveToHistory({
+          youtubeUrl,
+          videoId,
+          title: blogData.title,
+          subtitle: blogData.subtitle,
+          outline: blogData.outline,
+          content: blogData.content,
+          tags: blogData.tags,
+          summary: blogData.summary,
+          tone: tone || 'informative',
+          model: model || 'gpt-4o-mini',
+          source: transcript.source,
+        });
+        console.log(`[history] saved id=${historyId}`);
+      } catch (dbErr) {
+        console.error('[history] save error:', dbErr);
+      }
 
       res.json({
         success: true,

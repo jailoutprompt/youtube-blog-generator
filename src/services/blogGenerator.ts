@@ -1,7 +1,8 @@
 import openai from '../config/openai';
-import { BlogData } from '../types/index.d';
+import { BlogData, BlogTone, BlogModel, BlogTemplate } from '../types/index.d';
+import { TEMPLATE_PROMPTS } from './templates';
 
-const SYSTEM_PROMPT = `당신은 10년 경력의 전문 블로그 콘텐츠 라이터입니다.
+const BASE_PROMPT = `당신은 10년 경력의 전문 블로그 콘텐츠 라이터입니다.
 유튜브 영상의 자막(트랜스크립트)을 전달받으면, 이를 기반으로 **독립적인 블로그 글**을 작성합니다.
 
 ## 작성 원칙
@@ -11,14 +12,6 @@ const SYSTEM_PROMPT = `당신은 10년 경력의 전문 블로그 콘텐츠 라�
 2. **본론**: 3~6개 섹션으로 나눠 H2(##) 소제목 사용. 각 섹션은 2~4문단. 필요시 H3(###)으로 세분화.
 3. **결론**: 핵심 내용 요약 + 독자에게 한마디 (행동 유도 또는 생각거리).
 
-### 톤 & 스타일
-- 한국어, 반말/존댓말 혼합 가능하되 **"~입니다/합니다"** 체 기본 사용
-- 핵심 키워드와 중요 문장은 **볼드(**) 처리
-- 적절한 비유, 예시, 비교를 활용해 이해를 도움
-- 리스트(불릿/숫자)를 적극 활용해 가독성 확보
-- 문단이 5줄 이상 넘어가지 않도록 적절히 끊기
-- 딱딱한 논문체 ❌ → 읽기 편한 블로그체 ✅
-
 ### 분량
 - 본문(content)은 **최소 2,000자, 권장 3,000~4,000자**
 - 아웃라인은 3~6개 항목
@@ -27,13 +20,45 @@ const SYSTEM_PROMPT = `당신은 10년 경력의 전문 블로그 콘텐츠 라�
 ### 절대 금지
 - "이 영상에서는", "영상을 보면", "유튜버가 말하길" 등 **영상을 직접 참조하는 표현 사용 금지**
 - 이 글은 독립적인 블로그 포스트이므로, 원본이 영상이라는 사실을 드러내지 않음
-- 뜬구름 잡는 일반론 ❌ → 트랜스크립트에 있는 **구체적 정보, 수치, 사례** 위주로 작성
+- 뜬구름 잡는 일반론 금지 → 트랜스크립트에 있는 **구체적 정보, 수치, 사례** 위주로 작성
 - 트랜스크립트에 없는 내용을 지어내지 않음
 
 ### SEO 최적화
 - title은 검색에 잘 걸리도록 핵심 키워드 포함, 30자 내외
-- tags는 관련 키워드 5~8개
+- tags는 관련 키워드 5~8개`;
 
+const TONE_PROMPTS: Record<BlogTone, string> = {
+  informative: `
+### 톤 & 스타일: 정보형
+- 한국어, **"~입니다/합니다"** 체 사용
+- 객관적이고 분석적인 톤. 데이터와 사실 중심 서술
+- 핵심 키워드와 중요 문장은 **볼드** 처리
+- 적절한 비유, 예시, 비교를 활용해 이해를 도움
+- 리스트(불릿/숫자)를 적극 활용해 가독성 확보
+- 문단이 5줄 이상 넘어가지 않도록 적절히 끊기`,
+
+  casual: `
+### 톤 & 스타일: 캐주얼
+- 한국어, **"~해요/~거든요/~인데요"** 체 사용 (친근한 존댓말)
+- 친구에게 이야기하듯 편하고 자연스러운 대화체
+- 이모지는 사용하지 않되, 감탄사("와", "진짜", "대박")는 자연스럽게 사용
+- 독자에게 직접 말 거는 느낌 ("혹시 ~해본 적 있으세요?", "이거 진짜 중요한 부분인데요")
+- 핵심 포인트는 **볼드** 처리
+- 짧은 문단, 한 문단에 2~3문장
+- 중간중간 독자 공감 유도 ("이런 경험 다들 있죠?")`,
+
+  expert: `
+### 톤 & 스타일: 전문가
+- 한국어, **"~이다/~한다"** 체 사용 (전문 칼럼 스타일)
+- 깊이 있는 분석과 인사이트 중심. 피상적 설명 지양
+- 업계 전문 용어를 적절히 사용하되 필요시 괄호 안에 간단한 설명 추가
+- 논리적 흐름: 주장 → 근거 → 시사점
+- "주목할 점은", "핵심은", "결론적으로" 등 분석적 표현 활용
+- 비교/대조, 원인/결과 구조를 통해 깊이 있는 논점 전개
+- 마지막에 전문가적 관점에서의 전망이나 제언 포함`,
+};
+
+const RESPONSE_FORMAT = `
 ## 응답 형식
 반드시 아래 JSON으로만 응답하세요:
 {
@@ -44,6 +69,10 @@ const SYSTEM_PROMPT = `당신은 10년 경력의 전문 블로그 콘텐츠 라�
   "tags": ["키워드1", "키워드2", ...],
   "summary": "이 글의 핵심을 3~5문장으로 요약"
 }`;
+
+function buildSystemPrompt(tone: BlogTone, template: BlogTemplate = 'general'): string {
+  return BASE_PROMPT + TONE_PROMPTS[tone] + TEMPLATE_PROMPTS[template] + RESPONSE_FORMAT;
+}
 
 const MAX_TRANSCRIPT_LENGTH = 20000;
 
@@ -59,7 +88,6 @@ function deduplicateTranscript(transcript: string): string {
     const normalized = sentence.trim().toLowerCase().replace(/\s+/g, ' ');
     if (normalized.length < 5) continue;
 
-    // 이미 본 문장과 80% 이상 겹치면 스킵
     let isDuplicate = false;
     for (const prev of seen) {
       if (prev.length > 10 && normalized.includes(prev.slice(0, Math.floor(prev.length * 0.8)))) {
@@ -72,7 +100,6 @@ function deduplicateTranscript(transcript: string): string {
       seen.add(normalized);
       result.push(sentence.trim());
 
-      // seen이 너무 커지지 않도록 최근 50개만 유지
       if (seen.size > 50) {
         const first = seen.values().next().value;
         if (first !== undefined) seen.delete(first);
@@ -84,7 +111,6 @@ function deduplicateTranscript(transcript: string): string {
 }
 
 function truncateTranscript(transcript: string): string {
-  // 먼저 중복 제거
   const cleaned = deduplicateTranscript(transcript);
 
   if (cleaned.length <= MAX_TRANSCRIPT_LENGTH) {
@@ -100,21 +126,33 @@ function truncateTranscript(transcript: string): string {
   return `[앞부분]\n${start}\n\n[중간부분]\n${middle}\n\n[뒷부분]\n${end}`;
 }
 
+export interface GenerateOptions {
+  tone?: BlogTone;
+  model?: BlogModel;
+  template?: BlogTemplate;
+}
+
 export async function generateFromTranscript(
-  transcript: string
+  transcript: string,
+  options: GenerateOptions = {}
 ): Promise<BlogData> {
+  const tone = options.tone || 'informative';
+  const model = options.model || 'gpt-4o-mini';
+  const template = options.template || 'general';
   const trimmed = truncateTranscript(transcript);
 
+  console.log(`[blog-gen] tone=${tone}, model=${model}, template=${template}`);
+
   const response = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+    model,
     messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'system', content: buildSystemPrompt(tone, template) },
       {
         role: 'user',
         content: `다음 텍스트를 기반으로 블로그 글을 작성해주세요:\n\n${trimmed}`,
       },
     ],
-    temperature: 0.7,
+    temperature: tone === 'expert' ? 0.5 : tone === 'casual' ? 0.8 : 0.7,
     response_format: { type: 'json_object' },
   });
 
@@ -129,7 +167,6 @@ export async function generateFromTranscript(
     throw new Error('OpenAI 응답 형식이 올바르지 않습니다.');
   }
 
-  // 새 필드 기본값 보장
   parsed.subtitle = parsed.subtitle || '';
   parsed.tags = parsed.tags || [];
   parsed.summary = parsed.summary || '';

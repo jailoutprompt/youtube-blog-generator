@@ -4,6 +4,7 @@ dotenv.config();
 import path from 'path';
 import express from 'express';
 import generateRouter from './routes/generate';
+import historyRouter from './routes/history';
 
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
@@ -16,6 +17,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/', generateRouter);
+app.use('/api', historyRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
