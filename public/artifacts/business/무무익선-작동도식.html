@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>무무익선 — 작동 도식</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', Arial, sans-serif; margin: 24px; color: #111; }
+    h1 { font-size: 22px; margin-bottom: 8px; }
+    p  { color: #444; }
+    .container { max-width: 1080px; }
+    .mermaid { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; }
+    .hint { margin-top: 12px; font-size: 14px; color: #666; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'default' });
+  </script>
+  <!-- 본 문서는 Mermaid를 사용해 도식을 브라우저에서 직접 렌더링합니다. -->
+  <!-- 파일을 더블클릭하거나 브라우저로 열면 도식이 자동으로 표시됩니다. -->
+</head>
+<body>
+  <div class="container">
+    <h1>자전거 도난 위험도 예측/시각화 – 작동 도식</h1>
+    <p>데이터 준비 → 위험도 산출 → AI 예측 → API 제공 → 지도 시각화까지의 전체 흐름입니다.</p>
+    <div class="mermaid">
+flowchart TD
+  A[원본 데이터<br/>data_raw.xlsx] --> B[기초 전처리<br/>temp_data_a/b/c.csv]
+  B --> C[장소유형 재분류<br/>temp_data_b_categorized.csv]
+  C --> D[통합/가공 및 위험도 점수 계산<br/>final_data_mapping_set_v3.csv]
+  D --> E[위험도 등급 부여<br/>low/medium/high]
+  E --> F[모델 입력 준비<br/>인코딩/학습·테스트 분리]
+  F --> G[AI 모델 학습/평가<br/>Random Forest]
+  G --> H[모델/인코더 저장<br/>model_assets/*.pkl]
+
+  H --> I[API 서버(FastAPI)]
+  I -->|POST /predict-risk| J[예측 응답<br/>등급+확률]
+
+  D --> K[지도 시각화 데이터 준비<br/>지역별 평균 위험도]
+  K --> L[지오코딩(위도/경도 매핑)<br/>region_coordinates.csv]
+  L --> M[히트맵 생성(folium)]
+  I -->|GET /visualize-risk| M
+  M --> N[인터랙티브 지도 HTML]
+    </div>
+    <div class="hint">도식이 보이지 않으면 인터넷 연결을 확인하세요(CDN로딩).</div>
+  </div>
+</body>
+</html>
+
+
+
+

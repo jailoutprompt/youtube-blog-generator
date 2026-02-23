@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaPress — 메인</title>
+    <meta name="description" content="A meta-publishing system that designs the conditions under which books are automatically created and distributed.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========================================
+           Meta Press — Complete Stylesheet
+           ======================================== */
+        
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --noise-opacity: 0.025;
+            --grid-opacity: 0.04;
+            --glow-opacity: 0.4;
+            
+            --color-slate-50: #f8fafc;
+            --color-slate-100: #f1f5f9;
+            --color-slate-200: #e2e8f0;
+            --color-slate-300: #cbd5e1;
+            --color-slate-400: #94a3b8;
+            --color-slate-500: #64748b;
+            --color-slate-600: #475569;
+            --color-slate-700: #334155;
+            --color-slate-800: #1e293b;
+            --color-slate-900: #0f172a;
+            
+            --color-indigo-50: #eef2ff;
+            --color-indigo-100: #e0e7ff;
+            --color-indigo-500: #6366f1;
+            --color-indigo-600: #4f46e5;
+            
+            --color-violet-50: #f5f3ff;
+            --color-violet-100: #ede9fe;
+            --color-violet-500: #8b5cf6;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--color-slate-900);
+            background: linear-gradient(135deg, var(--color-slate-50) 0%, rgba(238, 242, 255, 0.3) 50%, rgba(245, 243, 255, 0.4) 100%);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* Noise Overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            opacity: var(--noise-opacity);
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Dot Grid Overlay */
+        .dot-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: var(--grid-opacity);
+            background-image: radial-gradient(circle, rgba(99, 102, 241, 0.4) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        /* Glow Blobs */
+        .glow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .glow-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+        }
+
+        .glow-blob-1 {
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(139, 92, 246, var(--glow-opacity)) 0%, transparent 70%);
+            top: -250px;
+            right: -150px;
+        }
+
+        .glow-blob-2 {
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, transparent 70%);
+            top: 500px;
+            left: -200px;
+        }
+
+        .glow-blob-3 {
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, transparent 70%);
+            bottom: 300px;
+            right: 5%;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                padding: 0 48px;
+            }
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .label {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-indigo-600);
+            margin-bottom: 12px;
+        }
+
+        /* Glass Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .glass-card-featured {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 24px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .glass-card-featured::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(99, 102, 241, 0.1), rgba(236, 72, 153, 0.2));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 500;
+            font-size: 0.9375rem;
+            background: var(--color-slate-900);
+            color: white;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-slate-800);
+            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 500;
+            font-size: 0.9375rem;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            color: var(--color-slate-700);
+            text-decoration: none;
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        /* Step Badge */
+        .step-badge {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--color-indigo-500), var(--color-violet-500));
+            color: white;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+        }
+
+        /* Icon Box */
+        .icon-box {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--color-indigo-100), var(--color-violet-100));
+            transition: transform 0.3s ease;
+        }
+
+        .glass-card:hover .icon-box {
+            transform: scale(1.1);
+        }
+
+        .icon-box svg {
+            width: 26px;
+            height: 26px;
+            color: var(--color-indigo-600);
+        }
+
+        /* Animations */
+        .animate-section {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .animate-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .animate-section {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+        }
+
+        /* Navigation */
+        .nav {
+            position: relative;
+            z-index: 50;
+            padding: 24px 0;
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--color-slate-900), var(--color-slate-700));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-logo svg {
+            width: 18px;
+            height: 18px;
+            color: white;
+        }
+
+        .nav-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--color-slate-900);
+            letter-spacing: -0.01em;
+        }
+
+        .nav-status {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8125rem;
+            color: var(--color-slate-500);
+        }
+
+        @media (min-width: 640px) {
+            .nav-status {
+                display: flex;
+            }
+        }
+
+        .nav-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            z-index: 10;
+            padding: 60px 0 100px;
+        }
+
+        @media (min-width: 1024px) {
+            .hero {
+                padding: 100px 0 140px;
+            }
+        }
+
+        .hero-content {
+            max-width: 720px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.25rem, 6vw, 3.75rem);
+            font-weight: 600;
+            color: var(--color-slate-900);
+            margin-bottom: 24px;
+            line-height: 1.1;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--color-slate-900) 0%, var(--color-indigo-600) 50%, var(--color-slate-900) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 1.125rem;
+            line-height: 1.7;
+            color: var(--color-slate-600);
+            max-width: 560px;
+            margin-bottom: 40px;
+        }
+
+        @media (min-width: 640px) {
+            .hero-description {
+                font-size: 1.25rem;
+            }
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        /* Sections */
+        .section {
+            position: relative;
+            z-index: 10;
+            padding: 80px 0;
+        }
+
+        @media (min-width: 1024px) {
+            .section {
+                padding: 100px 0;
+            }
+        }
+
+        .section-header {
+            margin-bottom: 48px;
+        }
+
+        .section-header h2 {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            color: var(--color-slate-900);
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            font-size: 1rem;
+            color: var(--color-slate-600);
+            max-width: 560px;
+            line-height: 1.7;
+        }
+
+        /* Meta Layer Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .feature-card {
+            padding: 32px;
+            height: 100%;
+        }
+
+        .feature-card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-slate-900);
+            margin: 20px 0 12px;
+        }
+
+        .feature-card p {
+            font-size: 0.9375rem;
+            color: var(--color-slate-600);
+            line-height: 1.6;
+        }
+
+        /* System Flow */
+        .flow-container {
+            padding: 40px;
+        }
+
+        .flow-desktop {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .flow-desktop {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+            }
+
+            .flow-mobile {
+                display: none;
+            }
+        }
+
+        .flow-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .flow-step .step-badge {
+            margin: 0 auto 16px;
+        }
+
+        .flow-step h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-slate-900);
+            margin-bottom: 4px;
+        }
+
+        .flow-step p {
+            font-size: 0.8125rem;
+            color: var(--color-slate-500);
+        }
+
+        .flow-connector {
+            position: absolute;
+            top: 22px;
+            left: calc(50% + 30px);
+            width: calc(100% - 60px);
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-indigo-200), var(--color-violet-200));
+        }
+
+        .flow-step:last-child .flow-connector {
+            display: none;
+        }
+
+        /* Mobile Flow */
+        .flow-mobile {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .flow-mobile-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .flow-mobile-item h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-slate-900);
+            margin-bottom: 2px;
+        }
+
+        .flow-mobile-item p {
+            font-size: 0.8125rem;
+            color: var(--color-slate-500);
+        }
+
+        /* Comparison Section */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 48px;
+            padding: 40px;
+        }
+
+        @media (min-width: 1024px) {
+            .comparison-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 64px;
+                padding: 56px;
+            }
+        }
+
+        .comparison-column h3 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.0625rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .comparison-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .comparison-icon-not {
+            background: var(--color-slate-100);
+        }
+
+        .comparison-icon-not svg {
+            color: var(--color-slate-400);
+        }
+
+        .comparison-icon-is {
+            background: linear-gradient(135deg, var(--color-indigo-500), var(--color-violet-500));
+        }
+
+        .comparison-icon-is svg {
+            color: white;
+        }
+
+        .comparison-list {
+            list-style: none;
+        }
+
+        .comparison-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            font-size: 0.9375rem;
+            line-height: 1.5;
+        }
+
+        .comparison-list li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-top: 8px;
+            flex-shrink: 0;
+        }
+
+        .comparison-not li {
+            color: var(--color-slate-500);
+            text-decoration: line-through;
+            text-decoration-color: var(--color-slate-300);
+        }
+
+        .comparison-not li::before {
+            background: var(--color-slate-300);
+        }
+
+        .comparison-is li {
+            color: var(--color-slate-700);
+        }
+
+        .comparison-is li::before {
+            background: var(--color-indigo-500);
+        }
+
+        /* Closing Section */
+        .closing {
+            position: relative;
+            z-index: 10;
+            padding: 100px 0 120px;
+        }
+
+        @media (min-width: 1024px) {
+            .closing {
+                padding: 140px 0 160px;
+            }
+        }
+
+        .closing blockquote {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 500;
+            color: var(--color-slate-900);
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+            max-width: 600px;
+        }
+
+        .closing blockquote span {
+            color: var(--color-slate-400);
+        }
+
+        .closing p {
+            font-size: 1rem;
+            color: var(--color-slate-500);
+        }
+
+        /* Footer */
+        .footer {
+            position: relative;
+            z-index: 10;
+            padding: 48px 0;
+            border-top: 1px solid rgba(226, 232, 240, 0.5);
+        }
+
+        .footer-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        @media (min-width: 640px) {
+            .footer-inner {
+                flex-direction: row;
+                align-items: flex-end;
+                justify-content: space-between;
+            }
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-info span {
+            display: block;
+        }
+
+        .footer-info span:first-child {
+            font-weight: 600;
+            color: var(--color-slate-900);
+            letter-spacing: -0.01em;
+        }
+
+        .footer-info span:last-child {
+            font-size: 0.875rem;
+            color: var(--color-slate-500);
+        }
+
+        .footer-tagline {
+            font-size: 0.875rem;
+            color: var(--color-slate-400);
+            font-style: italic;
+        }
+
+        /* Selection */
+        ::selection {
+            background: var(--color-indigo-100);
+            color: var(--color-indigo-900);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--color-slate-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-slate-300);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-slate-400);
+        }
+    </style>
+</head>
+<body>
+    <!-- Overlays -->
+    <div class="noise-overlay"></div>
+    <div class="dot-overlay"></div>
+    
+    <!-- Glow Blobs -->
+    <div class="glow-container">
+        <div class="glow-blob glow-blob-1"></div>
+        <div class="glow-blob glow-blob-2"></div>
+        <div class="glow-blob glow-blob-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-inner">
+                <div class="nav-brand animate-section" data-delay="0">
+                    <div class="nav-logo">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        </svg>
+                    </div>
+                    <span class="nav-title">Meta Press</span>
+                </div>
+                <div class="nav-status animate-section" data-delay="100">
+                    <span class="nav-status-dot"></span>
+                    <span>System Active</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <p class="label animate-section" data-delay="100">Meta-Publishing Infrastructure</p>
+                <h1 class="animate-section" data-delay="200">
+                    Publishing the conditions,<br>
+                    <span>not the content.</span>
+                </h1>
+                <p class="hero-description animate-section" data-delay="300">
+                    We don't publish books. We publish the system that produces books. 
+                    A meta-layer above publishing where structure determines output.
+                </p>
+                <div class="hero-buttons animate-section" data-delay="400">
+                    <a href="#system-flow" class="btn-primary">
+                        Explore the Framework
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
+                    <a href="#system-flow" class="btn-secondary">
+                        View System Flow
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Meta Layer Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header animate-section">
+                <p class="label">Architecture</p>
+                <h2>The Meta Layer</h2>
+                <p>A layer above publishing where books become outputs of defined conditions rather than products of individual effort.</p>
+            </div>
+
+            <div class="cards-grid">
+                <!-- Card 1: Decision Logic -->
+                <div class="glass-card feature-card animate-section" data-delay="100">
+                    <div class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.54Z"></path>
+                            <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.54Z"></path>
+                        </svg>
+                    </div>
+                    <h3>Decision Logic</h3>
+                    <p>Rules that determine what gets published, when, and under what conditions. The system decides. Humans set parameters.</p>
+                </div>
+
+                <!-- Card 2: Format Engine -->
+                <div class="glass-card feature-card animate-section" data-delay="200">
+                    <div class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"></path>
+                            <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"></path>
+                            <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"></path>
+                        </svg>
+                    </div>
+                    <h3>Format Engine</h3>
+                    <p>Structural templates that shape raw material into consistent, distributable units. Form follows function.</p>
+                </div>
+
+                <!-- Card 3: Distribution Conditions -->
+                <div class="glass-card feature-card animate-section" data-delay="300">
+                    <div class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m22 2-7 20-4-9-9-4Z"></path>
+                            <path d="M22 2 11 13"></path>
+                        </svg>
+                    </div>
+                    <h3>Distribution Conditions</h3>
+                    <p>Parameters governing how and where outputs reach their destinations. Automated routing, systematic delivery.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- System Flow Section -->
+    <section id="system-flow" class="section">
+        <div class="container">
+            <div class="section-header animate-section">
+                <p class="label">Process</p>
+                <h2>System Overview</h2>
+                <p>Output is a consequence of conditions. The system receives inputs, applies structure, and produces results.</p>
+            </div>
+
+            <div class="glass-card-featured flow-container animate-section" data-delay="200">
+                <!-- Desktop Flow -->
+                <div class="flow-desktop">
+                    <div class="flow-step">
+                        <div class="step-badge">01</div>
+                        <h4>Idea</h4>
+                        <p>Input received</p>
+                        <div class="flow-connector"></div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-badge">02</div>
+                        <h4>Conditions</h4>
+                        <p>Rules applied</p>
+                        <div class="flow-connector"></div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-badge">03</div>
+                        <h4>Structure</h4>
+                        <p>Format assigned</p>
+                        <div class="flow-connector"></div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-badge">04</div>
+                        <h4>Generation</h4>
+                        <p>Content produced</p>
+                        <div class="flow-connector"></div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-badge">05</div>
+                        <h4>Distribution</h4>
+                        <p>Output delivered</p>
+                    </div>
+                </div>
+
+                <!-- Mobile Flow -->
+                <div class="flow-mobile">
+                    <div class="glass-card flow-mobile-item">
+                        <div class="step-badge">01</div>
+                        <div>
+                            <h4>Idea</h4>
+                            <p>Input received</p>
+                        </div>
+                    </div>
+                    <div class="glass-card flow-mobile-item">
+                        <div class="step-badge">02</div>
+                        <div>
+                            <h4>Conditions</h4>
+                            <p>Rules applied</p>
+                        </div>
+                    </div>
+                    <div class="glass-card flow-mobile-item">
+                        <div class="step-badge">03</div>
+                        <div>
+                            <h4>Structure</h4>
+                            <p>Format assigned</p>
+                        </div>
+                    </div>
+                    <div class="glass-card flow-mobile-item">
+                        <div class="step-badge">04</div>
+                        <div>
+                            <h4>Generation</h4>
+                            <p>Content produced</p>
+                        </div>
+                    </div>
+                    <div class="glass-card flow-mobile-item">
+                        <div class="step-badge">05</div>
+                        <div>
+                            <h4>Distribution</h4>
+                            <p>Output delivered</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What It Is / What It Is Not Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header animate-section">
+                <p class="label">Distinction</p>
+                <h2>Clear Boundaries</h2>
+            </div>
+
+            <div class="glass-card-featured animate-section" data-delay="200">
+                <div class="comparison-grid">
+                    <!-- What It Is Not -->
+                    <div class="comparison-column">
+                        <h3>
+                            <span class="comparison-icon comparison-icon-not">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M18 6 6 18"></path>
+                                    <path d="m6 6 12 12"></path>
+                                </svg>
+                            </span>
+                            What Meta Press Is Not
+                        </h3>
+                        <ul class="comparison-list comparison-not">
+                            <li>A publishing company</li>
+                            <li>Focused on writing quality</li>
+                            <li>Dependent on creativity</li>
+                            <li>Producing content directly</li>
+                            <li>A traditional editorial process</li>
+                        </ul>
+                    </div>
+
+                    <!-- What It Is -->
+                    <div class="comparison-column">
+                        <h3>
+                            <span class="comparison-icon comparison-icon-is">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </span>
+                            What Meta Press Is
+                        </h3>
+                        <ul class="comparison-list comparison-is">
+                            <li>A publishing condition system</li>
+                            <li>Focused on decision logic</li>
+                            <li>Dependent on structure</li>
+                            <li>Producing systems that produce content</li>
+                            <li>An automated framework</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Closing Section -->
+    <section class="closing">
+        <div class="container">
+            <div class="animate-section">
+                <blockquote>
+                    "Content is disposable.<br>
+                    <span>Structure is permanent."</span>
+                </blockquote>
+                <p>Books are outputs. Structure is the asset.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner animate-section">
+                <div class="footer-brand">
+                    <div class="nav-logo">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        </svg>
+                    </div>
+                    <div class="footer-info">
+                        <span>Meta Press</span>
+                        <span>Meta-Publishing System</span>
+                    </div>
+                </div>
+                <p class="footer-tagline">Where publishing becomes a system.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Animation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for reduced motion preference
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            
+            if (prefersReducedMotion) {
+                document.querySelectorAll('.animate-section').forEach(el => {
+                    el.classList.add('visible');
+                });
+                return;
+            }
+
+            // Intersection Observer for scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const delay = entry.target.dataset.delay || 0;
+                        setTimeout(() => {
+                            entry.target.classList.add('visible');
+                        }, parseInt(delay));
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.animate-section').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
+
+

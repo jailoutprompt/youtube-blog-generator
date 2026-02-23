@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube 링크 하나로 할 수 있는 것들</title>
+<meta name="description" content="BlogBot으로 YouTube URL 하나에서 블로그, 전자책, 스크립트까지">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--card:#111119;--border:rgba(255,255,255,0.06);
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+  --purple:#8b5cf6;--blue:#3b82f6;--green:#22c55e;--orange:#f59e0b;--pink:#ec4899;--cyan:#06b6d4;--red:#ef4444;
+}
+body{font-family:'Pretendard Variable',-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* Hero */
+.hero{text-align:center;padding:80px 24px 60px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(139,92,246,0.08) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--purple);margin-bottom:20px}
+.hero h1{font-size:clamp(32px,5vw,52px);font-weight:900;line-height:1.15;margin-bottom:16px}
+.hero h1 .gradient{background:linear-gradient(135deg,var(--purple),var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:18px;color:var(--text2);max-width:500px;margin:0 auto;line-height:1.6}
+
+/* URL Input Visual */
+.url-demo{max-width:560px;margin:40px auto 0;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 20px;display:flex;align-items:center;gap:12px}
+.url-demo .icon{width:36px;height:36px;background:rgba(255,0,0,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.url-demo .icon svg{width:18px;height:18px}
+.url-demo .url-text{font-size:14px;color:var(--text3);flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.url-demo .url-text span{color:var(--text)}
+.url-demo .go{background:var(--purple);color:#fff;border:none;border-radius:10px;padding:8px 20px;font-size:13px;font-weight:700;cursor:default;font-family:inherit}
+
+/* Flow Arrow */
+.flow-arrow{text-align:center;padding:32px 0;position:relative}
+.flow-arrow svg{width:40px;height:60px}
+.flow-arrow::before,.flow-arrow::after{content:'';position:absolute;top:50%;width:calc(50% - 40px);height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,0.2),transparent)}
+.flow-arrow::before{left:0}
+.flow-arrow::after{right:0}
+
+/* Feature Cards */
+.features{max-width:1100px;margin:0 auto;padding:0 24px 80px}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 28px;transition:all 0.3s;position:relative;overflow:hidden}
+.feature-card:hover{border-color:rgba(139,92,246,0.2);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:20px 20px 0 0}
+.feature-card.blog::before{background:linear-gradient(90deg,var(--purple),var(--blue))}
+.feature-card.ebook::before{background:linear-gradient(90deg,var(--orange),var(--pink))}
+.feature-card.script::before{background:linear-gradient(90deg,var(--cyan),var(--green))}
+
+.card-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:20px}
+.blog .card-icon{background:rgba(139,92,246,0.1)}
+.ebook .card-icon{background:rgba(245,158,11,0.1)}
+.script .card-icon{background:rgba(6,182,212,0.1)}
+
+.card-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.blog .card-label{color:var(--purple)}
+.ebook .card-label{color:var(--orange)}
+.script .card-label{color:var(--cyan)}
+
+.feature-card h3{font-size:22px;font-weight:800;margin-bottom:8px}
+.feature-card .desc{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:24px}
+
+/* Options List */
+.options{display:flex;flex-direction:column;gap:8px}
+.option{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:10px;font-size:13px;transition:background 0.2s}
+.option:hover{background:rgba(255,255,255,0.04)}
+.option-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.option-text{flex:1}
+.option-text strong{display:block;font-size:13px;font-weight:600}
+.option-text span{font-size:11px;color:var(--text3)}
+
+/* Output formats */
+.outputs{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
+.output-badge{font-size:10px;font-weight:600;padding:4px 10px;border-radius:100px;background:rgba(255,255,255,0.04);color:var(--text2);border:1px solid rgba(255,255,255,0.06)}
+
+/* Detail Section */
+.detail{max-width:1100px;margin:0 auto;padding:0 24px 80px}
+.detail h2{font-size:28px;font-weight:800;text-align:center;margin-bottom:8px}
+.detail .detail-sub{font-size:14px;color:var(--text3);text-align:center;margin-bottom:40px}
+
+/* Process Flow */
+.process{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:60px}
+.step{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 20px;text-align:center;position:relative}
+.step-num{width:32px;height:32px;border-radius:50%;background:rgba(139,92,246,0.1);color:var(--purple);font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.step h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.step p{font-size:11px;color:var(--text3);line-height:1.5}
+.step-arrow{position:absolute;right:-18px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:16px;z-index:1}
+
+/* Combos */
+.combos{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.combo{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:center}
+.combo-formula{font-size:20px;margin-bottom:12px;letter-spacing:2px}
+.combo h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.combo p{font-size:12px;color:var(--text3);line-height:1.5}
+.combo-tag{display:inline-block;font-size:10px;font-weight:600;padding:3px 10px;border-radius:100px;margin-top:10px}
+
+/* Stats */
+.stats-section{max-width:1100px;margin:0 auto;padding:0 24px 80px}
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);border-radius:16px;overflow:hidden;border:1px solid var(--border)}
+.stat-item{background:var(--card);padding:28px 16px;text-align:center}
+.stat-item .num{font-size:28px;font-weight:900;margin-bottom:4px}
+.stat-item .label{font-size:11px;color:var(--text3)}
+
+/* Footer */
+.footer{text-align:center;padding:40px 24px 60px;border-top:1px solid var(--border)}
+.footer p{font-size:13px;color:var(--text3)}
+.footer a{color:var(--purple);text-decoration:none}
+
+@media(max-width:900px){
+  .features-grid,.combos{grid-template-columns:1fr}
+  .process{grid-template-columns:repeat(2,1fr)}
+  .step-arrow{display:none}
+  .stats-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:500px){
+  .process,.stats-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor"/></svg>
+    BlogBot
+  </div>
+  <h1>YouTube 링크 <span class="gradient">하나</span>로<br>할 수 있는 것들</h1>
+  <p>영상 URL을 넣으면 블로그, 전자책, 스크립트까지<br>AI가 전부 만들어줍니다</p>
+
+  <div class="url-demo">
+    <div class="icon">
+      <svg viewBox="0 0 24 24" fill="#ff0000"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2 31.4 31.4 0 000 12a31.4 31.4 0 00.5 5.8 3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1c.4-1.9.5-5.8.5-5.8s0-3.9-.5-5.8z"/><path d="M9.75 15.02l6.28-3.02-6.28-3.02v6.04z" fill="#fff"/></svg>
+    </div>
+    <div class="url-text">youtube.com/watch?v=<span>dQw4w9WgXcQ</span></div>
+    <button class="go">변환</button>
+  </div>
+</section>
+
+<!-- Flow Arrow -->
+<div class="flow-arrow">
+  <svg viewBox="0 0 40 60" fill="none">
+    <path d="M20 0v45" stroke="url(#ag)" stroke-width="2"/>
+    <path d="M10 40l10 15 10-15" stroke="url(#ag)" stroke-width="2" fill="none"/>
+    <defs><linearGradient id="ag" x1="20" y1="0" x2="20" y2="60"><stop stop-color="#8b5cf6"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs>
+  </svg>
+</div>
+
+<!-- 3 Main Features -->
+<section class="features">
+  <div class="features-grid">
+
+    <!-- Blog -->
+    <div class="feature-card blog">
+      <div class="card-icon">📝</div>
+      <div class="card-label">Feature 01</div>
+      <h3>블로그 글 생성</h3>
+      <p class="desc">영상 한 개 → SEO 최적화된 블로그 글 자동 생성. 4,000~5,000자, 제목·부제·태그·요약 포함.</p>
+
+      <div class="options">
+        <div class="option">
+          <div class="option-icon" style="background:rgba(139,92,246,0.1)">🎨</div>
+          <div class="option-text">
+            <strong>톤 3종</strong>
+            <span>정보형 · 캐주얼 · 전문가</span>
+          </div>
+        </div>
+        <div class="option">
+          <div class="option-icon" style="background:rgba(59,130,246,0.1)">📐</div>
+          <div class="option-text">
+            <strong>템플릿 5종</strong>
+            <span>일반 · 리뷰 · 튜토리얼 · 뉴스 · 에세이</span>
+          </div>
+        </div>
+        <div class="option">
+          <div class="option-icon" style="background:rgba(34,197,94,0.1)">🤖</div>
+          <div class="option-text">
+            <strong>모델 선택</strong>
+            <span>GPT-4o-mini (빠름) · GPT-4o (고품질)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="outputs">
+        <span class="output-badge">마크다운</span>
+        <span class="output-badge">복사</span>
+        <span class="output-badge">히스토리 자동저장</span>
+      </div>
+    </div>
+
+    <!-- eBook -->
+    <div class="feature-card ebook">
+      <div class="card-icon">📚</div>
+      <div class="card-label">Feature 02</div>
+      <h3>전자책 생성</h3>
+      <p class="desc">영상 2~20개 선택 → 각 영상이 하나의 챕터가 되어 완성된 전자책으로 변환.</p>
+
+      <div class="options">
+        <div class="option">
+          <div class="option-icon" style="background:rgba(245,158,11,0.1)">🧠</div>
+          <div class="option-text">
+            <strong>AI 아웃라인</strong>
+            <span>챕터 순서 · 제목 · 서론/결론 방향 자동 구성</span>
+          </div>
+        </div>
+        <div class="option">
+          <div class="option-icon" style="background:rgba(236,72,153,0.1)">📖</div>
+          <div class="option-text">
+            <strong>챕터별 생성</strong>
+            <span>서론 → 제1장~N장 → 결론, 진행률 표시</span>
+          </div>
+        </div>
+        <div class="option">
+          <div class="option-icon" style="background:rgba(239,68,68,0.1)">📄</div>
+          <div class="option-text">
+            <strong>PDF 변환</strong>
+            <span>A4 레이아웃, 페이지 번호, 목차 포함</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="outputs">
+        <span class="output-badge">마크다운</span>
+        <span class="output-badge">HTML</span>
+        <span class="output-badge">PDF</span>
+        <span class="output-badge">복사</span>
+      </div>
+    </div>
+
+    <!-- Script -->
+    <div class="feature-card script">
+      <div class="card-icon">📜</div>
+      <div class="card-label">Feature 03</div>
+      <h3>스크립트 추출</h3>
+      <p class="desc">채널/재생목록 URL → 영상 목록 로드 → 스크립트 일괄 추출. 자막 없으면 Whisper 자동 변환.</p>
+
+      <div class="options">
+        <div class="option">
+          <div class="option-icon" style="background:rgba(6,182,212,0.1)">📋</div>
+          <div class="option-text">
+            <strong>채널 전체 스캔</strong>
+            <span>50개씩 페이지네이션, 검색 필터</span>
+          </div>
+        </div>
+        <div class="option">
+          <div class="option-icon" style="background:rgba(34,197,94,0.1)">⚡</div>
+          <div class="option-text">
+            <strong>배치 추출</strong>
+            <span>다중 선택 → 순차 추출, 중단 가능</span>
+          </div>
+        </div>
+        <div class="option">
+          <div class="option-icon" style="background:rgba(139,92,246,0.1)">🎙️</div>
+          <div class="option-text">
+            <strong>Whisper 폴백</strong>
+            <span>자막 없는 영상 → 음성 인식 자동 변환</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="outputs">
+        <span class="output-badge">텍스트</span>
+        <span class="output-badge">일괄 다운로드</span>
+        <span class="output-badge">개별 복사</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Process -->
+<section class="detail">
+  <h2>작동 원리</h2>
+  <p class="detail-sub">URL 입력부터 결과물까지 4단계</p>
+
+  <div class="process">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h4>URL 입력</h4>
+      <p>영상 하나 또는<br>채널/재생목록 URL</p>
+      <span class="step-arrow">→</span>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h4>자막 추출</h4>
+      <p>YouTube 자막 우선<br>없으면 Whisper STT</p>
+      <span class="step-arrow">→</span>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h4>AI 분석</h4>
+      <p>톤 · 템플릿 · 모델<br>조합에 따라 변환</p>
+      <span class="step-arrow">→</span>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <h4>결과물</h4>
+      <p>블로그 · 전자책 · PDF<br>복사 · 다운로드</p>
+    </div>
+  </div>
+
+  <h2>조합 예시</h2>
+  <p class="detail-sub">톤 × 템플릿 × 모델 = 30가지 조합</p>
+
+  <div class="combos">
+    <div class="combo">
+      <div class="combo-formula">📝 + 🎓 + ⚡</div>
+      <h4>정보형 + 튜토리얼 + 4o-mini</h4>
+      <p>기술 영상을 빠르게<br>단계별 가이드로 변환</p>
+      <span class="combo-tag" style="background:rgba(139,92,246,0.1);color:var(--purple)">개발 블로그에 최적</span>
+    </div>
+    <div class="combo">
+      <div class="combo-formula">💬 + ✍️ + 🧠</div>
+      <h4>캐주얼 + 에세이 + 4o</h4>
+      <p>브이로그를 감성적인<br>에세이로 변환</p>
+      <span class="combo-tag" style="background:rgba(236,72,153,0.1);color:var(--pink)">블로그 마켓에 최적</span>
+    </div>
+    <div class="combo">
+      <div class="combo-formula">🔬 + 📰 + 🧠</div>
+      <h4>전문가 + 뉴스 + 4o</h4>
+      <p>뉴스/시사 영상을<br>분석 기사로 변환</p>
+      <span class="combo-tag" style="background:rgba(6,182,212,0.1);color:var(--cyan)">뉴스레터에 최적</span>
+    </div>
+  </div>
+</section>
+
+<!-- Coming Soon -->
+<section class="detail" style="padding-bottom:40px">
+  <h2>Coming Soon</h2>
+  <p class="detail-sub">같은 YouTube 링크로 더 많은 것들이 가능해집니다</p>
+
+  <div class="features-grid" style="margin-top:32px">
+
+    <div class="feature-card" style="position:relative;opacity:0.85">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;border-radius:20px 20px 0 0;background:linear-gradient(90deg,#f43f5e,#f59e0b)"></div>
+      <div class="card-icon" style="background:rgba(244,63,94,0.1)">📱</div>
+      <div class="card-label" style="color:#f43f5e">Feature 04</div>
+      <h3>SNS 포스트 변환</h3>
+      <p class="desc">영상 하나를 인스타 캐러셀, X(트위터) 쓰레드, 링크드인 포스트로 자동 변환. 플랫폼별 최적 포맷.</p>
+      <div class="options">
+        <div class="option">
+          <div class="option-icon" style="background:rgba(244,63,94,0.1)">📸</div>
+          <div class="option-text"><strong>인스타그램 캐러셀</strong><span>슬라이드 10장, 텍스트 + 비주얼 구성</span></div>
+        </div>
+        <div class="option">
+          <div class="option-icon" style="background:rgba(59,130,246,0.1)">🧵</div>
+          <div class="option-text"><strong>X 쓰레드</strong><span>280자 단위 연결 트윗, 훅 + CTA 포함</span></div>
+        </div>
+        <div class="option">
+          <div class="option-icon" style="background:rgba(16,185,129,0.1)">💼</div>
+          <div class="option-text"><strong>링크드인 포스트</strong><span>전문가 톤, 인사이트 중심</span></div>
+        </div>
+      </div>
+      <div class="outputs">
+        <span class="output-badge" style="border-color:rgba(244,63,94,0.2);color:#f43f5e">COMING SOON</span>
+      </div>
+    </div>
+
+    <div class="feature-card" style="position:relative;opacity:0.85">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;border-radius:20px 20px 0 0;background:linear-gradient(90deg,#06b6d4,#8b5cf6)"></div>
+      <div class="card-icon" style="background:rgba(6,182,212,0.1)">📧</div>
+      <div class="card-label" style="color:#06b6d4">Feature 05</div>
+      <h3>뉴스레터 변환</h3>
+      <p class="desc">영상 콘텐츠를 구독자에게 보내는 뉴스레터 형식으로 변환. 제목라인, 프리뷰, 본문, CTA까지.</p>
+      <div class="options">
+        <div class="option">
+          <div class="option-icon" style="background:rgba(6,182,212,0.1)">✉️</div>
+          <div class="option-text"><strong>이메일 최적화</strong><span>제목, 프리뷰 텍스트, 본문 구조화</span></div>
+        </div>
+        <div class="option">
+          <div class="option-icon" style="background:rgba(139,92,246,0.1)">📊</div>
+          <div class="option-text"><strong>요약 + 인사이트</strong><span>바쁜 구독자를 위한 핵심 정리</span></div>
+        </div>
+      </div>
+      <div class="outputs">
+        <span class="output-badge" style="border-color:rgba(6,182,212,0.2);color:#06b6d4">COMING SOON</span>
+      </div>
+    </div>
+
+    <div class="feature-card" style="position:relative;opacity:0.85">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;border-radius:20px 20px 0 0;background:linear-gradient(90deg,#22c55e,#3b82f6)"></div>
+      <div class="card-icon" style="background:rgba(34,197,94,0.1)">🔍</div>
+      <div class="card-label" style="color:#22c55e">Feature 06</div>
+      <h3>SEO 최적화 출력</h3>
+      <p class="desc">블로그 글과 함께 메타 태그, 키워드 밀도 분석, 구조화 데이터(Schema.org)까지 자동 생성.</p>
+      <div class="options">
+        <div class="option">
+          <div class="option-icon" style="background:rgba(34,197,94,0.1)">🏷️</div>
+          <div class="option-text"><strong>메타 태그 자동 생성</strong><span>title, description, og:image</span></div>
+        </div>
+        <div class="option">
+          <div class="option-icon" style="background:rgba(59,130,246,0.1)">📈</div>
+          <div class="option-text"><strong>키워드 분석</strong><span>밀도, 배치, 관련 키워드 추천</span></div>
+        </div>
+      </div>
+      <div class="outputs">
+        <span class="output-badge" style="border-color:rgba(34,197,94,0.2);color:#22c55e">COMING SOON</span>
+      </div>
+    </div>
+
+    <div class="feature-card" style="position:relative;opacity:0.85">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;border-radius:20px 20px 0 0;background:linear-gradient(90deg,#3b82f6,#8b5cf6)"></div>
+      <div class="card-icon" style="background:rgba(59,130,246,0.1)">🌐</div>
+      <div class="card-label" style="color:#3b82f6">Feature 07</div>
+      <h3>워드프레스 자동 포스팅</h3>
+      <p class="desc">생성된 블로그 글을 워드프레스에 바로 발행. WP REST API 연동, 카테고리·태그 자동 매핑.</p>
+      <div class="options">
+        <div class="option">
+          <div class="option-icon" style="background:rgba(59,130,246,0.1)">🔗</div>
+          <div class="option-text"><strong>원클릭 발행</strong><span>생성 → 검토 → 워드프레스 즉시 발행</span></div>
+        </div>
+      </div>
+      <div class="outputs">
+        <span class="output-badge" style="border-color:rgba(59,130,246,0.2);color:#3b82f6">COMING SOON</span>
+      </div>
+    </div>
+
+    <div class="feature-card" style="position:relative;opacity:0.85">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;border-radius:20px 20px 0 0;background:linear-gradient(90deg,#f59e0b,#ef4444)"></div>
+      <div class="card-icon" style="background:rgba(245,158,11,0.1)">⚙️</div>
+      <div class="card-label" style="color:#f59e0b">Feature 08</div>
+      <h3>Public API</h3>
+      <p class="desc">개발자용 API 키 발급. 자체 서비스에 BlogBot 기능을 연동. 종량제 과금.</p>
+      <div class="options">
+        <div class="option">
+          <div class="option-icon" style="background:rgba(245,158,11,0.1)">🔑</div>
+          <div class="option-text"><strong>API 키 발급</strong><span>대시보드에서 생성 · 관리 · 사용량 확인</span></div>
+        </div>
+      </div>
+      <div class="outputs">
+        <span class="output-badge" style="border-color:rgba(245,158,11,0.2);color:#f59e0b">COMING SOON</span>
+      </div>
+    </div>
+
+    <div class="feature-card" style="position:relative;opacity:0.85">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;border-radius:20px 20px 0 0;background:linear-gradient(90deg,#8b5cf6,#ec4899)"></div>
+      <div class="card-icon" style="background:rgba(139,92,246,0.1)">👥</div>
+      <div class="card-label" style="color:#8b5cf6">Feature 09</div>
+      <h3>팀 워크스페이스</h3>
+      <p class="desc">에이전시·마케팅팀 대상. 팀원 초대, 공유 히스토리, 브랜드 톤 프리셋, 사용량 대시보드.</p>
+      <div class="options">
+        <div class="option">
+          <div class="option-icon" style="background:rgba(139,92,246,0.1)">🏢</div>
+          <div class="option-text"><strong>팀 관리</strong><span>초대 · 권한 · 공유 템플릿 · 브랜드 가이드</span></div>
+        </div>
+      </div>
+      <div class="outputs">
+        <span class="output-badge" style="border-color:rgba(139,92,246,0.2);color:#8b5cf6">COMING SOON</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Updated Stats -->
+<section class="stats-section">
+  <div class="stats-grid" style="grid-template-columns:repeat(6,1fr)">
+    <div class="stat-item"><div class="num" style="color:var(--green)">3</div><div class="label">지금 가능</div></div>
+    <div class="stat-item"><div class="num" style="color:var(--orange)">6</div><div class="label">Coming Soon</div></div>
+    <div class="stat-item"><div class="num" style="color:var(--purple)">30</div><div class="label">톤×템플릿 조합</div></div>
+    <div class="stat-item"><div class="num" style="color:var(--blue)">7+</div><div class="label">출력 포맷</div></div>
+    <div class="stat-item"><div class="num" style="color:var(--cyan)">20</div><div class="label">최대 챕터</div></div>
+    <div class="stat-item"><div class="num" style="color:var(--pink)">9</div><div class="label">전체 기능</div></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>BlogBot · YouTube URL 하나로 콘텐츠 사업의 시작 · <a href="/">사용하기 →</a></p>
+</footer>
+
+</body>
+</html>

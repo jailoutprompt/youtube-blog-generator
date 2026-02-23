@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여행자 유형 테스트</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 {
+            color: #4a90e2;
+        }
+        .btn {
+            background-color: #4caf50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="start-screen">
+            <h1>당신의 여행 스타일은? 🌍✈️</h1>
+            <p>지금 바로 알아보세요!</p>
+            <button class="btn" onclick="startQuiz()">시작하기</button>
+        </div>
+        <div id="quiz-screen" class="hidden">
+            <h2 id="question"></h2>
+            <button class="btn" onclick="selectAnswer('A')">A</button>
+            <button class="btn" onclick="selectAnswer('B')">B</button>
+        </div>
+        <div id="result-screen" class="hidden">
+            <h2>당신의 여행자 유형은...</h2>
+            <h1 id="result-type"></h1>
+            <p id="result-description"></p>
+            <button class="btn" onclick="restartQuiz()">다시하기</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "여행 계획을 짤 때 나는...",
+                a: "꼼꼼히 다 짜놓는 편이야 📅",
+                b: "대충 정하고 즉흥적으로 움직여 🤪"
+            },
+            {
+                q: "여행지에서 나는...",
+                a: "인생샷 건지는게 제일 중요해 📸",
+                b: "경험이 사진보다 중요해 🤘"
+            },
+            {
+                q: "여행 중 맛집을 고를 때...",
+                a: "인스타 맛집 리스트 정주행 🍽️",
+                b: "현지인 추천 맛집이 최고 👌"
+            },
+            {
+                q: "여행 예산이 부족하다면...",
+                a: "호텔은 포기 못해 🏨",
+                b: "숙소 대신 액티비티에 올인 🏄‍♂️"
+            },
+            {
+                q: "여행지에서 나는...",
+                a: "유명 관광지는 다 가봐야 해 🗽",
+                b: "숨은 명소 찾아다니는게 재밌어 🕵️"
+            }
+        ];
+
+        const results = [
+            {
+                type: "플래너형 여행자 🗓️",
+                description: "당신은 완벽한 여행을 위해 모든 것을 계획하는 타입이에요! 추천 여행지: 일본 🇯🇵"
+            },
+            {
+                type: "즉흥형 여행자 🎭",
+                description: "당신은 계획에 얽매이지 않고 자유롭게 여행을 즐기는 타입이에요! 추천 여행지: 태국 🇹🇭"
+            },
+            {
+                type: "인생샷 헌터 📸",
+                description: "당신은 인스타그램을 위해 태어난 감각적인 여행자예요! 추천 여행지: 그리스 🇬🇷"
+            },
+            {
+                type: "경험 수집가 🌈",
+                description: "당신은 새로운 경험을 통해 삶을 풍요롭게 만드는 여행자예요! 추천 여행지: 페루 🇵🇪"
+            },
+            {
+                type: "트렌드 세터 🌟",
+                description: "당신은 최신 트렌드를 좇는 힙한 여행자예요! 추천 여행지: 뉴욕 🗽"
+            },
+            {
+                type: "로컬 체험러 🏘️",
+                description: "당신은 현지인처럼 살아보는 것을 즐기는 여행자예요! 추천 여행지: 이탈리아 🇮🇹"
+            },
+            {
+                type: "럭셔리 여행자 💎",
+                description: "당신은 최고의 서비스와 편안함을 추구하는 여행자예요! 추천 여행지: 두바이 🇦🇪"
+            },
+            {
+                type: "백패커 🎒",
+                description: "당신은 최소한의 짐으로 세계를 누비는 자유로운 영혼이에요! 추천 여행지: 베트남 🇻🇳"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+
+        function startQuiz() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestion < questions.length) {
+                const q = questions[currentQuestion];
+                document.getElementById('question').innerHTML = q.q + "<br><br>A. " + q.a + "<br>B. " + q.b;
+            } else {
+                showResult();
+            }
+        }
+
+        function selectAnswer(answer) {
+            answers.push(answer);
+            currentQuestion++;
+            showQuestion();
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            
+            const resultIndex = Math.floor(Math.random() * results.length);
+            const result = results[resultIndex];
+            
+            document.getElementById('result-type').textContent = result.type;
+            document.getElementById('result-description').textContent = result.description;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            answers = [];
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

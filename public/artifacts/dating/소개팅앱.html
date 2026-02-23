@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>한일연애 — 소개팅 매칭</title>
+  
+  <!-- Pretendard 폰트 -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background-color: #FFFDF8;
+      text-align: center;
+      padding-bottom: 100px;
+    }
+    
+    /* 노션 페이지 컨테이너 */
+    .notion-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      overflow: auto;
+      z-index: 1;
+      padding-bottom: 150px;
+      background-color: #FFFDF8;
+    }
+    
+    .notion-embed {
+      width: 100%;
+      min-height: 100vh;
+      border: none;
+      background: transparent;
+      display: block;
+    }
+    
+    /* 노션 페이지 대체 화면 */
+    .notion-fallback {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+      background-color: #FFFDF8;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .notion-fallback-btn {
+      display: inline-block;
+      padding: 20px 40px;
+      background-color: #000000;
+      color: #FFFFFF;
+      font-size: 20px;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .notion-fallback-btn:hover {
+      background-color: #333333;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+    
+    .notion-fallback-text {
+      color: #666;
+      font-size: 18px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    
+    .notion-fallback-subtext {
+      color: #999;
+      font-size: 14px;
+    }
+    
+    /* 카카오톡 채널 버튼 (우측 하단 고정) */
+    .kakao-channel-btn {
+      position: fixed;
+      bottom: 120px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background-color: #FEE500;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      z-index: 9998;
+      transition: transform 0.2s ease;
+      text-decoration: none;
+      border: none;
+    }
+    
+    .kakao-channel-btn:hover {
+      transform: scale(1.05);
+    }
+    
+    .kakao-channel-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .kakao-channel-icon {
+      font-size: 24px;
+      font-weight: bold;
+      color: #3C1E1E;
+      line-height: 1;
+    }
+    
+    /* CTA 버튼 (하단 고정) */
+    .cta-bottom-btn {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      padding: 20px;
+      background-color: #FFFFFF;
+      border-top: 3px solid #FFD966;
+      text-align: center;
+      z-index: 9999;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .cta-bottom-btn a {
+      display: inline-block;
+      padding: 16px 32px;
+      background-color: #FFFFFF;
+      color: #1A1A1A;
+      font-size: 18px;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background-color 0.2s ease;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    }
+    
+    .cta-bottom-btn a:hover {
+      background-color: #F5F5F5;
+    }
+    
+    .cta-bottom-btn a:active {
+      background-color: #EEEEEE;
+    }
+    
+    /* 모바일 반응형 */
+    @media (max-width: 768px) {
+      .notion-container {
+        padding-bottom: 120px;
+      }
+      
+      .kakao-channel-btn {
+        width: 50px;
+        height: 50px;
+        bottom: 100px;
+        right: 15px;
+      }
+      
+      .kakao-channel-icon {
+        font-size: 20px;
+      }
+      
+      .cta-bottom-btn {
+        padding: 16px;
+      }
+      
+      .cta-bottom-btn a {
+        font-size: 16px;
+        padding: 14px 24px;
+        width: calc(100% - 32px);
+        max-width: 100%;
+      }
+      
+      body {
+        padding-bottom: 90px;
+      }
+      
+      .notion-fallback-btn {
+        font-size: 18px;
+        padding: 16px 32px;
+      }
+      
+      .notion-fallback-text {
+        font-size: 16px;
+      }
+    }
+    
+    /* 작은 모바일 기기 */
+    @media (max-width: 480px) {
+      .kakao-channel-btn {
+        width: 48px;
+        height: 48px;
+        bottom: 90px;
+        right: 12px;
+      }
+      
+      .kakao-channel-icon {
+        font-size: 18px;
+      }
+      
+      .cta-bottom-btn a {
+        font-size: 15px;
+        padding: 12px 20px;
+      }
+    }
+    
+    /* 로딩 애니메이션 */
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 노션 페이지 컨테이너 -->
+  <div class="notion-container">
+    <!-- 여러 방법으로 노션 페이지 임베드 시도 -->
+    <iframe 
+      src="https://lean-rock-3c5.notion.site/2a1606bd224380ff9de5eaf562748ad4"
+      class="notion-embed"
+      frameborder="0"
+      allow="fullscreen"
+      allowfullscreen
+      scrolling="yes"
+      id="notion-frame"
+      style="width: 100%; height: 100%; border: none;"
+    ></iframe>
+    
+    <!-- object 태그로 시도 -->
+    <object 
+      data="https://lean-rock-3c5.notion.site/2a1606bd224380ff9de5eaf562748ad4"
+      type="text/html"
+      style="width: 100%; height: 100%; display: none;"
+      id="notion-object"
+    ></object>
+    
+    <!-- embed 태그로 시도 -->
+    <embed 
+      src="https://lean-rock-3c5.notion.site/2a1606bd224380ff9de5eaf562748ad4"
+      type="text/html"
+      style="width: 100%; height: 100%; display: none;"
+      id="notion-embed"
+    ></embed>
+    
+    <!-- 대체 화면 (초기에는 숨김) -->
+    <div class="notion-fallback" id="notion-fallback" style="display: none;">
+      <div style="margin-bottom: 30px;">
+        <div style="width: 100px; height: 100px; margin: 0 auto 30px; background: linear-gradient(135deg, #FFD966 0%, #FFE699 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 50px; box-shadow: 0 8px 24px rgba(255, 217, 102, 0.3); animation: pulse 2s infinite;">
+          📄
+        </div>
+        <p class="notion-fallback-text">노션 페이지를 확인하세요</p>
+        <p class="notion-fallback-subtext">노션 페이지가 로드되지 않았습니다. 아래 버튼을 클릭하여 확인하세요.</p>
+      </div>
+      <a 
+        href="https://lean-rock-3c5.notion.site/2a1606bd224380ff9de5eaf562748ad4" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        class="notion-fallback-btn"
+        id="notion-link-btn"
+      >
+        📄 노션 페이지 보기
+      </a>
+    </div>
+  </div>
+  
+  <!-- 카카오톡 채널 버튼 -->
+  <a href="https://pf.kakao.com/_xxxx" target="_blank" rel="noopener noreferrer" class="kakao-channel-btn" aria-label="카카오톡 채널">
+    <span class="kakao-channel-icon">Ch</span>
+  </a>
+  
+  <!-- 하단 CTA 버튼 -->
+  <div class="cta-bottom-btn">
+    <a href="https://naver.me/xxxx" target="_blank" rel="noopener noreferrer">
+      12월, 합류하고 싶다면?
+    </a>
+  </div>
+  
+  <script>
+    // 노션 페이지 URL
+    const notionUrl = 'https://lean-rock-3c5.notion.site/2a1606bd224380ff9de5eaf562748ad4';
+    const notionFrame = document.getElementById('notion-frame');
+    const notionObject = document.getElementById('notion-object');
+    const notionEmbed = document.getElementById('notion-embed');
+    const notionFallback = document.getElementById('notion-fallback');
+    const notionLinkBtn = document.getElementById('notion-link-btn');
+    
+    let loadAttempted = false;
+    let checkInterval;
+    
+    // iframe 로드 시도
+    notionFrame.addEventListener('load', function() {
+      console.log('iframe 로드 이벤트 발생');
+      checkIfLoaded();
+    });
+    
+    notionFrame.addEventListener('error', function() {
+      console.log('iframe 오류 발생');
+      tryAlternatives();
+    });
+    
+    // object 로드 시도
+    notionObject.addEventListener('load', function() {
+      console.log('object 로드 이벤트 발생');
+      checkIfLoaded();
+    });
+    
+    // embed 로드 시도
+    notionEmbed.addEventListener('load', function() {
+      console.log('embed 로드 이벤트 발생');
+      checkIfLoaded();
+    });
+    
+    // 로드 여부 확인 함수
+    function checkIfLoaded() {
+      setTimeout(function() {
+        try {
+          // iframe 체크
+          const frameDoc = notionFrame.contentDocument || notionFrame.contentWindow.document;
+          const frameBody = frameDoc.body;
+          const frameText = frameBody ? frameBody.innerText.toLowerCase() : '';
+          
+          if (frameText && !frameText.includes('refused') && !frameText.includes('denied') && frameText.length > 50) {
+            console.log('노션 페이지가 iframe에 로드되었습니다!');
+            notionFrame.style.display = 'block';
+            notionFallback.style.display = 'none';
+            return;
+          }
+          
+          // 오류 메시지가 있으면 대체 방법 시도
+          if (frameText.includes('refused') || frameText.includes('denied')) {
+            console.log('iframe에 로드 실패 - 대체 방법 시도');
+            tryAlternatives();
+          }
+        } catch (e) {
+          // CORS 오류 - 실제로는 로드되었을 수 있음
+          console.log('CORS 오류 (하지만 페이지는 로드되었을 수 있음)');
+          // 3초 후에도 확인이 안 되면 대체 화면 표시
+          setTimeout(function() {
+            if (!loadAttempted) {
+              tryAlternatives();
+            }
+          }, 3000);
+        }
+      }, 2000);
+    }
+    
+    // 대체 방법 시도
+    function tryAlternatives() {
+      if (loadAttempted) return;
+      loadAttempted = true;
+      
+      console.log('대체 방법 시도 중...');
+      
+      // object 태그 시도
+      notionFrame.style.display = 'none';
+      notionObject.style.display = 'block';
+      
+      setTimeout(function() {
+        // object도 실패하면 embed 시도
+        notionObject.style.display = 'none';
+        notionEmbed.style.display = 'block';
+        
+        setTimeout(function() {
+          // 모든 방법 실패 시 대체 화면 표시
+          notionEmbed.style.display = 'none';
+          notionFallback.style.display = 'flex';
+          console.log('모든 임베드 방법 실패 - 대체 화면 표시');
+        }, 2000);
+      }, 2000);
+    }
+    
+    // 초기 체크 (5초 후)
+    setTimeout(function() {
+      if (!loadAttempted) {
+        tryAlternatives();
+      }
+    }, 5000);
+    
+    // 버튼 클릭 시 노션 페이지 열기
+    if (notionLinkBtn) {
+      notionLinkBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.open(notionUrl, '_blank');
+      });
+    }
+  </script>
+</body>
+</html>
+

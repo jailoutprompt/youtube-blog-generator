@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CommuniType: MBTI 공감 언어 번역기</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="config.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 CommuniType</h1>
+            <p>당신의 말을 그들의 언어로 번역해 보세요.</p>
+            <div class="ai-badge">
+                <span>🤖 AI Powered</span>
+                <span>16가지 MBTI 유형 지원</span>
+            </div>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <label for="mbti-select">1. 번역할 MBTI 유형을 선택하세요:</label>
+                <select id="mbti-select">
+                    <option value="ISTJ">ISTJ (현실적인 논리주의자)</option>
+                    <option value="ISFJ">ISFJ (용감한 수호자)</option>
+                    <option value="INFJ">INFJ (선의의 옹호자)</option>
+                    <option value="INTJ">INTJ (용의주도한 전략가)</option>
+                    <option value="ISTP">ISTP (만능 재주꾼)</option>
+                    <option value="ISFP">ISFP (호기심 많은 예술가)</option>
+                    <option value="INFP">INFP (열정적인 중재자)</option>
+                    <option value="INTP">INTP (논리적인 사색가)</option>
+                    <option value="ESTP">ESTP (모험을 즐기는 사업가)</option>
+                    <option value="ESFP">ESFP (자유로운 영혼의 연예인)</option>
+                    <option value="ENFP">ENFP (재기발랄한 활동가)</option>
+                    <option value="ENTP">ENTP (뜨거운 논쟁을 즐기는 변론가)</option>
+                    <option value="ESTJ">ESTJ (엄격한 관리자)</option>
+                    <option value="ESFJ">ESFJ (사교적인 외교관)</option>
+                    <option value="ENFJ">ENFJ (정의로운 사회운동가)</option>
+                    <option value="ENTJ">ENTJ (대담한 통솔자)</option>
+                </select>
+
+                <label for="input-text">2. 변환할 문장을 입력하세요:</label>
+                <textarea id="input-text" rows="4" placeholder="예시: 이번 주 금요일까지 이 보고서를 꼭 끝내야 해."></textarea>
+
+                <button id="translate-btn">공감 언어로 변환하기</button>
+            </div>
+
+            <div id="result-container" class="hidden">
+                <h2>번역 결과</h2>
+                <div class="result-box">
+                    <p id="translated-text"></p>
+                </div>
+                <h3>💡 소통 Tip & 변환 이유</h3>
+                <div class="explanation-box">
+                    <p id="explanation-text"></p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

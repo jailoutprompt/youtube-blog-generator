@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>클로드 심리 테스트</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #4a90e2;
+        }
+        .btn {
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: background-color 0.3s;
+            width: calc(50% - 10px); /* 버튼 너비 조정 */
+        }
+        .btn-start { background-color: #4CAF50; width: auto; }
+        .btn-a { background-color: #3498db; }
+        .btn-b { background-color: #e74c3c; }
+        .btn-share { background-color: #9b59b6; width: auto; }
+        .btn-restart { background-color: #f39c12; width: auto; }
+        .btn:hover { opacity: 0.8; }
+        .hidden {
+            display: none;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            padding: 3px;
+            border-radius: 3px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
+            margin-bottom: 20px;
+        }
+        .progress {
+            display: block;
+            height: 22px;
+            background-color: #4CAF50;
+            border-radius: 3px;
+            transition: width 500ms ease-in-out;
+        }
+        .share-buttons {
+            margin-top: 20px;
+        }
+        .share-buttons button {
+            margin: 0 5px;
+        }
+        #result-image {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+        .answer-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .recommended-places {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .place-item {
+            width: 30%;
+            margin-bottom: 20px;
+        }
+        .place-item img {
+            width: 100%;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="start-screen">
+            <h1>당신의 여행 스타일은? 🌍✈️</h1>
+            <p>10개의 질문으로 알아보는 나만의 여행 유형!</p>
+            <button class="btn btn-start" onclick="startQuiz()" aria-label="테스트 시작하기">시작하기</button>
+        </div>
+        <div id="quiz-screen" class="hidden">
+            <div class="progress-bar">
+                <span class="progress" style="width: 0%"></span>
+            </div>
+            <h2 id="question"></h2>
+            <div class="answer-buttons">
+                <button class="btn btn-a" onclick="selectAnswer('A')" id="btnA"></button>
+                <button class="btn btn-b" onclick="selectAnswer('B')" id="btnB"></button>
+            </div>
+        </div>
+        <div id="result-screen" class="hidden">
+            <h2>당신의 여행자 유형은...</h2>
+            <h1 id="result-type"></h1>
+            <img id="result-image" src="" alt="결과 이미지">
+            <p id="result-description"></p>
+            <h3>추천 국내 여행지</h3>
+            <div id="recommended-places" class="recommended-places"></div>
+            <div class="share-buttons">
+                <button class="btn btn-share" onclick="shareResult('kakao')" aria-label="카카오톡으로 공유하기">카카오톡 공유</button>
+                <button class="btn btn-share" onclick="shareResult('instagram')" aria-label="인스타그램으로 공유하기">인스타그램 공유</button>
+            </div>
+            <button class="btn btn-restart" onclick="restartQuiz()" aria-label="테스트 다시하기">다시하기</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "여행 계획을 짤 때 나는...",
+                a: "꼼꼼히 다 짜놓는 편이야 📅",
+                b: "대충 정하고 즉흥적으로 움직여 🤪"
+            },
+            {
+                q: "여행지에서 나는...",
+                a: "인생샷 건지는게 제일 중요해 📸",
+                b: "경험이 사진보다 중요해 🤘"
+            },
+            {
+                q: "여행 중 맛집을 고를 때...",
+                a: "인스타 맛집 리스트 정주행 🍽️",
+                b: "현지인 추천 맛집이 최고 👌"
+            },
+            {
+                q: "여행 예산이 부족하다면...",
+                a: "호텔은 포기 못해 🏨",
+                b: "숙소 대신 액티비티에 올인 🏄‍♂️"
+            },
+            {
+                q: "여행지에서 나는...",
+                a: "유명 관광지는 다 가봐야 해 🗽",
+                b: "숨은 명소 찾아다니는게 재밌어 🕵️"
+            },
+            {
+                q: "새로운 음식을 시도할 때...",
+                a: "익숙한 맛이 좋아 🍔",
+                b: "이색적인 현지 음식에 도전 🍱"
+            },
+            {
+                q: "여행 동반자를 고른다면...",
+                a: "친구들과 함께 떠나는게 좋아 👫",
+                b: "혼자 여행하는게 편해 🚶"
+            },
+            {
+                q: "여행 중 예상치 못한 상황이 생긴다면...",
+                a: "당황스럽고 스트레스 받아 😰",
+                b: "또 다른 모험이라 생각하고 즐겨 😄"
+            },
+            {
+                q: "여행 후 기념품을 고를 때...",
+                a: "실용적인 물건이 좋아 🧳",
+                b: "그 지역 특유의 물건을 선호해 🎭"
+            },
+            {
+                q: "다음 여행지를 고를 때...",
+                a: "익숙하고 편안한 곳으로 가고 싶어 🏖️",
+                b: "새롭고 도전적인 곳을 찾아 🏔️"
+            }
+        ];
+
+        const results = [
+            {
+                type: "안전지향 플래너 🗓️",
+                description: "당신은 완벽한 여행을 위해 모든 것을 꼼꼼히 계획하는 타입이에요! 안전하고 편안한 여행을 선호하시는군요.",
+                places: [
+                    { name: "제주도", image: "https://i.imgur.com/1234567.jpg" },
+                    { name: "경주", image: "https://i.imgur.com/2345678.jpg" },
+                    { name: "통영", image: "https://i.imgur.com/3456789.jpg" }
+                ],
+                image: "https://i.imgur.com/4567890.jpg"
+            },
+            {
+                type: "자유로운 모험가 🎭",
+                description: "당신은 계획에 얽매이지 않고 자유롭게 여행을 즐기는 타입이에요! 새로운 경험을 찾아 떠나는 걸 좋아하시는군요.",
+                places: [
+                    { name: "울릉도", image: "https://i.imgur.com/5678901.jpg" },
+                    { name: "강원도", image: "https://i.imgur.com/6789012.jpg" },
+                    { name: "무주", image: "https://i.imgur.com/7890123.jpg" }
+                ],
+                image: "https://i.imgur.com/8901234.jpg"
+            },
+            {
+                type: "문화탐험 매니아 🏛️",
+                description: "당신은 새로운 문화와 역사를 경험하는 것을 즐기는 타입이에요! 박물관과 유적지 탐방을 좋아하시는군요.",
+                places: [
+                    { name: "서울", image: "https://i.imgur.com/9012345.jpg" },
+                    { name: "안동", image: "https://i.imgur.com/0123456.jpg" },
+                    { name: "공주", image: "https://i.imgur.com/1234567.jpg" }
+                ],
+                image: "https://i.imgur.com/2345678.jpg"
+            },
+            {
+                type: "미식 여행가 🍽️",
+                description: "당신은 여행지의 음식을 통해 그 지역을 이해하는 타입이에요! 현지 맛집 탐방을 즐기시는군요.",
+                places: [
+                    { name: "전주", image: "https://i.imgur.com/3456789.jpg" },
+                    { name: "부산", image: "https://i.imgur.com/4567890.jpg" },
+                    { name: "강릉", image: "https://i.imgur.com/5678901.jpg" }
+                ],
+                image: "https://i.imgur.com/6789012.jpg"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+
+        function startQuiz() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestion < questions.length) {
+                const q = questions[currentQuestion];
+                document.getElementById('question').textContent = q.q;
+                document.getElementById('btnA').textContent = q.a;
+                document.getElementById('btnB').textContent = q.b;
+                updateProgressBar();
+            } else {
+                showResult();
+            }
+        }
+
+        function selectAnswer(answer) {
+            answers.push(answer);
+            currentQuestion++;
+            showQuestion();
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.querySelector('.progress').style.width = `${progress}%`;
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            
+            const resultIndex = calculateResult();
+            const result = results[resultIndex];
+            
+            document.getElementById('result-type').textContent = result.type;
+            document.getElementById('result-description').textContent = result.description;
+            document.getElementById('result-image').src = result.image;
+            
+            const placesContainer = document.getElementById('recommended-places');
+            placesContainer.innerHTML = '';
+            result.places.forEach(place => {
+                const placeElement = document.createElement('div');
+                placeElement.className = 'place-item';
+                placeElement.innerHTML = `
+                    <img src="${place.image}" alt="${place.name}">
+                    <p>${place.name}</p>
+                `;
+                placesContainer.appendChild(placeElement);
+            });
+        }
+
+        function calculateResult() {
+            const aCount = answers.filter(a => a === 'A').length;
+            return Math.min(Math.floor(aCount / 3), results.length - 1);
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            answers = [];
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+
+        function shareResult(platform) {
+            const resultType = document.getElementById('result-type').textContent;
+            const shareText = `내 여행자 유형은 ${resultType}입니다! 당신의 여행 스타일은 어떤가요?`;
+            const shareUrl = encodeURIComponent(window.location.href);
+
+            if (platform === 'kakao') {
+                // 카카오톡 공유하기 API 사용
+                Kakao.Link.sendDefault({
+                    objectType: 'text',
+                    text: shareText,
+                    link: {
+                        mobileWebUrl: window.location.href,
+                        webUrl: window.location.href,
+                    },
+                });
+            } else if (platform === 'instagram') {
+                // 인스타그램은 직접적인 공유 API가 없으므로, 사용자에게 안내 메시지를 보여줍니다.
+                alert('인스타그램 스토리에 공유하려면 스크린샷을 찍어 직접 업로드해주세요!');
+            }
+        }
+    </script>
+    <!-- 카카오톡 공유하기 API -->
+    <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+    <script>
+        // 여기에 카카오톡 API 키를 입력하세요
+        Kakao.init('YOUR_KAKAO_API_KEY');
+    </script>
+</body>
+</html>

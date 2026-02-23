@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>뇌울림 — 결과 모달</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #222222;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #707070;
+            --accent-blue: #3e82f7;
+            --accent-green: #00ff88;
+            --accent-red: #ff3b30;
+            --accent-orange: #ff9500;
+            --border-color: #333333;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* Modal Container */
+        .modal-container {
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            max-width: 440px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        /* Modal Header */
+        .modal-header {
+            text-align: center;
+            padding: 40px 32px 24px;
+            background: linear-gradient(180deg, rgba(255, 59, 48, 0.15) 0%, transparent 100%);
+        }
+        
+        .warning-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #ff3b30, #ff6b5e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 8px 24px rgba(255, 59, 48, 0.3);
+        }
+        
+        .alert-badge {
+            background: linear-gradient(135deg, #ff3b30, #ff6b5e);
+            color: white;
+            padding: 12px 32px;
+            border-radius: 24px;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            display: inline-block;
+            margin-bottom: 24px;
+        }
+        
+        .risk-display {
+            margin-bottom: 16px;
+        }
+        
+        .risk-percentage {
+            font-size: 64px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            color: var(--accent-red);
+            margin-bottom: 8px;
+        }
+        
+        .risk-label {
+            font-size: 17px;
+            color: var(--text-secondary);
+        }
+        
+        /* Modal Content */
+        .modal-content {
+            padding: 0 24px 24px;
+        }
+        
+        /* Location Verification Section - NEW */
+        .location-verification {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid var(--border-color);
+        }
+        
+        .verification-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .verification-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .verification-status {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(62, 130, 247, 0.15);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+        
+        .location-item {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .location-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .location-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .location-value {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .place-type-icon {
+            font-size: 24px;
+        }
+        
+        .confidence-mini {
+            font-size: 12px;
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+        
+        .address-text {
+            font-size: 15px;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+        
+        /* Feedback Buttons */
+        .feedback-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .feedback-btn {
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .feedback-btn:hover {
+            background: var(--bg-card);
+            border-color: var(--accent-blue);
+        }
+        
+        .feedback-btn.active {
+            background: rgba(0, 255, 136, 0.15);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+        
+        .feedback-btn-incorrect {
+            background: transparent;
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+        
+        .feedback-btn-incorrect:hover {
+            background: rgba(255, 59, 48, 0.1);
+        }
+        
+        /* Edit Mode */
+        .edit-mode {
+            margin-top: 12px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--accent-blue);
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .edit-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+        
+        .place-type-select {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        
+        .place-type-select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        
+        .address-input {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-bottom: 12px;
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+        }
+        
+        .address-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .save-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .save-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* Alert Message */
+        .alert-message {
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .alert-text strong {
+            color: var(--accent-red);
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: -0.3px;
+        }
+        
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Info Note */
+        .info-note {
+            background: rgba(62, 130, 247, 0.1);
+            border: 1px solid rgba(62, 130, 247, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+        
+        .info-note-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+            }
+        }
+        
+        /* Scrollbar */
+        .modal-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .modal-container::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        
+        .modal-container::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-overlay">
+        <div class="modal-container">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <div class="warning-icon">⚠️</div>
+                <div class="alert-badge">주의가 필요합니다</div>
+                <div class="risk-display">
+                    <div class="risk-percentage">85%</div>
+                    <div class="risk-label">높은 위험</div>
+                </div>
+            </div>
+            
+            <!-- Modal Content -->
+            <div class="modal-content">
+                
+                <!-- Location Verification Section -->
+                <div class="location-verification">
+                    <div class="verification-header">
+                        <div class="verification-title">
+                            📍 장소 정보 확인
+                        </div>
+                        <div class="verification-status">AI 분석</div>
+                    </div>
+                    
+                    <!-- Place Type -->
+                    <div class="location-item">
+                        <div class="location-label">
+                            🏢 분석된 장소 유형
+                        </div>
+                        <div class="location-value">
+                            <span class="place-type-icon">🛍️</span>
+                            <span>상업시설</span>
+                            <span class="confidence-mini">신뢰도 87%</span>
+                        </div>
+                        
+                        <div class="feedback-buttons">
+                            <button class="feedback-btn" id="correctBtn">
+                                ✓ 맞아요
+                            </button>
+                            <button class="feedback-btn feedback-btn-incorrect" id="incorrectBtn">
+                                ✗ 틀렸어요
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Address -->
+                    <div class="location-item">
+                        <div class="location-label">
+                            📮 GPS 주소
+                        </div>
+                        <div class="address-text">
+                            서울특별시 서초구 서초대로 396
+                        </div>
+                        
+                        <div class="feedback-buttons">
+                            <button class="feedback-btn" id="addressCorrectBtn">
+                                ✓ 정확해요
+                            </button>
+                            <button class="feedback-btn feedback-btn-incorrect" id="addressIncorrectBtn">
+                                ✗ 수정할래요
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Edit Mode (Hidden by default) -->
+                    <div class="edit-mode" id="editMode" style="display: none;">
+                        <div class="edit-title">🔧 정보 수정하기</div>
+                        
+                        <select class="place-type-select" id="placeTypeSelect">
+                            <option value="">장소 유형 선택</option>
+                            <option value="교통시설">🚇 지하철역 출입구</option>
+                            <option value="업무시설">🏢 사무실/업무시설</option>
+                            <option value="교육시설">🎓 학교/교육시설</option>
+                            <option value="주거시설">🏠 아파트/주거시설</option>
+                            <option value="상업시설" selected>🛍️ 쇼핑몰/상업시설</option>
+                            <option value="소매점포">🏪 편의점/소매점</option>
+                            <option value="음식점업소">🍽️ 음식점/카페</option>
+                            <option value="체육시설">🏃 공원/체육시설</option>
+                            <option value="유흥업소">🎵 유흥/엔터시설</option>
+                        </select>
+                        
+                        <textarea 
+                            class="address-input" 
+                            id="addressInput"
+                            placeholder="정확한 주소를 입력해주세요"
+                        >서울특별시 서초구 서초대로 396</textarea>
+                        
+                        <button class="save-btn" id="saveBtn">
+                            저장하기
+                        </button>
+                    </div>
+                    
+                    <div class="info-note">
+                        <div class="info-note-text">
+                            💡 정확한 정보는 더 나은 위험도 분석에 도움이 됩니다
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Alert Message -->
+                <div class="alert-message">
+                    <div class="alert-text">
+                        이 지역은 최근 <strong>3개월간 1587건</strong>의 도난이 발생했습니다. 더 안전한 장소를 추천드립니다.
+                    </div>
+                </div>
+                
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">순위</div>
+                        <div class="stat-value">25/100</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">도난 건수</div>
+                        <div class="stat-value">1587건</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">장소 유형 순위</div>
+                        <div class="stat-value">1/9</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">도난 건수</div>
+                        <div class="stat-value">327,634건</div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary">
+                        🗺️ 안전 구역 찾기
+                    </button>
+                    <button class="btn btn-secondary">
+                        여기 주차할래요
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Feedback buttons functionality
+        const correctBtn = document.getElementById('correctBtn');
+        const incorrectBtn = document.getElementById('incorrectBtn');
+        const addressCorrectBtn = document.getElementById('addressCorrectBtn');
+        const addressIncorrectBtn = document.getElementById('addressIncorrectBtn');
+        const editMode = document.getElementById('editMode');
+        const saveBtn = document.getElementById('saveBtn');
+        
+        // Place Type Feedback
+        correctBtn.addEventListener('click', function() {
+            this.classList.add('active');
+            incorrectBtn.classList.remove('active');
+            editMode.style.display = 'none';
+            
+            // Show success feedback
+            showToast('✓ 장소 유형이 확인되었습니다');
+        });
+        
+        incorrectBtn.addEventListener('click', function() {
+            this.classList.add('active');
+            correctBtn.classList.remove('active');
+            editMode.style.display = 'block';
+            
+            // Focus on select
+            document.getElementById('placeTypeSelect').focus();
+        });
+        
+        // Address Feedback
+        addressCorrectBtn.addEventListener('click', function() {
+            this.classList.add('active');
+            addressIncorrectBtn.classList.remove('active');
+            
+            showToast('✓ 주소가 확인되었습니다');
+        });
+        
+        addressIncorrectBtn.addEventListener('click', function() {
+            this.classList.add('active');
+            addressCorrectBtn.classList.remove('active');
+            editMode.style.display = 'block';
+            
+            // Focus on textarea
+            document.getElementById('addressInput').focus();
+        });
+        
+        // Save Button
+        saveBtn.addEventListener('click', function() {
+            const placeType = document.getElementById('placeTypeSelect').value;
+            const address = document.getElementById('addressInput').value;
+            
+            if (placeType && address) {
+                // Update the display
+                const placeTypeText = document.getElementById('placeTypeSelect').selectedOptions[0].text;
+                document.querySelector('.location-value span:nth-child(2)').textContent = placeTypeText.substring(2);
+                document.querySelector('.address-text').textContent = address;
+                
+                // Hide edit mode
+                editMode.style.display = 'none';
+                
+                // Reset buttons
+                correctBtn.classList.add('active');
+                incorrectBtn.classList.remove('active');
+                addressCorrectBtn.classList.add('active');
+                addressIncorrectBtn.classList.remove('active');
+                
+                showToast('✓ 정보가 업데이트되었습니다');
+            } else {
+                showToast('⚠ 모든 정보를 입력해주세요', true);
+            }
+        });
+        
+        // Toast notification
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${isError ? 'var(--accent-red)' : 'var(--accent-green)'};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 24px;
+                font-size: 14px;
+                font-weight: 600;
+                z-index: 10000;
+                animation: slideDown 0.3s ease-out;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

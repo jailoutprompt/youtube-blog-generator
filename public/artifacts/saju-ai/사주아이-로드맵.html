@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사주아이 — 로드맵</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0a0f; --card: #111119; --border: rgba(255,255,255,0.06);
+  --text: #f1f5f9; --text2: #94a3b8; --text3: #64748b;
+  --purple: #8b5cf6; --blue: #3b82f6; --green: #22c55e;
+  --orange: #f59e0b; --red: #ef4444; --pink: #ec4899; --cyan: #06b6d4;
+  --yellow: #fcd303;
+}
+body {
+  font-family: 'Pretendard Variable', -apple-system, system-ui, sans-serif;
+  background: var(--bg); color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  padding: 48px 24px 120px;
+}
+.container { max-width: 1060px; margin: 0 auto; }
+
+.header { margin-bottom: 40px; }
+.header h1 { font-size: 30px; font-weight: 800; margin-bottom: 6px; }
+.header .sub { font-size: 14px; color: var(--text3); }
+.header .date { font-size: 11px; color: var(--text3); margin-top: 8px; padding: 4px 10px; border-radius: 100px; background: rgba(255,255,255,0.03); display: inline-block; }
+
+.section { margin-bottom: 64px; }
+.section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+.section-title { font-size: 22px; font-weight: 800; margin-bottom: 24px; }
+
+/* ===== JOURNEY MAP ===== */
+.journey-wrap {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 40px 32px; overflow-x: auto;
+}
+.journey-svg { width: 100%; min-width: 960px; }
+
+/* ===== YOU ARE HERE BANNER ===== */
+.here-banner {
+  display: flex; align-items: center; gap: 16px;
+  padding: 20px 24px; border-radius: 14px;
+  background: linear-gradient(135deg, rgba(252,211,3,0.08), rgba(139,92,246,0.06));
+  border: 1px solid rgba(252,211,3,0.2);
+  margin-bottom: 32px;
+}
+.here-pin {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--yellow); color: #000;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 900; flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(252,211,3,0.4);
+}
+.here-text h3 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+.here-text p { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+/* ===== PROGRESS BAR ===== */
+.progress-wrap { margin-bottom: 48px; }
+.progress-bar-outer {
+  width: 100%; height: 32px; border-radius: 16px;
+  background: var(--card); border: 1px solid var(--border);
+  overflow: hidden; position: relative;
+}
+.progress-bar-fill {
+  height: 100%; border-radius: 16px;
+  background: linear-gradient(90deg, var(--green), var(--yellow));
+  position: relative; transition: width 1s;
+}
+.progress-bar-fill::after {
+  content: ''; position: absolute; right: 0; top: 0; bottom: 0;
+  width: 4px; background: #fff; border-radius: 2px;
+  box-shadow: 0 0 12px rgba(255,255,255,0.6);
+}
+.progress-labels {
+  display: flex; justify-content: space-between;
+  margin-top: 10px; font-size: 10px; color: var(--text3);
+}
+.progress-labels span { text-align: center; }
+.progress-pct {
+  text-align: center; margin-top: 8px;
+  font-size: 14px; font-weight: 800; color: var(--yellow);
+}
+
+/* ===== PHASE TIMELINE ===== */
+.timeline { position: relative; }
+.tl-line {
+  position: absolute; left: 28px; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(to bottom, var(--green) 0%, var(--green) 28%, var(--yellow) 28%, var(--yellow) 34%, var(--text3) 34%, var(--text3) 100%);
+  border-radius: 2px;
+}
+.tl-phase { position: relative; padding-left: 72px; padding-bottom: 48px; }
+.tl-phase:last-child { padding-bottom: 0; }
+.tl-dot {
+  position: absolute; left: 16px; top: 2px;
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 900; z-index: 2;
+}
+.tl-dot.done { background: var(--green); color: #000; }
+.tl-dot.current { background: var(--yellow); color: #000; box-shadow: 0 0 16px rgba(252,211,3,0.5); }
+.tl-dot.future { background: var(--card); color: var(--text3); border: 2px solid var(--text3); }
+.tl-dot.far { background: var(--card); color: var(--text3); border: 2px dashed rgba(100,116,139,0.4); }
+
+.tl-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.tl-header h3 { font-size: 18px; font-weight: 800; }
+.tl-tag { padding: 3px 10px; border-radius: 100px; font-size: 10px; font-weight: 700; }
+.tl-header .tl-period { font-size: 11px; color: var(--text3); }
+.tl-desc { font-size: 13px; color: var(--text2); margin-bottom: 16px; line-height: 1.6; }
+
+.tl-tasks { display: flex; flex-direction: column; gap: 6px; }
+.tl-task {
+  display: grid; grid-template-columns: 20px 1fr auto;
+  align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  font-size: 13px;
+}
+.tl-task .check { font-size: 14px; }
+.tl-task .task-label { font-weight: 600; }
+.tl-task .task-sub { font-size: 10px; color: var(--text3); font-weight: 400; }
+.tl-task .task-time {
+  padding: 2px 8px; border-radius: 100px;
+  font-size: 9px; font-weight: 700; white-space: nowrap;
+}
+
+/* ===== METRICS FORECAST ===== */
+.forecast-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.forecast-card {
+  padding: 20px; border-radius: 12px; background: var(--card);
+  border: 1px solid var(--border); text-align: center;
+}
+.forecast-card .fc-phase { font-size: 10px; font-weight: 700; margin-bottom: 8px; }
+.forecast-card .fc-metric { font-size: 28px; font-weight: 900; margin-bottom: 2px; }
+.forecast-card .fc-label { font-size: 11px; color: var(--text3); margin-bottom: 10px; }
+.forecast-card .fc-items { font-size: 10px; color: var(--text2); line-height: 1.7; text-align: left; }
+
+/* ===== REVENUE MODEL ===== */
+.money-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.money-card {
+  padding: 24px; border-radius: 14px; background: var(--card);
+  border: 1px solid var(--border); position: relative;
+}
+.money-card.highlight { border-color: rgba(252,211,3,0.4); }
+.money-card.highlight::after {
+  content: 'MAIN'; position: absolute; top: -8px; right: 16px;
+  padding: 2px 10px; border-radius: 100px;
+  font-size: 9px; font-weight: 800;
+  background: var(--yellow); color: #000;
+}
+.money-card .m-tag { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 100px; display: inline-block; margin-bottom: 10px; }
+.money-card .m-name { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+.money-card .m-price { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+.money-card .m-list { list-style: none; padding: 0; }
+.money-card .m-list li {
+  font-size: 12px; color: var(--text2); line-height: 1.8;
+  padding-left: 16px; position: relative;
+}
+.money-card .m-list li::before {
+  content: ''; position: absolute; left: 0; top: 9px;
+  width: 6px; height: 6px; border-radius: 50%;
+}
+.money-card .m-list li.yes::before { background: var(--green); }
+.money-card .m-list li.no::before { background: var(--text3); opacity: 0.3; }
+.money-card .m-list li.no { color: var(--text3); text-decoration: line-through; opacity: 0.5; }
+.money-card .m-note { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 10px; color: var(--text3); }
+
+/* ===== RISK ===== */
+.risk-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.risk-card {
+  padding: 18px; border-radius: 12px; background: var(--card);
+  border: 1px solid var(--border);
+}
+.risk-card .r-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.risk-card .r-desc { font-size: 11px; color: var(--text2); line-height: 1.6; }
+.risk-card .r-fix { font-size: 10px; color: var(--green); margin-top: 8px; font-weight: 600; }
+
+@media (max-width: 768px) {
+  .forecast-grid { grid-template-columns: repeat(2, 1fr); }
+  .money-grid { grid-template-columns: 1fr; }
+  .risk-grid { grid-template-columns: 1fr; }
+  .tl-phase { padding-left: 56px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+  <h1>🔮 사주아이 프로젝트 지도</h1>
+  <div class="sub">어디까지 왔고, 어디로 가야 하는가</div>
+  <div class="date">2026.02.24 기준</div>
+</div>
+
+<!-- You Are Here -->
+<div class="here-banner">
+  <div class="here-pin">📍</div>
+  <div class="here-text">
+    <h3>현재 위치: Phase 1 완료 → Phase 2 진입 직전</h3>
+    <p>서비스 3개(사주/궁합/운세) + 결제 코드 + 프론트엔드 전부 완성. 배포만 하면 세상에 공개됨.</p>
+  </div>
+</div>
+
+<!-- Progress Bar -->
+<div class="progress-wrap">
+  <div class="section-label" style="color:var(--cyan)">Overall Progress</div>
+  <div class="section-title" style="margin-bottom:16px;">전체 여정 진행도</div>
+  <div class="progress-bar-outer">
+    <div class="progress-bar-fill" style="width: 30%;"></div>
+  </div>
+  <div class="progress-labels">
+    <span>아이디어<br>2026.02</span>
+    <span>개발 완료<br>(지금 여기)</span>
+    <span>배포<br>+ 결제</span>
+    <span>첫 매출<br>발생</span>
+    <span>성장<br>궤도</span>
+    <span>월 100<br>달성</span>
+  </div>
+  <div class="progress-pct">30% — 제품은 됐고, 배포 + 마케팅이 남았다</div>
+</div>
+
+<!-- ===== JOURNEY MAP (SVG) ===== -->
+<div class="section">
+  <div class="section-label" style="color:var(--cyan)">Journey Map</div>
+  <div class="section-title">전체 여정 한눈에</div>
+  <div class="journey-wrap">
+    <svg viewBox="0 0 960 520" class="journey-svg" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow"><feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#fcd303" flood-opacity="0.5"/></filter>
+        <filter id="glowG"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#22c55e" flood-opacity="0.4"/></filter>
+      </defs>
+
+      <!-- 길 배경 -->
+      <path d="M 60 80 C 160 80, 180 80, 240 80 C 320 80, 340 80, 400 80 C 460 80, 490 140, 520 200 C 550 260, 580 280, 660 280 C 740 280, 770 280, 840 280 C 890 280, 910 340, 930 420"
+            fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="48" stroke-linecap="round"/>
+
+      <!-- 완료 구간 (초록) -->
+      <path d="M 60 80 L 240 80" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round"/>
+      <!-- 현재 구간 (노랑 점선) -->
+      <path d="M 240 80 C 320 80, 340 80, 400 80" fill="none" stroke="#fcd303" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 6"/>
+      <!-- 미래 구간 (회색 점선) -->
+      <path d="M 400 80 C 460 80, 490 140, 520 200 C 550 260, 580 280, 660 280 C 740 280, 770 280, 840 280 C 890 280, 910 340, 930 420"
+            fill="none" stroke="rgba(100,116,139,0.3)" stroke-width="2" stroke-linecap="round" stroke-dasharray="6 8"/>
+
+      <!-- PHASE 0: 시작 -->
+      <circle cx="60" cy="80" r="14" fill="#22c55e" filter="url(#glowG)"/>
+      <text x="60" y="85" fill="#000" font-size="12" font-weight="900" text-anchor="middle">0</text>
+      <text x="60" y="56" fill="#22c55e" font-size="10" font-weight="700" text-anchor="middle">START</text>
+      <text x="60" y="115" fill="#94a3b8" font-size="9" text-anchor="middle">2026.02.20</text>
+
+      <!-- PHASE 1: 개발 -->
+      <circle cx="240" cy="80" r="14" fill="#22c55e" filter="url(#glowG)"/>
+      <text x="240" y="85" fill="#000" font-size="12" font-weight="900" text-anchor="middle">1</text>
+      <text x="240" y="56" fill="#22c55e" font-size="10" font-weight="700" text-anchor="middle">개발 완료</text>
+      <rect x="165" y="115" width="150" height="105" rx="8" fill="rgba(34,197,94,0.05)" stroke="rgba(34,197,94,0.15)" stroke-width="1"/>
+      <text x="173" y="133" fill="#22c55e" font-size="9" font-weight="700">완성된 것:</text>
+      <text x="173" y="149" fill="#94a3b8" font-size="9">🔮 사주 (AI 13섹션)</text>
+      <text x="173" y="163" fill="#94a3b8" font-size="9">💕 궁합 (AI 7섹션)</text>
+      <text x="173" y="177" fill="#94a3b8" font-size="9">⭐ 2026 운세 (AI 8섹션)</text>
+      <text x="173" y="191" fill="#94a3b8" font-size="9">💳 토스 결제 코드</text>
+      <text x="173" y="205" fill="#94a3b8" font-size="9">📱 프론트 (원본 90%)</text>
+      <text x="173" y="216" fill="#94a3b8" font-size="9">📄 약관/개인정보/회사소개</text>
+
+      <!-- 현재 위치 마커 -->
+      <circle cx="320" cy="80" r="18" fill="#fcd303" filter="url(#glow)"/>
+      <text x="320" y="86" fill="#000" font-size="14" font-weight="900" text-anchor="middle">!</text>
+      <text x="320" y="56" fill="#fcd303" font-size="11" font-weight="800" text-anchor="middle">HERE</text>
+      <text x="320" y="115" fill="#fcd303" font-size="9" text-anchor="middle" font-weight="600">Vercel 배포</text>
+      <text x="320" y="128" fill="#fcd303" font-size="9" text-anchor="middle" font-weight="600">+ 토스 라이브 키</text>
+
+      <!-- PHASE 2: 런칭 -->
+      <circle cx="400" cy="80" r="14" fill="#111119" stroke="#64748b" stroke-width="2"/>
+      <text x="400" y="85" fill="#94a3b8" font-size="12" font-weight="900" text-anchor="middle">2</text>
+      <text x="400" y="56" fill="#94a3b8" font-size="10" font-weight="700" text-anchor="middle">런칭</text>
+      <rect x="350" y="100" width="120" height="72" rx="8" fill="rgba(100,116,139,0.04)" stroke="rgba(100,116,139,0.1)" stroke-width="1"/>
+      <text x="358" y="118" fill="#64748b" font-size="9" font-weight="700">해야 할 것:</text>
+      <text x="358" y="133" fill="#64748b" font-size="9">Vercel 배포 (30분)</text>
+      <text x="358" y="146" fill="#64748b" font-size="9">도메인 연결</text>
+      <text x="358" y="159" fill="#64748b" font-size="9">토스 라이브 키 발급</text>
+      <text x="358" y="169" fill="#64748b" font-size="9">Supabase DB</text>
+
+      <!-- PHASE 3: 첫 매출 -->
+      <circle cx="520" cy="200" r="14" fill="#111119" stroke="#64748b" stroke-width="2"/>
+      <text x="520" y="205" fill="#94a3b8" font-size="12" font-weight="900" text-anchor="middle">3</text>
+      <text x="520" y="180" fill="#94a3b8" font-size="10" font-weight="700" text-anchor="middle">첫 매출</text>
+      <rect x="465" y="220" width="130" height="58" rx="8" fill="rgba(100,116,139,0.04)" stroke="rgba(100,116,139,0.1)" stroke-width="1"/>
+      <text x="473" y="238" fill="#64748b" font-size="9" font-weight="700">마케팅:</text>
+      <text x="473" y="253" fill="#64748b" font-size="9">지인 30명 바이럴</text>
+      <text x="473" y="266" fill="#64748b" font-size="9">인스타 + 카카오 공유</text>
+      <text x="473" y="275" fill="#64748b" font-size="9">SEO 메타태그</text>
+
+      <!-- PHASE 4: 성장 -->
+      <circle cx="660" cy="280" r="14" fill="#111119" stroke="#64748b" stroke-width="2"/>
+      <text x="660" y="285" fill="#94a3b8" font-size="12" font-weight="900" text-anchor="middle">4</text>
+      <text x="660" y="260" fill="#94a3b8" font-size="10" font-weight="700" text-anchor="middle">월 100만</text>
+      <rect x="600" y="305" width="130" height="72" rx="8" fill="rgba(100,116,139,0.04)" stroke="rgba(100,116,139,0.1)" stroke-width="1"/>
+      <text x="608" y="323" fill="#64748b" font-size="9" font-weight="700">성장 부스터:</text>
+      <text x="608" y="338" fill="#64748b" font-size="9">틱톡/릴스 숏폼</text>
+      <text x="608" y="351" fill="#64748b" font-size="9">소셜 로그인 + 마이페이지</text>
+      <text x="608" y="364" fill="#64748b" font-size="9">A/B 테스트</text>
+      <text x="608" y="375" fill="#64748b" font-size="9">블로그 SEO</text>
+
+      <!-- PHASE 5: 확장 -->
+      <circle cx="840" cy="280" r="14" fill="#111119" stroke="rgba(100,116,139,0.4)" stroke-width="2" stroke-dasharray="4 3"/>
+      <text x="840" y="285" fill="#64748b" font-size="12" font-weight="900" text-anchor="middle">5</text>
+      <text x="840" y="260" fill="#64748b" font-size="10" font-weight="700" text-anchor="middle">월 500만</text>
+      <rect x="775" y="305" width="140" height="72" rx="8" fill="rgba(100,116,139,0.03)" stroke="rgba(100,116,139,0.08)" stroke-width="1"/>
+      <text x="783" y="323" fill="#4a5568" font-size="9" font-weight="700">확장:</text>
+      <text x="783" y="338" fill="#4a5568" font-size="9">타로 · 이름풀이 · 꿈해몽</text>
+      <text x="783" y="351" fill="#4a5568" font-size="9">번들 패키지 (2,500원)</text>
+      <text x="783" y="364" fill="#4a5568" font-size="9">인플루언서 마케팅</text>
+      <text x="783" y="375" fill="#4a5568" font-size="9">구독 모델 (4,900원/월)</text>
+
+      <!-- PHASE 6: 스케일 -->
+      <circle cx="930" cy="420" r="14" fill="#111119" stroke="rgba(100,116,139,0.3)" stroke-width="2" stroke-dasharray="4 3"/>
+      <text x="930" y="425" fill="#4a5568" font-size="12" font-weight="900" text-anchor="middle">6</text>
+      <text x="930" y="400" fill="#4a5568" font-size="10" font-weight="700" text-anchor="middle">월 1000만+</text>
+      <rect x="825" y="440" width="140" height="72" rx="8" fill="rgba(100,116,139,0.02)" stroke="rgba(100,116,139,0.06)" stroke-width="1"/>
+      <text x="833" y="458" fill="#3a4250" font-size="9" font-weight="700">장기 비전:</text>
+      <text x="833" y="473" fill="#3a4250" font-size="9">해외 진출 (일본/동남아)</text>
+      <text x="833" y="486" fill="#3a4250" font-size="9">네이티브 앱 (iOS/Android)</text>
+      <text x="833" y="499" fill="#3a4250" font-size="9">AI 실시간 채팅 상담</text>
+      <text x="833" y="510" fill="#3a4250" font-size="9">B2B 기업 이벤트</text>
+
+      <!-- 범례 -->
+      <line x1="20" y1="490" x2="50" y2="490" stroke="#22c55e" stroke-width="3"/>
+      <text x="56" y="494" fill="#94a3b8" font-size="9">완료</text>
+      <line x1="100" y1="490" x2="130" y2="490" stroke="#fcd303" stroke-width="3" stroke-dasharray="6 4"/>
+      <text x="136" y="494" fill="#94a3b8" font-size="9">진행중</text>
+      <line x1="190" y1="490" x2="220" y2="490" stroke="rgba(100,116,139,0.3)" stroke-width="2" stroke-dasharray="4 6"/>
+      <text x="226" y="494" fill="#94a3b8" font-size="9">미래</text>
+      <circle cx="280" cy="490" r="6" fill="#fcd303" filter="url(#glow)"/>
+      <text x="292" y="494" fill="#94a3b8" font-size="9">현재 위치</text>
+    </svg>
+  </div>
+</div>
+
+<!-- ===== PHASE TIMELINE ===== -->
+<div class="section">
+  <div class="section-label" style="color:var(--purple)">Detailed Roadmap</div>
+  <div class="section-title">단계별 상세 계획</div>
+
+  <div class="timeline">
+    <div class="tl-line"></div>
+
+    <!-- Phase 0 -->
+    <div class="tl-phase">
+      <div class="tl-dot done">0</div>
+      <div class="tl-header">
+        <h3>시작 — 아이디어 + 분석</h3>
+        <span class="tl-tag" style="background:rgba(34,197,94,0.1);color:var(--green);">DONE</span>
+        <span class="tl-period">2026.02.20</span>
+      </div>
+      <div class="tl-desc">"이거 만들자ㅎ" — 원본 사이트 분석, 기술스택 결정, 리버스코딩 프로토콜 정립.</div>
+      <div class="tl-tasks">
+        <div class="tl-task"><span class="check" style="color:var(--green)">✓</span><span class="task-label">원본 분석 (saju-kid.com) <span class="task-sub">— Playwright 스크래핑 + 디자인 토큰 추출</span></span><span class="task-time" style="background:rgba(34,197,94,0.1);color:var(--green);">완료</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--green)">✓</span><span class="task-label">리버스코딩 프로토콜 정립 <span class="task-sub">— CLAUDE.md 저장, 매 세션 자동 참조</span></span><span class="task-time" style="background:rgba(34,197,94,0.1);color:var(--green);">완료</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--green)">✓</span><span class="task-label">기술스택 결정 <span class="task-sub">— Next.js 15 + Tailwind + OpenAI GPT-4o</span></span><span class="task-time" style="background:rgba(34,197,94,0.1);color:var(--green);">완료</span></div>
+      </div>
+    </div>
+
+    <!-- Phase 1 -->
+    <div class="tl-phase">
+      <div class="tl-dot done">1</div>
+      <div class="tl-header">
+        <h3>전체 개발</h3>
+        <span class="tl-tag" style="background:rgba(34,197,94,0.1);color:var(--green);">DONE</span>
+        <span class="tl-period">2026.02.20 ~ 02.24 (4일)</span>
+      </div>
+      <div class="tl-desc">AI한테 시켜서 4일만에 서비스 3개 + 결제까지 다 만듦. 인건비 0원.</div>
+      <div class="tl-tasks">
+        <div class="tl-task"><span class="check" style="color:var(--green)">✓</span><span class="task-label">프론트엔드 클론 <span class="task-sub">— 네오브루탈리즘 디자인, 원본 90% 일치</span></span><span class="task-time" style="background:rgba(34,197,94,0.1);color:var(--green);">완료</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--green)">✓</span><span class="task-label">🔮 사주풀이 서비스 <span class="task-sub">— 만세력 계산 + AI 13섹션 + 팩폭/위로 패턴</span></span><span class="task-time" style="background:rgba(34,197,94,0.1);color:var(--green);">완료</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--green)">✓</span><span class="task-label">💕 궁합 서비스 <span class="task-sub">— 두 사람 사주 → 점수 + AI 7섹션 분석</span></span><span class="task-time" style="background:rgba(34,197,94,0.1);color:var(--green);">완료</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--green)">✓</span><span class="task-label">⭐ 2026 운세 서비스 <span class="task-sub">— 총운 + 월별 + 직업/연애/건강운</span></span><span class="task-time" style="background:rgba(34,197,94,0.1);color:var(--green);">완료</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--green)">✓</span><span class="task-label">토스페이먼츠 결제 코드 <span class="task-sub">— 결제창 + 승인 API + 성공/실패 페이지</span></span><span class="task-time" style="background:rgba(34,197,94,0.1);color:var(--green);">완료</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--green)">✓</span><span class="task-label">페이월 + 공유 + 로그인 + 법적 페이지 <span class="task-sub">— 약관/개인정보/회사소개</span></span><span class="task-time" style="background:rgba(34,197,94,0.1);color:var(--green);">완료</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--green)">✓</span><span class="task-label">AI 프롬프트 원본 맞춤 <span class="task-sub">— 창의적 비유 제목, 십성/신살, 개운 포인트</span></span><span class="task-time" style="background:rgba(34,197,94,0.1);color:var(--green);">완료</span></div>
+      </div>
+    </div>
+
+    <!-- Phase 2: 런칭 -->
+    <div class="tl-phase">
+      <div class="tl-dot current">2</div>
+      <div class="tl-header">
+        <h3>런칭 — 세상에 공개</h3>
+        <span class="tl-tag" style="background:rgba(252,211,3,0.1);color:var(--yellow);">NEXT</span>
+        <span class="tl-period">예상 1~3일</span>
+      </div>
+      <div class="tl-desc">배포 버튼 하나면 공개. 토스 키 받으면 그날부터 결제 가능. 빠르면 이번주 첫 매출.</div>
+      <div class="tl-tasks">
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">Vercel 배포 <span class="task-sub">— 터미널에서 vercel 치면 끝</span></span><span class="task-time" style="background:rgba(34,197,94,0.1);color:var(--green);">30분</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">도메인 연결 <span class="task-sub">— 가비아에서 2만원/년</span></span><span class="task-time" style="background:rgba(34,197,94,0.1);color:var(--green);">30분</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">토스페이먼츠 라이브 키 신청 <span class="task-sub">— 사업자번호 있으니 바로 신청, 심사 1~3일</span></span><span class="task-time" style="background:rgba(245,158,11,0.1);color:var(--orange);">대기</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">Supabase DB 연결 <span class="task-sub">— 결제 기록 저장. 무료 tier</span></span><span class="task-time" style="background:rgba(139,92,246,0.1);color:var(--purple);">2시간</span></div>
+      </div>
+    </div>
+
+    <!-- Phase 3: 첫 매출 -->
+    <div class="tl-phase">
+      <div class="tl-dot future">3</div>
+      <div class="tl-header">
+        <h3>씨 뿌리기 — 첫 매출</h3>
+        <span class="tl-tag" style="background:rgba(100,116,139,0.1);color:var(--text3);">PLANNED</span>
+        <span class="tl-period">런칭 후 1~2주</span>
+      </div>
+      <div class="tl-desc">아무도 모르면 매출 0원. "야 나 사주 봤는데 소름이야" — 이 한마디가 핵심.</div>
+      <div class="tl-tasks">
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">지인 바이럴 <span class="task-sub">— 친구/가족 30명한테 URL. 솔직한 피드백</span></span><span class="task-time" style="background:rgba(34,197,94,0.1);color:var(--green);">바로</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">카카오 공유 SDK <span class="task-sub">— 결과 공유 시 예쁜 OG 카드 → 바이럴 핵심</span></span><span class="task-time" style="background:rgba(139,92,246,0.1);color:var(--purple);">3시간</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">SEO 메타태그 <span class="task-sub">— "무료 사주" "2026 운세" 검색 유입</span></span><span class="task-time" style="background:rgba(139,92,246,0.1);color:var(--purple);">2시간</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">인스타그램 운영 <span class="task-sub">— 띠별 운세 카드뉴스, 릴스</span></span><span class="task-time" style="background:rgba(139,92,246,0.1);color:var(--purple);">지속</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">Google Analytics <span class="task-sub">— 유입 경로, 전환율, 이탈률 추적</span></span><span class="task-time" style="background:rgba(139,92,246,0.1);color:var(--purple);">1시간</span></div>
+      </div>
+    </div>
+
+    <!-- Phase 4: 성장 -->
+    <div class="tl-phase">
+      <div class="tl-dot future">4</div>
+      <div class="tl-header">
+        <h3>성장 궤도 — 월 100만</h3>
+        <span class="tl-tag" style="background:rgba(100,116,139,0.1);color:var(--text3);">PLANNED</span>
+        <span class="tl-period">런칭 후 3~6주</span>
+      </div>
+      <div class="tl-desc">초기 유저 피드백 반영. 바이럴 + SEO로 자연 유입 확보. 하루 10건 → 월 100만.</div>
+      <div class="tl-tasks">
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">소셜 로그인 (카카오 우선) <span class="task-sub">— 리텐션 UP, 재방문 유도</span></span><span class="task-time" style="background:rgba(245,158,11,0.1);color:var(--orange);">4시간</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">마이페이지 <span class="task-sub">— 결제내역, 분석이력, 다시보기</span></span><span class="task-time" style="background:rgba(245,158,11,0.1);color:var(--orange);">4시간</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">틱톡/릴스 마케팅 <span class="task-sub">— "AI가 내 사주를 봤는데..." 숏폼</span></span><span class="task-time" style="background:rgba(139,92,246,0.1);color:var(--purple);">지속</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">네이버 블로그 SEO <span class="task-sub">— "2026 띠별 운세" 키워드 공략</span></span><span class="task-time" style="background:rgba(139,92,246,0.1);color:var(--purple);">지속</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">A/B 테스트 <span class="task-sub">— 랜딩 카피, CTA, 가격 실험</span></span><span class="task-time" style="background:rgba(100,116,139,0.08);color:var(--text3);">지속</span></div>
+      </div>
+    </div>
+
+    <!-- Phase 5: 확장 -->
+    <div class="tl-phase">
+      <div class="tl-dot far">5</div>
+      <div class="tl-header">
+        <h3>서비스 확장 — 월 500만</h3>
+        <span class="tl-tag" style="background:rgba(100,116,139,0.08);color:var(--text3);">FUTURE</span>
+        <span class="tl-period">런칭 후 2~3개월</span>
+      </div>
+      <div class="tl-desc">사주만으론 한계. 서비스 종류 늘리고 객단가 올리고 광고 태우기.</div>
+      <div class="tl-tasks">
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">타로 서비스 <span class="task-sub">— 오늘의 타로, 연애 타로. 가벼운 진입점</span></span><span class="task-time" style="background:rgba(100,116,139,0.08);color:var(--text3);">수요 확인 후</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">이름풀이 (작명) <span class="task-sub">— 단가 높음 (3,000~5,000원). 신생아 부모 타겟</span></span><span class="task-time" style="background:rgba(100,116,139,0.08);color:var(--text3);">수요 확인 후</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">번들 패키지 <span class="task-sub">— 사주+궁합+운세 세트 2,500원 → 객단가 UP</span></span><span class="task-time" style="background:rgba(100,116,139,0.08);color:var(--text3);">Phase 4 후</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">구독 모델 <span class="task-sub">— 월 4,900원 무제한. MRR 확보</span></span><span class="task-time" style="background:rgba(100,116,139,0.08);color:var(--text3);">Phase 4 후</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">인플루언서 + 페북/인스타 광고 <span class="task-sub">— CPA 500원 이하면 ROI 80%</span></span><span class="task-time" style="background:rgba(100,116,139,0.08);color:var(--text3);">예산 확보 후</span></div>
+      </div>
+    </div>
+
+    <!-- Phase 6: 스케일 -->
+    <div class="tl-phase">
+      <div class="tl-dot far">6</div>
+      <div class="tl-header">
+        <h3>제국 건설 — 월 1,000만+</h3>
+        <span class="tl-tag" style="background:rgba(100,116,139,0.08);color:var(--text3);">VISION</span>
+        <span class="tl-period">런칭 후 6개월+</span>
+      </div>
+      <div class="tl-desc">사주아이가 브랜드. 플랫폼으로 진화. 돈이 돈을 벌게 만드는 구조.</div>
+      <div class="tl-tasks">
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">해외 진출 <span class="task-sub">— 일본 四柱推命, 동남아 점술 시장</span></span><span class="task-time" style="background:rgba(100,116,139,0.08);color:var(--text3);">장기</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">네이티브 앱 <span class="task-sub">— iOS/Android. 푸시알림 → 리텐션 극대화</span></span><span class="task-time" style="background:rgba(100,116,139,0.08);color:var(--text3);">장기</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">AI 채팅 상담 <span class="task-sub">— "사주아이에게 물어보세요" 실시간 대화</span></span><span class="task-time" style="background:rgba(100,116,139,0.08);color:var(--text3);">장기</span></div>
+        <div class="tl-task"><span class="check" style="color:var(--text3)">○</span><span class="task-label">B2B 기업 이벤트 <span class="task-sub">— 워크숍, 단체 궁합. 건당 10~50만원</span></span><span class="task-time" style="background:rgba(100,116,139,0.08);color:var(--text3);">장기</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== METRICS FORECAST ===== -->
+<div class="section">
+  <div class="section-label" style="color:var(--green)">Forecast</div>
+  <div class="section-title">단계별 목표 지표</div>
+  <div class="forecast-grid">
+    <div class="forecast-card" style="border-color:rgba(252,211,3,0.2);">
+      <div class="fc-phase" style="color:var(--yellow);">PHASE 2</div>
+      <div class="fc-metric" style="color:var(--yellow);">첫 URL</div>
+      <div class="fc-label">배포 + 결제 활성화</div>
+      <div class="fc-items">Vercel 배포 완료<br>토스 라이브 키 발급<br>결제 end-to-end 테스트</div>
+    </div>
+    <div class="forecast-card" style="border-color:rgba(245,158,11,0.2);">
+      <div class="fc-phase" style="color:var(--orange);">PHASE 3</div>
+      <div class="fc-metric" style="color:var(--orange);">월 30만</div>
+      <div class="fc-label">하루 1~3건</div>
+      <div class="fc-items">지인 바이럴 30명+<br>최소 1건 유료 결제<br>전환율 측정 시작</div>
+    </div>
+    <div class="forecast-card" style="border-color:rgba(139,92,246,0.2);">
+      <div class="fc-phase" style="color:var(--purple);">PHASE 4</div>
+      <div class="fc-metric" style="color:var(--purple);">월 100만</div>
+      <div class="fc-label">하루 10건</div>
+      <div class="fc-items">SEO 자연 유입 확보<br>전환율 5~10%<br>MAU 5,000+</div>
+    </div>
+    <div class="forecast-card" style="border-color:rgba(59,130,246,0.2);">
+      <div class="fc-phase" style="color:var(--blue);">PHASE 5-6</div>
+      <div class="fc-metric" style="color:var(--blue);">월 500만+</div>
+      <div class="fc-label">하루 50건+</div>
+      <div class="fc-items">서비스 5종+<br>구독자 100+<br>광고 ROI 안정화</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REVENUE MODEL ===== -->
+<div class="section">
+  <div class="section-label" style="color:var(--pink)">Revenue</div>
+  <div class="section-title">수익 모델</div>
+  <div class="money-grid">
+    <div class="money-card">
+      <span class="m-tag" style="background:rgba(100,116,139,0.15);color:var(--text3);">FREE</span>
+      <div class="m-name">무료 미리보기</div>
+      <div class="m-price" style="color:var(--text3);">₩0</div>
+      <ul class="m-list">
+        <li class="yes">사주 입력 + 만세력 확인</li>
+        <li class="yes">AI 분석 첫 2섹션</li>
+        <li class="yes">궁합 점수 확인</li>
+        <li class="no">전체 AI 분석 (13섹션)</li>
+        <li class="no">개운법 + 행운 포인트</li>
+        <li class="no">상세 궁합/운세 분석</li>
+      </ul>
+      <div class="m-note">무료 체험 → "나머지 보고 싶다" → 결제 전환</div>
+    </div>
+    <div class="money-card highlight">
+      <span class="m-tag" style="background:rgba(252,211,3,0.15);color:var(--yellow);">건당 결제</span>
+      <div class="m-name">사주풀이 / 궁합 / 운세</div>
+      <div class="m-price" style="color:var(--yellow);">₩990/건</div>
+      <ul class="m-list">
+        <li class="yes">전체 AI 분석 잠금 해제</li>
+        <li class="yes">사주: 13섹션 + 개운법</li>
+        <li class="yes">궁합: 7섹션 + 커플 개운법</li>
+        <li class="yes">운세: 8섹션 + 월별 운세</li>
+        <li class="yes">행운의 개운 포인트</li>
+        <li class="yes">결과 공유 기능</li>
+      </ul>
+      <div class="m-note">핵심 수익원. 건당 순이익 ~900원 (마진 91%)</div>
+    </div>
+    <div class="money-card">
+      <span class="m-tag" style="background:rgba(139,92,246,0.15);color:var(--purple);">BUNDLE (예정)</span>
+      <div class="m-name">3종 세트</div>
+      <div class="m-price" style="color:var(--purple);">₩2,500</div>
+      <ul class="m-list">
+        <li class="yes">사주 + 궁합 + 운세 전부</li>
+        <li class="yes">16% 할인 (2,970원→2,500원)</li>
+        <li class="yes">PDF 다운로드</li>
+        <li class="yes">결과 영구 저장</li>
+        <li class="no">무제한 이용 (구독 별도)</li>
+        <li class="no">AI 채팅 상담</li>
+      </ul>
+      <div class="m-note">Phase 5에서 도입. 객단가 2.5배 UP</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RISKS ===== -->
+<div class="section">
+  <div class="section-label" style="color:var(--red)">Risks & Dependencies</div>
+  <div class="section-title">리스크 + 의존성</div>
+  <div class="risk-grid">
+    <div class="risk-card">
+      <div class="r-title"><span style="color:var(--red);">!</span> OpenAI API 비용</div>
+      <div class="r-desc">GPT-4o max_tokens: 16000. 건당 ~50~100원. 유저 많아지면 비용 증가.</div>
+      <div class="r-fix">대응: 매출 990원 vs 비용 100원 = 마진 충분. 캐싱으로 중복 절약 가능.</div>
+    </div>
+    <div class="risk-card">
+      <div class="r-title"><span style="color:var(--red);">!</span> 토스 라이브 키 심사</div>
+      <div class="r-desc">심사 1~3일 소요. 거절될 수도 있음 (사업자 요건 미충족 시).</div>
+      <div class="r-fix">대응: 사업자등록번호 + 통신판매업 이미 있음. 거절 시 Stripe 대안.</div>
+    </div>
+    <div class="risk-card">
+      <div class="r-title"><span style="color:var(--orange);">!</span> 마케팅 부재 = 0원</div>
+      <div class="r-desc">사이트 있어도 아무도 모르면 매출 0원. 마케팅이 가장 큰 변수.</div>
+      <div class="r-fix">대응: 사주 컨텐츠는 공유율 높음. 바이럴 + SEO + 숏폼 3트랙 공략.</div>
+    </div>
+    <div class="risk-card">
+      <div class="r-title"><span style="color:var(--orange);">!</span> 원본과 법적 이슈</div>
+      <div class="r-desc">디자인을 90% 베꼈으므로 저작권 시비 가능성.</div>
+      <div class="r-fix">대응: 디자인 차별화 점진적 진행. 로고/카피/브랜딩은 독자적으로.</div>
+    </div>
+    <div class="risk-card">
+      <div class="r-title"><span style="color:var(--text3);">!</span> AI 결과 품질 편차</div>
+      <div class="r-desc">GPT-4o 출력이 매번 다름. 가끔 짧거나 질 낮은 결과 나올 수 있음.</div>
+      <div class="r-fix">대응: 프롬프트 지속 튜닝 + 최소 길이 검증 + 유저 피드백 수집.</div>
+    </div>
+    <div class="risk-card">
+      <div class="r-title"><span style="color:var(--text3);">!</span> Vercel 무료 한도</div>
+      <div class="r-desc">Serverless Function 실행 시간 10초. AI 스트리밍은 30초+ 걸릴 수 있음.</div>
+      <div class="r-fix">대응: Edge Runtime 사용 또는 Pro 플랜 ($20/월). 매출로 충분히 커버.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

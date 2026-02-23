@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlogBot 데모 — 라이트 미니멀</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #ffffff;
+  --bg-gray: #f8f9fa;
+  --bg-card: #ffffff;
+  --text: #111111;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --accent: #5046e5;
+  --accent-light: #ede9fe;
+  --border: #e8e8e8;
+  --green: #16a34a;
+  --green-light: #dcfce7;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Pretendard Variable', -apple-system, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── Navbar ── */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 60px;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 800; font-size: 18px; color: var(--text);
+  text-decoration: none;
+}
+.nav-logo-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 900; color: #fff;
+}
+.nav-right { display: flex; align-items: center; gap: 16px; }
+.nav-link {
+  font-size: 14px; color: var(--text-secondary); text-decoration: none;
+  padding: 6px 12px; border-radius: 8px;
+  transition: all 0.2s;
+}
+.nav-link:hover { background: var(--bg-gray); color: var(--text); }
+.nav-cta {
+  padding: 8px 20px; border-radius: 10px; border: none;
+  background: var(--accent); color: #fff;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: opacity 0.2s;
+}
+.nav-cta:hover { opacity: 0.9; }
+
+/* ── Hero ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 120px 24px 60px;
+}
+
+.hero h1 {
+  font-size: clamp(36px, 5.5vw, 56px);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  word-break: keep-all;
+}
+.hero h1 .accent { color: var(--accent); }
+.hero .subtitle {
+  font-size: 18px; color: var(--text-secondary);
+  line-height: 1.7; margin-bottom: 48px;
+  max-width: 480px;
+}
+
+.hero-input-wrap {
+  width: 100%; max-width: 580px;
+  display: flex; align-items: center;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  padding: 6px 6px 6px 20px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.hero-input-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(80,70,229,0.1);
+}
+.hero-input-wrap input {
+  flex: 1; background: none; border: none; outline: none;
+  font-size: 15px; color: var(--text); font-family: inherit;
+}
+.hero-input-wrap input::placeholder { color: var(--text-muted); }
+.hero-input-wrap button {
+  padding: 14px 32px; border-radius: 10px; border: none;
+  background: var(--accent); color: #fff;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  font-family: inherit; white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.hero-input-wrap button:hover { opacity: 0.9; }
+
+.hero-sub {
+  margin-top: 16px; font-size: 13px; color: var(--text-muted);
+}
+
+/* ── Steps ── */
+.steps-section {
+  padding: 100px 24px;
+  background: var(--bg-gray);
+}
+.steps-container {
+  max-width: 900px; margin: 0 auto;
+  text-align: center;
+}
+.steps-title {
+  font-size: 14px; font-weight: 700; color: var(--accent);
+  margin-bottom: 12px;
+}
+.steps-heading {
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: 800; margin-bottom: 64px;
+  word-break: keep-all;
+}
+
+.steps-row {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 40px; text-align: center;
+}
+.step {
+  display: flex; flex-direction: column; align-items: center;
+}
+.step-num {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 800;
+  margin-bottom: 20px;
+}
+.step h3 {
+  font-size: 17px; font-weight: 700; margin-bottom: 8px;
+}
+.step p {
+  font-size: 14px; color: var(--text-secondary); line-height: 1.7;
+}
+.step-connector {
+  display: none;
+}
+
+/* ── Showcase Carousel ── */
+.showcase-section {
+  padding: 100px 24px;
+}
+.showcase-container {
+  max-width: 1100px; margin: 0 auto;
+}
+.showcase-label {
+  font-size: 14px; font-weight: 700; color: var(--accent);
+  margin-bottom: 12px;
+}
+.showcase-heading {
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: 800; margin-bottom: 48px;
+  word-break: keep-all;
+}
+
+.showcase-tabs {
+  display: flex; gap: 8px; margin-bottom: 32px;
+}
+.showcase-tab {
+  padding: 8px 20px; border-radius: 100px;
+  border: 1px solid var(--border);
+  background: var(--bg); color: var(--text-secondary);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s; font-family: inherit;
+}
+.showcase-tab.active {
+  background: var(--accent); color: #fff; border-color: var(--accent);
+}
+.showcase-tab:hover:not(.active) {
+  border-color: var(--accent); color: var(--accent);
+}
+
+.showcase-card {
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: none;
+}
+.showcase-card.active { display: block; }
+.showcase-card-top {
+  display: grid; grid-template-columns: 1fr 1fr;
+}
+.showcase-input-side {
+  padding: 32px;
+  background: var(--bg-gray);
+  border-right: 1px solid var(--border);
+}
+.showcase-input-side .label {
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+.showcase-yt-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.showcase-yt-thumb {
+  aspect-ratio: 16/9;
+  background: linear-gradient(135deg, #1e1b4b, #4c1d95);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.showcase-yt-thumb .play {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #fff;
+}
+.showcase-yt-thumb .dur {
+  position: absolute; bottom: 8px; right: 8px;
+  padding: 2px 6px; border-radius: 3px;
+  background: rgba(0,0,0,0.8); font-size: 11px; color: #fff;
+}
+.showcase-yt-meta {
+  padding: 12px 16px;
+}
+.showcase-yt-meta h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.showcase-yt-meta p { font-size: 11px; color: var(--text-muted); }
+
+.showcase-output-side {
+  padding: 32px;
+}
+.showcase-output-side .label {
+  font-size: 11px; font-weight: 700; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 6px;
+}
+.showcase-output-side .label::before {
+  content: '✓'; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--green); color: #fff; font-size: 9px;
+  display: flex; align-items: center; justify-content: center;
+}
+.showcase-result h3 {
+  font-size: 17px; font-weight: 700; margin-bottom: 12px; line-height: 1.4;
+}
+.showcase-result .tags {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+}
+.showcase-result .tag {
+  padding: 3px 10px; border-radius: 100px;
+  background: var(--accent-light); color: var(--accent);
+  font-size: 11px; font-weight: 600;
+}
+.showcase-result .body-preview {
+  font-size: 13px; color: var(--text-secondary); line-height: 1.8;
+  border-left: 3px solid var(--accent-light);
+  padding-left: 12px;
+}
+
+.showcase-card-bottom {
+  display: flex; align-items: center; gap: 24px;
+  padding: 16px 32px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-gray);
+}
+.showcase-stat {
+  font-size: 12px; color: var(--text-muted);
+  display: flex; align-items: center; gap: 4px;
+}
+.showcase-stat strong { color: var(--text); }
+
+/* ── Testimonials ── */
+.testimonials-section {
+  padding: 100px 24px;
+  background: var(--bg-gray);
+}
+.testimonials-container {
+  max-width: 900px; margin: 0 auto;
+  text-align: center;
+}
+.testimonials-label {
+  font-size: 14px; font-weight: 700; color: var(--accent);
+  margin-bottom: 12px;
+}
+.testimonials-heading {
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: 800; margin-bottom: 48px;
+  word-break: keep-all;
+}
+
+.testimonials-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 20px; text-align: left;
+}
+.testimonial-card {
+  padding: 28px;
+  border-radius: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+.testimonial-card .stars {
+  color: #fbbf24; font-size: 14px; margin-bottom: 12px;
+}
+.testimonial-card .quote {
+  font-size: 15px; line-height: 1.7;
+  margin-bottom: 16px; color: var(--text);
+}
+.testimonial-card .quote strong {
+  color: var(--accent); font-weight: 700;
+}
+.testimonial-card .author {
+  display: flex; align-items: center; gap: 12px;
+}
+.testimonial-card .avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--accent-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: var(--accent);
+}
+.testimonial-card .author-info { font-size: 13px; }
+.testimonial-card .author-info .name { font-weight: 600; }
+.testimonial-card .author-info .role { color: var(--text-muted); margin-top: 2px; }
+
+/* ── CTA ── */
+.cta-section {
+  padding: 100px 24px;
+  text-align: center;
+}
+.cta-section h2 {
+  font-size: clamp(24px, 3.5vw, 40px);
+  font-weight: 800; margin-bottom: 12px;
+  word-break: keep-all;
+}
+.cta-section .desc {
+  font-size: 16px; color: var(--text-secondary);
+  margin-bottom: 40px;
+}
+.cta-input-wrap {
+  width: 100%; max-width: 560px; margin: 0 auto;
+  display: flex; align-items: center;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  padding: 6px 6px 6px 20px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.cta-input-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(80,70,229,0.1);
+}
+.cta-input-wrap input {
+  flex: 1; background: none; border: none; outline: none;
+  font-size: 15px; font-family: inherit;
+}
+.cta-input-wrap input::placeholder { color: var(--text-muted); }
+.cta-input-wrap button {
+  padding: 14px 28px; border-radius: 10px; border: none;
+  background: var(--accent); color: #fff;
+  font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+}
+
+footer {
+  padding: 40px 24px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 13px; color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .steps-row { grid-template-columns: 1fr; gap: 32px; }
+  .showcase-card-top { grid-template-columns: 1fr; }
+  .showcase-input-side { border-right: none; border-bottom: 1px solid var(--border); }
+  .testimonials-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">B</div>
+    BlogBot
+  </a>
+  <div class="nav-right">
+    <a href="#" class="nav-link">기능</a>
+    <a href="#" class="nav-link">가격</a>
+    <button class="nav-cta">시작하기</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>
+    영상 하나로,<br>
+    <span class="accent">수익형 콘텐츠 완성.</span>
+  </h1>
+  <p class="subtitle">
+    YouTube 링크 하나면 SEO 블로그, 전자책, 스크립트를<br>AI가 자동으로 만들어드립니다.
+  </p>
+  <div class="hero-input-wrap">
+    <input type="text" placeholder="YouTube 링크를 붙여넣으세요...">
+    <button>변환하기 →</button>
+  </div>
+  <p class="hero-sub">3분이면 충분합니다 · 무료로 시작</p>
+</section>
+
+<!-- Steps -->
+<section class="steps-section">
+  <div class="steps-container">
+    <div class="steps-title">How it works</div>
+    <div class="steps-heading">3단계면 끝나는 콘텐츠 생산</div>
+    <div class="steps-row">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>링크 붙여넣기</h3>
+        <p>YouTube 영상 또는 채널 URL을 입력합니다. 그게 전부입니다.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>AI가 분석</h3>
+        <p>스크립트를 자동 추출하고, GPT-4가 콘텐츠 구조를 설계합니다.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>콘텐츠 완성</h3>
+        <p>블로그, 전자책, 스크립트를 다운로드합니다. 바로 수익화 가능.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Showcase -->
+<section class="showcase-section">
+  <div class="showcase-container">
+    <div class="showcase-label">Result Preview</div>
+    <div class="showcase-heading">실제 결과물을 확인하세요</div>
+
+    <div class="showcase-tabs">
+      <button class="showcase-tab active" onclick="switchShowcase(0)">블로그 글</button>
+      <button class="showcase-tab" onclick="switchShowcase(1)">전자책</button>
+      <button class="showcase-tab" onclick="switchShowcase(2)">스크립트</button>
+    </div>
+
+    <!-- Blog showcase -->
+    <div class="showcase-card active" data-idx="0">
+      <div class="showcase-card-top">
+        <div class="showcase-input-side">
+          <div class="label">입력</div>
+          <div class="showcase-yt-card">
+            <div class="showcase-yt-thumb">
+              <div class="play">▶</div>
+              <div class="dur">15:42</div>
+            </div>
+            <div class="showcase-yt-meta">
+              <h4>2024 비트코인 전망과 투자 전략</h4>
+              <p>투자의 정석 · 142만회</p>
+            </div>
+          </div>
+        </div>
+        <div class="showcase-output-side">
+          <div class="label">생성 결과</div>
+          <div class="showcase-result">
+            <h3>2024년 비트코인 투자 전략: 반감기 이후 완벽 가이드</h3>
+            <div class="tags">
+              <span class="tag">비트코인</span>
+              <span class="tag">투자전략</span>
+              <span class="tag">반감기</span>
+              <span class="tag">2024</span>
+            </div>
+            <div class="body-preview">
+              비트코인의 네 번째 반감기가 2024년에 예정되어 있으며, 투자자들의 관심이 집중되고 있습니다. 역사적으로 반감기 이후 12~18개월 내에 상당한 가격 상승이 있었으며, 이번에도 비슷한 패턴을 보일 가능성이 높습니다...
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="showcase-card-bottom">
+        <div class="showcase-stat">글자수: <strong>3,847자</strong></div>
+        <div class="showcase-stat">태그: <strong>8개</strong></div>
+        <div class="showcase-stat">생성 시간: <strong>2분 41초</strong></div>
+        <div class="showcase-stat">템플릿: <strong>정보형</strong></div>
+      </div>
+    </div>
+
+    <!-- Ebook showcase -->
+    <div class="showcase-card" data-idx="1">
+      <div class="showcase-card-top">
+        <div class="showcase-input-side">
+          <div class="label">입력 (영상 5개)</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="showcase-yt-card" style="display:flex;align-items:center;padding:10px 14px;gap:10px;">
+              <div style="width:28px;height:28px;border-radius:6px;background:#4c1d95;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0">1</div>
+              <div><div style="font-size:12px;font-weight:600;">투자 마인드셋의 모든 것</div><div style="font-size:10px;color:var(--text-muted)">12:30</div></div>
+            </div>
+            <div class="showcase-yt-card" style="display:flex;align-items:center;padding:10px 14px;gap:10px;">
+              <div style="width:28px;height:28px;border-radius:6px;background:#4c1d95;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0">2</div>
+              <div><div style="font-size:12px;font-weight:600;">주식 vs 코인 vs 부동산</div><div style="font-size:10px;color:var(--text-muted)">18:44</div></div>
+            </div>
+            <div class="showcase-yt-card" style="display:flex;align-items:center;padding:10px 14px;gap:10px;">
+              <div style="width:28px;height:28px;border-radius:6px;background:#4c1d95;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0">3</div>
+              <div><div style="font-size:12px;font-weight:600;">포트폴리오 구성 전략</div><div style="font-size:10px;color:var(--text-muted)">22:15</div></div>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);text-align:center;padding:4px 0;">+ 2개 더</div>
+          </div>
+        </div>
+        <div class="showcase-output-side">
+          <div class="label">생성 결과</div>
+          <div class="showcase-result">
+            <h3>📚 현명한 투자의 기술: 초보자를 위한 완벽 가이드</h3>
+            <div class="tags">
+              <span class="tag">전자책</span>
+              <span class="tag">PDF</span>
+              <span class="tag">5챕터</span>
+            </div>
+            <div class="body-preview" style="border-left-color:#dcfce7;">
+              <strong>목차</strong><br>
+              서론 — 투자, 왜 지금 시작해야 하는가<br>
+              제1장 — 투자 마인드셋의 핵심 원칙<br>
+              제2장 — 자산별 특성과 선택 기준<br>
+              제3장 — 나만의 포트폴리오 구성법<br>
+              제4장 — 리스크 관리의 기술<br>
+              제5장 — 장기 투자 로드맵<br>
+              결론 — 첫 걸음을 내딛으며
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="showcase-card-bottom">
+        <div class="showcase-stat">분량: <strong>18,400자</strong></div>
+        <div class="showcase-stat">챕터: <strong>5개</strong></div>
+        <div class="showcase-stat">생성 시간: <strong>8분 12초</strong></div>
+        <div class="showcase-stat">형식: <strong>PDF / MD / HTML</strong></div>
+      </div>
+    </div>
+
+    <!-- Script showcase -->
+    <div class="showcase-card" data-idx="2">
+      <div class="showcase-card-top">
+        <div class="showcase-input-side">
+          <div class="label">입력 (채널 URL)</div>
+          <div class="showcase-yt-card" style="padding:16px;">
+            <div style="font-size:13px;font-weight:700;margin-bottom:8px;">📺 투자의 정석 채널</div>
+            <div style="font-size:12px;color:var(--text-muted);line-height:1.6;">
+              구독자 45.2만명<br>
+              영상 128개<br>
+              총 조회수 2,340만회
+            </div>
+          </div>
+        </div>
+        <div class="showcase-output-side">
+          <div class="label">추출 결과</div>
+          <div class="showcase-result">
+            <h3>128개 영상 스크립트 일괄 추출</h3>
+            <div class="tags">
+              <span class="tag">일괄 추출</span>
+              <span class="tag">검색 필터</span>
+              <span class="tag">개별 다운로드</span>
+            </div>
+            <div class="body-preview" style="border-left-color:#fef3c7;">
+              ✅ 2024 비트코인 전망 — 8,421자<br>
+              ✅ 주식 vs 코인 vs 부동산 — 12,304자<br>
+              ✅ ETF 입문 가이드 — 6,892자<br>
+              ✅ 포트폴리오 구성법 — 15,201자<br>
+              ⏳ 나머지 124개 추출 중...
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="showcase-card-bottom">
+        <div class="showcase-stat">총 영상: <strong>128개</strong></div>
+        <div class="showcase-stat">추출 속도: <strong>영상당 ~5초</strong></div>
+        <div class="showcase-stat">다운로드: <strong>개별 / 일괄</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials-section">
+  <div class="testimonials-container">
+    <div class="testimonials-label">Reviews</div>
+    <div class="testimonials-heading">크리에이터들이 선택한 이유</div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <div class="quote">
+          "채널 영상 30개를 전자책으로 만들어서 스마트스토어에 올렸더니 <strong>월 30만원</strong> 수익이 발생했습니다. 진짜 URL만 넣으면 끝."
+        </div>
+        <div class="author">
+          <div class="avatar">김</div>
+          <div class="author-info">
+            <div class="name">김서현</div>
+            <div class="role">재테크 블로거</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <div class="quote">
+          "전에는 블로그 하나 쓰는데 2시간 걸렸는데, 지금은 <strong>3분이면 끝</strong>납니다. 같은 시간에 콘텐츠 40배 더 만들 수 있어요."
+        </div>
+        <div class="author">
+          <div class="avatar">박</div>
+          <div class="author-info">
+            <div class="name">박민수</div>
+            <div class="role">콘텐츠 마케터</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <div class="quote">
+          "전자책 한 권을 <strong>30분 만에 완성</strong>했습니다. 이전에는 2주 걸렸는데, 세상이 바뀌었다고 느꼈어요."
+        </div>
+        <div class="author">
+          <div class="avatar">이</div>
+          <div class="author-info">
+            <div class="name">이준호</div>
+            <div class="role">프리랜서 작가</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <div class="quote">
+          "영어 채널 영상들로 한국어 전자책을 만들었어요. 번역 + 전자책 생성이 한번에. <strong>부업 수익이 2배</strong> 됐습니다."
+        </div>
+        <div class="author">
+          <div class="avatar">정</div>
+          <div class="author-info">
+            <div class="name">정유나</div>
+            <div class="role">N잡러</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>지금 바로 첫 블로그를 만들어보세요</h2>
+  <p class="desc">무료로 시작하세요. 카드 등록 없이.</p>
+  <div class="cta-input-wrap">
+    <input type="text" placeholder="YouTube 링크를 붙여넣으세요...">
+    <button>무료로 변환 →</button>
+  </div>
+</section>
+
+<footer>
+  <p>© 2024 BlogBot. 영상을 수익으로.</p>
+</footer>
+
+<script>
+function switchShowcase(idx) {
+  document.querySelectorAll('.showcase-tab').forEach((t,i) => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('.showcase-card').forEach((c,i) => c.classList.toggle('active', i === idx));
+}
+</script>
+
+</body>
+</html>

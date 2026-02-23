@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaPress — 세일즈 페이지</title>
+    <meta name="description" content="Paste your blog posts, essays, or notes. Get a professionally formatted PDF book in 48 hours.">
+    
+    <meta property="og:title" content="Meta Press — Turn Your Writing Into a Book">
+    <meta property="og:description" content="Paste your writing. Get a professional PDF book in 48 hours.">
+    <meta property="og:type" content="website">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+    
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-slate-50: #f8fafc;
+            --color-slate-100: #f1f5f9;
+            --color-slate-200: #e2e8f0;
+            --color-slate-300: #cbd5e1;
+            --color-slate-400: #94a3b8;
+            --color-slate-500: #64748b;
+            --color-slate-600: #475569;
+            --color-slate-700: #334155;
+            --color-slate-800: #1e293b;
+            --color-slate-900: #0f172a;
+            --color-indigo-500: #6366f1;
+            --color-indigo-600: #4f46e5;
+            --color-violet-500: #8b5cf6;
+            --color-emerald-500: #10b981;
+            --color-amber-500: #f59e0b;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--color-slate-900);
+            background: linear-gradient(135deg, var(--color-slate-50) 0%, rgba(238, 242, 255, 0.3) 50%, rgba(245, 243, 255, 0.4) 100%);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        .dot-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: radial-gradient(circle, rgba(99, 102, 241, 0.4) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        .glow-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .glow-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+        }
+
+        .glow-blob-1 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.35) 0%, transparent 70%);
+            top: -200px; right: -100px;
+        }
+
+        .glow-blob-2 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
+            top: 800px; left: -150px;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .container-wide {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Nav */
+        .nav {
+            position: relative;
+            z-index: 50;
+            padding: 20px 0;
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-logo {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--color-slate-900), var(--color-slate-700));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-logo svg {
+            width: 16px; height: 16px;
+            color: white;
+        }
+
+        .nav-title {
+            font-weight: 600;
+            font-size: 0.9375rem;
+            color: var(--color-slate-900);
+        }
+
+        .nav-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--color-emerald-500);
+        }
+
+        .nav-badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--color-emerald-500);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            z-index: 10;
+            padding: 50px 0 30px;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .hero { padding: 70px 0 40px; }
+        }
+
+        .hero-label {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 20px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--color-indigo-600);
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.875rem, 5vw, 3rem);
+            font-weight: 700;
+            color: var(--color-slate-900);
+            line-height: 1.15;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--color-indigo-600), var(--color-violet-500));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.0625rem;
+            color: var(--color-slate-600);
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Input Section */
+        .input-section {
+            position: relative;
+            z-index: 10;
+            padding: 30px 0 60px;
+        }
+
+        .input-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+            padding: 28px;
+        }
+
+        @media (min-width: 768px) {
+            .input-card { padding: 36px; }
+        }
+
+        .input-card textarea {
+            width: 100%;
+            min-height: 220px;
+            padding: 20px;
+            border: 2px solid var(--color-slate-200);
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 0.9375rem;
+            line-height: 1.7;
+            resize: vertical;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: white;
+        }
+
+        .input-card textarea:focus {
+            outline: none;
+            border-color: var(--color-indigo-500);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .input-card textarea::placeholder {
+            color: var(--color-slate-400);
+        }
+
+        .input-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .continue-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 40px;
+            background: var(--color-slate-900);
+            color: white;
+            font-size: 1.0625rem;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .continue-btn:hover {
+            background: var(--color-slate-800);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.2);
+        }
+
+        .continue-btn svg {
+            width: 18px; height: 18px;
+        }
+
+        .input-hint {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 0.8125rem;
+            color: var(--color-slate-400);
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Section */
+        .section {
+            position: relative;
+            z-index: 10;
+            padding: 60px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-title h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--color-slate-900);
+            margin-bottom: 12px;
+        }
+
+        .section-title p {
+            color: var(--color-slate-500);
+            font-size: 1rem;
+        }
+
+        /* Steps */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .steps-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 24px;
+            }
+        }
+
+        .step-card {
+            padding: 32px 28px;
+            text-align: center;
+        }
+
+        .step-number {
+            width: 44px; height: 44px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--color-indigo-500), var(--color-violet-500));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+        }
+
+        .step-card h3 {
+            font-size: 1.0625rem;
+            font-weight: 600;
+            color: var(--color-slate-900);
+            margin-bottom: 10px;
+        }
+
+        .step-card p {
+            font-size: 0.9375rem;
+            color: var(--color-slate-500);
+            line-height: 1.5;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            padding: 80px 0;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .pricing-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .pricing-card {
+            padding: 32px 28px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .pricing-card.featured {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid var(--color-indigo-500);
+        }
+
+        .pricing-card.featured::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 16px;
+            background: linear-gradient(135deg, var(--color-indigo-500), var(--color-violet-500));
+            border-radius: 20px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-slate-900);
+            margin-bottom: 8px;
+        }
+
+        .pricing-pages {
+            font-size: 0.875rem;
+            color: var(--color-slate-500);
+            margin-bottom: 20px;
+        }
+
+        .pricing-price {
+            margin-bottom: 20px;
+        }
+
+        .pricing-price .current {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-slate-900);
+            line-height: 1.2;
+        }
+
+        .pricing-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 24px;
+        }
+
+        .pricing-features li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 0.875rem;
+            color: var(--color-slate-600);
+        }
+
+        .pricing-features li svg {
+            width: 16px; height: 16px;
+            color: var(--color-emerald-500);
+            flex-shrink: 0;
+        }
+
+        /* FAQ */
+        .faq-grid {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            padding: 24px 28px;
+            margin-bottom: 12px;
+        }
+
+        .faq-item h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-slate-900);
+            margin-bottom: 10px;
+        }
+
+        .faq-item p {
+            font-size: 0.9375rem;
+            color: var(--color-slate-500);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            position: relative;
+            z-index: 10;
+            padding: 40px 0;
+            border-top: 1px solid rgba(226, 232, 240, 0.5);
+        }
+
+        .footer-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            text-align: center;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            font-size: 0.875rem;
+            color: var(--color-slate-400);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+            animation: modalIn 0.3s ease-out;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 24px 28px 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .modal-close {
+            width: 36px; height: 36px;
+            border: none;
+            background: var(--color-slate-100);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--color-slate-200);
+        }
+
+        .modal-close svg {
+            width: 18px; height: 18px;
+            color: var(--color-slate-500);
+        }
+
+        .modal-body {
+            padding: 20px 28px 32px;
+        }
+
+        .maintenance-notice {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .maintenance-notice svg {
+            width: 20px; height: 20px;
+            color: var(--color-emerald-500);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .maintenance-notice p {
+            font-size: 0.9375rem;
+            color: var(--color-slate-700);
+            line-height: 1.5;
+        }
+
+        .maintenance-notice strong {
+            color: var(--color-slate-900);
+        }
+
+        .pricing-step h3 {
+            font-size: 1.375rem;
+            font-weight: 700;
+            color: var(--color-slate-900);
+            margin-bottom: 8px;
+        }
+
+        .pricing-step > p {
+            color: var(--color-slate-500);
+            margin-bottom: 24px;
+        }
+
+        .plan-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .plan-option {
+            border: 2px solid var(--color-slate-200);
+            border-radius: 14px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .plan-option:hover {
+            border-color: var(--color-slate-300);
+        }
+
+        .plan-option.selected {
+            border-color: var(--color-indigo-500);
+            background: rgba(99, 102, 241, 0.03);
+        }
+
+        .plan-option.special {
+            border-color: var(--color-emerald-500);
+            background: rgba(16, 185, 129, 0.03);
+        }
+
+        .plan-option.special.selected {
+            border-color: var(--color-emerald-500);
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .plan-option.special::after {
+            content: 'Launch Special';
+            position: absolute;
+            top: -10px;
+            right: 16px;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, var(--color-emerald-500), #34d399);
+            border-radius: 12px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .plan-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .plan-name {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--color-slate-900);
+        }
+
+        .plan-price {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .plan-price .original {
+            font-size: 0.8125rem;
+            color: var(--color-slate-400);
+            text-decoration: line-through;
+        }
+
+        .plan-price .current {
+            font-size: 1.375rem;
+            font-weight: 700;
+            color: var(--color-indigo-600);
+        }
+
+        .plan-option.special .plan-price .current {
+            color: var(--color-emerald-500);
+        }
+
+        .plan-desc {
+            font-size: 0.8125rem;
+            color: var(--color-slate-500);
+        }
+
+        .plan-radio {
+            display: none;
+        }
+
+        .email-input-group {
+            margin-bottom: 20px;
+        }
+
+        .email-input-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--color-slate-700);
+            margin-bottom: 8px;
+        }
+
+        .email-input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--color-slate-200);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .email-input-group input:focus {
+            outline: none;
+            border-color: var(--color-indigo-500);
+        }
+
+        .guarantees {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: var(--color-slate-50);
+            border-radius: 12px;
+        }
+
+        .guarantee-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8125rem;
+            color: var(--color-slate-600);
+        }
+
+        .guarantee-item svg {
+            width: 16px; height: 16px;
+            color: var(--color-emerald-500);
+            flex-shrink: 0;
+        }
+
+        .modal-submit-btn {
+            width: 100%;
+            padding: 16px 24px;
+            background: var(--color-slate-900);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-submit-btn:hover {
+            background: var(--color-slate-800);
+        }
+
+        /* Success */
+        .success-step {
+            display: none;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .success-step.active {
+            display: block;
+        }
+
+        .pricing-step.hidden {
+            display: none;
+        }
+
+        .success-icon {
+            width: 72px; height: 72px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, var(--color-emerald-500), #34d399);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-icon svg {
+            width: 36px; height: 36px;
+            color: white;
+        }
+
+        .success-step h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-slate-900);
+            margin-bottom: 12px;
+        }
+
+        .success-step p {
+            color: var(--color-slate-500);
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .success-step .highlight-text {
+            color: var(--color-slate-700);
+            font-weight: 500;
+        }
+
+        /* Preview Step */
+        .preview-step {
+            display: none;
+            text-align: center;
+        }
+
+        .preview-step.active {
+            display: block;
+        }
+
+        .preview-pdf-container {
+            margin: 24px 0;
+            border: 2px solid var(--color-slate-200);
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--color-slate-50);
+        }
+
+        .preview-pdf-iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+        }
+
+        .preview-notice {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .preview-notice p {
+            font-size: 0.875rem;
+            color: var(--color-slate-700);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .preview-notice strong {
+            color: var(--color-slate-900);
+        }
+
+        .payment-btn {
+            width: 100%;
+            padding: 18px 24px;
+            background: linear-gradient(135deg, var(--color-indigo-600), var(--color-violet-500));
+            color: white;
+            font-size: 1.125rem;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .payment-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .processing-step {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .processing-step.active {
+            display: block;
+        }
+
+        .processing-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, var(--color-indigo-500), var(--color-violet-500));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .processing-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        /* Animations */
+        .animate-section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+
+        .animate-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .animate-section {
+                opacity: 1;
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="dot-overlay"></div>
+    <div class="glow-container">
+        <div class="glow-blob glow-blob-1"></div>
+        <div class="glow-blob glow-blob-2"></div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="nav">
+        <div class="container-wide">
+            <div class="nav-inner">
+                <div class="nav-brand">
+                    <div class="nav-logo">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                        </svg>
+                    </div>
+                    <span class="nav-title">Meta Press</span>
+                </div>
+                <div class="nav-badge">Online</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="animate-section">
+                <span class="hero-label">📚 For creators with something to say</span>
+                <h1>Turn your writing into a book<br>in <span class="highlight">10 minutes</span></h1>
+                <p class="hero-subtitle">Paste your blog posts, essays, or notes below. Get a professionally formatted PDF book delivered to your inbox.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Input Section -->
+    <section class="input-section">
+        <div class="container">
+            <div class="input-card animate-section" data-delay="100">
+                <textarea id="userContent" placeholder="Paste all your writing here...
+
+You can include multiple blog posts, essays, or notes.
+Just paste everything — we'll structure it into chapters for you.
+
+Example content:
+• Blog posts you've written
+• Newsletter archives
+• Personal essays
+• How-to guides
+• Notes from talks or presentations"></textarea>
+
+                <div class="input-actions">
+                    <button class="continue-btn" onclick="openModal()">
+                        Create My Book
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <p class="input-hint">Paste your content above, then click to continue.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="section">
+        <div class="container-wide">
+            <div class="section-title animate-section">
+                <h2>How It Works</h2>
+                <p>Three steps. Ten minutes. One book.</p>
+            </div>
+            <div class="steps-grid">
+                <div class="glass-card step-card animate-section" data-delay="100">
+                    <div class="step-number">1</div>
+                    <h3>Paste Your Writing</h3>
+                    <p>Add your blog posts, essays, newsletters, or notes — all in one place.</p>
+                </div>
+                <div class="glass-card step-card animate-section" data-delay="200">
+                    <div class="step-number">2</div>
+                    <h3>We Structure & Design</h3>
+                    <p>Your content gets organized into chapters with professional formatting.</p>
+                </div>
+                <div class="glass-card step-card animate-section" data-delay="300">
+                    <div class="step-number">3</div>
+                    <h3>Get Your PDF</h3>
+                    <p>Receive a polished book in your inbox within 48 hours.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing-section">
+        <div class="container-wide">
+            <div class="section-title animate-section">
+                <h2>Simple Pricing</h2>
+                <p>Choose the size that fits your content.</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="glass-card pricing-card animate-section" data-delay="100">
+                    <h3>Starter</h3>
+                    <p class="pricing-pages">Up to 30 pages</p>
+                    <div class="pricing-price">
+                        <span class="current">$10</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            30-page PDF book
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Professional formatting
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            48-hour delivery
+                        </li>
+                    </ul>
+                </div>
+                <div class="glass-card pricing-card featured animate-section" data-delay="200">
+                    <h3>Standard</h3>
+                    <p class="pricing-pages">Up to 100 pages</p>
+                    <div class="pricing-price">
+                        <span class="current">$50</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            100-page PDF book
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Professional formatting
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            48-hour delivery
+                        </li>
+                    </ul>
+                </div>
+                <div class="glass-card pricing-card animate-section" data-delay="300">
+                    <h3>Complete</h3>
+                    <p class="pricing-pages">Up to 300 pages</p>
+                    <div class="pricing-price">
+                        <span class="current">$200</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            300-page PDF book
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Professional formatting
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            48-hour delivery
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section">
+        <div class="container-wide">
+            <div class="section-title animate-section">
+                <h2>Questions</h2>
+            </div>
+            <div class="faq-grid">
+                <div class="glass-card faq-item animate-section" data-delay="100">
+                    <h4>What kind of writing works best?</h4>
+                    <p>Blog posts, newsletter archives, personal essays, how-to guides, memoir pieces — any original writing based on your experience.</p>
+                </div>
+                <div class="glass-card faq-item animate-section" data-delay="150">
+                    <h4>How much content do I need?</h4>
+                    <p>Around 5,000-15,000 words works great. Don't worry about exact counts — just paste what you have.</p>
+                </div>
+                <div class="glass-card faq-item animate-section" data-delay="200">
+                    <h4>Can I sell the book?</h4>
+                    <p>Absolutely. It's your content, your book. Sell it anywhere you want.</p>
+                </div>
+                <div class="glass-card faq-item animate-section" data-delay="250">
+                    <h4>What if I'm not satisfied?</h4>
+                    <p>100% money-back guarantee. Full refund, no questions asked.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container-wide">
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <div class="nav-logo">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                        </svg>
+                    </div>
+                    <span class="nav-title">Meta Press</span>
+                </div>
+                <p class="footer-text">Turn your ideas into books.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Processing Step -->
+                <div class="processing-step" id="processingStep">
+                    <div class="processing-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                    </div>
+                    <h3>Creating your book preview...</h3>
+                    <p>We're structuring your content and generating a preview. This will take just a moment.</p>
+                    <div class="loading-spinner" style="margin: 20px auto; display: block;"></div>
+                </div>
+
+                <!-- Preview Step -->
+                <div class="preview-step" id="previewStep">
+                    <h3>Your Book Preview</h3>
+                    <p style="color: var(--color-slate-500); margin-bottom: 20px;">Here's a preview of your book. Complete your purchase to download the full version.</p>
+                    
+                    <div class="preview-notice">
+                        <p><strong>📖 Preview:</strong> This is the first 5 pages of your book. Purchase to unlock the complete 30-page version.</p>
+                    </div>
+
+                    <div class="preview-pdf-container">
+                        <iframe id="previewPdf" class="preview-pdf-iframe" src=""></iframe>
+                    </div>
+
+                    <div class="plan-options" style="margin-top: 24px;">
+                        <label class="plan-option special selected" onclick="selectPlan(this, 'starter')">
+                            <input type="radio" name="plan" value="starter" class="plan-radio" checked>
+                            <div class="plan-header">
+                                <span class="plan-name">Starter — 30 pages</span>
+                                <div class="plan-price">
+                                    <span class="original">$10</span>
+                                    <span class="current">$1</span>
+                                </div>
+                            </div>
+                            <p class="plan-desc">Get the full book with professional formatting</p>
+                        </label>
+                    </div>
+
+                    <div class="email-input-group">
+                        <label for="previewEmail">Email address</label>
+                        <input type="email" id="previewEmail" placeholder="you@example.com" required>
+                    </div>
+
+                    <button class="payment-btn" onclick="proceedToPayment()">
+                        <span id="paymentBtnText">Complete Purchase — $1</span>
+                    </button>
+
+                    <p style="font-size: 0.8125rem; color: var(--color-slate-400); margin-top: 16px;">
+                        Secure payment • 100% money-back guarantee
+                    </p>
+                </div>
+
+                <!-- Pricing Step (Hidden by default) -->
+                <div class="pricing-step hidden" id="pricingStep">
+                    <div class="maintenance-notice">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                            <path d="m9 12 2 2 4-4"></path>
+                        </svg>
+                        <p><strong>Thanks for your patience!</strong> We're finishing up some system upgrades. As a thank you, early supporters get the 30-page book for just <strong>$1</strong>. Your book will be delivered within 48 hours.</p>
+                    </div>
+
+                    <h3>Choose your book size</h3>
+                    <p>Select based on how much content you have.</p>
+
+                    <div class="plan-options">
+                        <label class="plan-option special selected" onclick="selectPlan(this, 'starter')">
+                            <input type="radio" name="plan" value="starter" class="plan-radio" checked>
+                            <div class="plan-header">
+                                <span class="plan-name">Starter — 30 pages</span>
+                                <div class="plan-price">
+                                    <span class="original">$10</span>
+                                    <span class="current">$1</span>
+                                </div>
+                            </div>
+                            <p class="plan-desc">Perfect for 3-5 blog posts or essays</p>
+                        </label>
+
+                        <label class="plan-option" onclick="selectPlan(this, 'standard')">
+                            <input type="radio" name="plan" value="standard" class="plan-radio">
+                            <div class="plan-header">
+                                <span class="plan-name">Standard — 100 pages</span>
+                                <div class="plan-price">
+                                    <span class="current">$50</span>
+                                </div>
+                            </div>
+                            <p class="plan-desc">Ideal for 6-10 pieces or a comprehensive guide</p>
+                        </label>
+
+                        <label class="plan-option" onclick="selectPlan(this, 'complete')">
+                            <input type="radio" name="plan" value="complete" class="plan-radio">
+                            <div class="plan-header">
+                                <span class="plan-name">Complete — 300 pages</span>
+                                <div class="plan-price">
+                                    <span class="current">$200</span>
+                                </div>
+                            </div>
+                            <p class="plan-desc">For full books, courses, or archives</p>
+                        </label>
+                    </div>
+
+                    <div class="email-input-group">
+                        <label for="email">Email address</label>
+                        <input type="email" id="email" placeholder="you@example.com" required>
+                    </div>
+
+                    <div class="guarantees">
+                        <div class="guarantee-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span>Delivered to your inbox within 48 hours</span>
+                        </div>
+                        <div class="guarantee-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span>100% money-back guarantee</span>
+                        </div>
+                        <div class="guarantee-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span>Full ownership — sell or share freely</span>
+                        </div>
+                    </div>
+
+                    <button class="modal-submit-btn" onclick="submitOrder()">Reserve My Spot</button>
+                </div>
+
+                <!-- Success Step -->
+                <div class="success-step" id="successStep">
+                    <div class="success-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Payment Complete! 🎉</h3>
+                    <p>Your full book is ready for download.</p>
+                    <p class="highlight-text">Thank you for your purchase! Your complete 30-page book is now available.</p>
+                    <div style="margin: 24px 0;">
+                        <a id="downloadLink" href="#" class="payment-btn" style="text-decoration: none; display: inline-block;" download>
+                            Download Full Book (PDF)
+                        </a>
+                    </div>
+                    <p style="margin-top: 16px; font-size: 0.875rem; color: var(--color-slate-500);">
+                        A download link has also been sent to your email.<br>
+                        Not satisfied? 100% refund, no questions asked.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPlan = 'starter';
+
+        async function openModal() {
+            const content = document.getElementById('userContent').value.trim();
+            if (!content) {
+                alert('Please paste your writing first.');
+                return;
+            }
+
+            if (content.length < 100) {
+                alert('Please paste at least 100 characters of content.');
+                return;
+            }
+
+            // 모달 열기
+            document.getElementById('modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // 모든 단계 숨기기
+            document.getElementById('pricingStep').classList.add('hidden');
+            document.getElementById('previewStep').classList.remove('active');
+            document.getElementById('successStep').classList.remove('active');
+            
+            // 처리 중 단계 표시
+            document.getElementById('processingStep').classList.add('active');
+
+            try {
+                // 즉시 맛보기 생성 시작
+                const response = await fetch('/api/create-preview', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        content: content
+                    })
+                });
+
+                // 응답이 JSON인지 확인
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('Non-JSON response:', text);
+                    throw new Error('Server returned non-JSON response. Please check server logs.');
+                }
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Preview generation failed.');
+                }
+
+                // 처리 중 단계 숨기기
+                document.getElementById('processingStep').classList.remove('active');
+                
+                // 맛보기 단계 표시
+                document.getElementById('previewStep').classList.add('active');
+                
+                // PDF 미리보기 표시
+                if (data.previewUrl) {
+                    document.getElementById('previewPdf').src = data.previewUrl;
+                }
+                
+                // 주문 ID 저장
+                window.currentOrderId = data.orderId;
+                window.previewData = data;
+
+            } catch (error) {
+                console.error('Preview generation error:', error);
+                alert('Preview generation failed: ' + error.message);
+                document.getElementById('processingStep').classList.remove('active');
+                closeModal();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        function selectPlan(element, plan) {
+            document.querySelectorAll('.plan-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            element.querySelector('input').checked = true;
+            selectedPlan = plan;
+        }
+
+        async function proceedToPayment() {
+            const email = document.getElementById('previewEmail').value;
+            
+            if (!email || !email.includes('@')) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+
+            if (!window.currentOrderId) {
+                alert('Order not found. Please try again.');
+                return;
+            }
+
+            // 버튼 비활성화 및 로딩 상태
+            const paymentBtn = document.querySelector('.payment-btn');
+            const paymentBtnText = document.getElementById('paymentBtnText');
+            const originalText = paymentBtnText.textContent;
+            paymentBtn.disabled = true;
+            paymentBtnText.innerHTML = '<span class="loading-spinner"></span>Processing payment...';
+
+            try {
+                // 결제 처리 API 호출
+                const response = await fetch('/api/complete-purchase', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        orderId: window.currentOrderId,
+                        email: email,
+                        plan: selectedPlan
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Payment processing failed.');
+                }
+
+                // 성공 - 완료 단계 표시
+                document.getElementById('previewStep').classList.remove('active');
+                document.getElementById('successStep').classList.add('active');
+                
+                // 전체 PDF 다운로드 링크 업데이트
+                if (data.fullPdfUrl) {
+                    const downloadLink = document.getElementById('downloadLink');
+                    if (downloadLink) {
+                        downloadLink.href = data.fullPdfUrl;
+                    }
+                }
+
+                console.log('Payment completed successfully:', data);
+
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('Payment processing failed: ' + error.message);
+                
+                // 버튼 복원
+                paymentBtn.disabled = false;
+                paymentBtnText.textContent = originalText;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            
+            if (prefersReducedMotion) {
+                document.querySelectorAll('.animate-section').forEach(el => el.classList.add('visible'));
+                return;
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const delay = entry.target.dataset.delay || 0;
+                        setTimeout(() => entry.target.classList.add('visible'), parseInt(delay));
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+            document.querySelectorAll('.animate-section').forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사주아이 — 프로젝트 현황</title>
+<style>
+  :root {
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #111827;
+    --bg-card: #1a2235;
+    --bg-card-hover: #1f2a40;
+    --border: #2a3550;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-blue: #3b82f6;
+    --accent-purple: #8b5cf6;
+    --accent-green: #10b981;
+    --accent-red: #ef4444;
+    --accent-orange: #f59e0b;
+    --accent-cyan: #06b6d4;
+    --gradient-primary: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    --gradient-green: linear-gradient(135deg, #10b981, #06b6d4);
+    --gradient-warm: linear-gradient(135deg, #f59e0b, #ef4444);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(59,130,246,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(139,92,246,0.08) 0%, transparent 50%);
+    animation: pulse 8s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 0.5; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.05); }
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+
+  .hero-badge {
+    display: inline-block;
+    background: rgba(59,130,246,0.15);
+    border: 1px solid rgba(59,130,246,0.3);
+    color: var(--accent-blue);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.3rem 0.9rem;
+    border-radius: 100px;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .grid-full { grid-column: 1 / -1; }
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .card:hover {
+    border-color: rgba(59,130,246,0.3);
+    box-shadow: 0 0 30px rgba(59,130,246,0.05);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .card-icon.blue { background: rgba(59,130,246,0.15); }
+  .card-icon.green { background: rgba(16,185,129,0.15); }
+  .card-icon.purple { background: rgba(139,92,246,0.15); }
+  .card-icon.orange { background: rgba(245,158,11,0.15); }
+  .card-icon.red { background: rgba(239,68,68,0.15); }
+  .card-icon.cyan { background: rgba(6,182,212,0.15); }
+
+  .card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* Progress ring */
+  .progress-ring-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1.5rem 0;
+  }
+
+  .progress-ring-container {
+    position: relative;
+    width: 140px;
+    height: 140px;
+  }
+
+  .progress-ring-bg {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 8;
+  }
+
+  .progress-ring-fill {
+    fill: none;
+    stroke: url(#progressGradient);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 377;
+    stroke-dashoffset: 37.7;
+    transform: rotate(-90deg);
+    transform-origin: center;
+    transition: stroke-dashoffset 1s ease;
+  }
+
+  .progress-ring-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .progress-ring-value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .progress-ring-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  /* Tech stack pills */
+  .tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .tech-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1px solid;
+  }
+
+  .tech-pill.next { background: rgba(0,0,0,0.3); border-color: #333; color: #fff; }
+  .tech-pill.tailwind { background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.3); color: var(--accent-cyan); }
+  .tech-pill.openai { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); color: var(--accent-green); }
+  .tech-pill.toss { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: var(--accent-blue); }
+
+  /* Feature list */
+  .feature-list { list-style: none; }
+
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+  }
+
+  .feature-item:last-child { border-bottom: none; }
+
+  .feature-status {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    margin-top: 1px;
+  }
+
+  .feature-status.done {
+    background: rgba(16,185,129,0.15);
+    color: var(--accent-green);
+    border: 1.5px solid rgba(16,185,129,0.4);
+  }
+
+  .feature-status.todo {
+    background: rgba(239,68,68,0.1);
+    color: var(--accent-red);
+    border: 1.5px solid rgba(239,68,68,0.3);
+  }
+
+  .feature-text { flex: 1; }
+  .feature-text.done-text { color: var(--text-secondary); }
+  .feature-text.todo-text { color: var(--text-muted); }
+
+  .feature-tag {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 100px;
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .tag-core { background: rgba(59,130,246,0.12); color: var(--accent-blue); }
+  .tag-ai { background: rgba(139,92,246,0.12); color: var(--accent-purple); }
+  .tag-pay { background: rgba(245,158,11,0.12); color: var(--accent-orange); }
+  .tag-ui { background: rgba(6,182,212,0.12); color: var(--accent-cyan); }
+
+  /* Progress bars */
+  .progress-bar-group { margin-top: 0.5rem; }
+
+  .progress-bar-item {
+    margin-bottom: 1rem;
+  }
+
+  .progress-bar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+  }
+
+  .progress-bar-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .progress-bar-value {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .progress-bar-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    transition: width 1s ease;
+  }
+
+  .fill-green { background: var(--gradient-green); }
+  .fill-blue { background: var(--gradient-primary); }
+  .fill-orange { background: linear-gradient(135deg, #f59e0b, #f97316); }
+  .fill-purple { background: linear-gradient(135deg, #8b5cf6, #a855f7); }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 2rem; }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent-green), var(--accent-blue), var(--accent-purple), var(--accent-orange));
+    border-radius: 100px;
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-bottom: 1.75rem;
+  }
+
+  .timeline-item:last-child { padding-bottom: 0; }
+
+  .timeline-dot {
+    position: absolute;
+    left: -2rem;
+    top: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2.5px solid;
+    background: var(--bg-card);
+  }
+
+  .timeline-dot.phase1 { border-color: var(--accent-green); box-shadow: 0 0 8px rgba(16,185,129,0.3); }
+  .timeline-dot.phase2 { border-color: var(--accent-blue); box-shadow: 0 0 8px rgba(59,130,246,0.3); }
+  .timeline-dot.phase3 { border-color: var(--accent-purple); box-shadow: 0 0 8px rgba(139,92,246,0.3); }
+  .timeline-dot.phase4 { border-color: var(--accent-orange); box-shadow: 0 0 8px rgba(245,158,11,0.3); }
+
+  .timeline-phase {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.2rem;
+  }
+
+  .timeline-phase.p1 { color: var(--accent-green); }
+  .timeline-phase.p2 { color: var(--accent-blue); }
+  .timeline-phase.p3 { color: var(--accent-purple); }
+  .timeline-phase.p4 { color: var(--accent-orange); }
+
+  .timeline-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+  }
+
+  .timeline-tasks {
+    list-style: none;
+  }
+
+  .timeline-task {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    padding: 0.15rem 0;
+    padding-left: 1rem;
+    position: relative;
+  }
+
+  .timeline-task::before {
+    content: '\203A';
+    position: absolute;
+    left: 0;
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+
+  /* Cost table */
+  .cost-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+
+  .cost-table tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .cost-table tr:last-child { border-bottom: none; }
+
+  .cost-table td {
+    padding: 0.6rem 0;
+    font-size: 0.85rem;
+  }
+
+  .cost-table td:first-child {
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .cost-table td:last-child {
+    text-align: right;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cost-highlight {
+    background: rgba(16,185,129,0.08);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-top: 0.75rem;
+    border: 1px solid rgba(16,185,129,0.15);
+  }
+
+  .cost-highlight-label {
+    font-size: 0.72rem;
+    color: var(--accent-green);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .cost-highlight-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent-green);
+  }
+
+  .cost-highlight-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  /* File tree */
+  .file-tree {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.78rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 1.25rem;
+    border: 1px solid rgba(255,255,255,0.04);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .ft-dir { color: var(--accent-blue); font-weight: 600; }
+  .ft-file { color: var(--text-secondary); }
+  .ft-comment { color: var(--text-muted); font-style: italic; }
+  .ft-api { color: var(--accent-purple); }
+  .ft-component { color: var(--accent-cyan); }
+  .ft-lib { color: var(--accent-green); }
+
+  /* KPI cards */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .kpi-card {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .kpi-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 0.15rem;
+  }
+
+  .kpi-value.blue { color: var(--accent-blue); }
+  .kpi-value.green { color: var(--accent-green); }
+  .kpi-value.purple { color: var(--accent-purple); }
+  .kpi-value.orange { color: var(--accent-orange); }
+
+  .kpi-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+  }
+
+  .footer-date { font-weight: 600; color: var(--text-secondary); }
+
+  /* Section label */
+  .section-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Count badges */
+  .count-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .count-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .count-badge .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .dot.green-dot { background: var(--accent-green); }
+  .dot.red-dot { background: var(--accent-red); }
+
+  @media (max-width: 767px) {
+    .hero { padding: 2rem 1rem 1.75rem; }
+    .hero h1 { font-size: 1.75rem; }
+    .hero-stats { gap: 1.5rem; }
+    .hero-stat-value { font-size: 1.4rem; }
+    .container { padding: 1.25rem 1rem 3rem; }
+    .card { padding: 1.25rem; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .kpi-value { font-size: 1.1rem; }
+    .progress-ring-container { width: 110px; height: 110px; }
+    .progress-ring-value { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Project Dashboard</div>
+    <h1>사주AI 클론</h1>
+    <p class="hero-sub">saju-kid.com 리버스 엔지니어링 &middot; Next.js 15 + GPT-4o</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-value">90%</div>
+        <div class="hero-stat-label">완성도</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">3</div>
+        <div class="hero-stat-label">서비스</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">10</div>
+        <div class="hero-stat-label">완료 기능</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">9</div>
+        <div class="hero-stat-label">남은 작업</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- Section: 프로젝트 개요 + 완성도 링 -->
+  <div class="section-label">프로젝트 개요</div>
+  <div class="grid" style="margin-bottom: 2.5rem;">
+
+    <!-- 개요 카드 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon blue">&#9881;</div>
+        <div class="card-title">프로젝트 정보</div>
+      </div>
+      <table class="cost-table">
+        <tr><td>프로젝트명</td><td>사주AI 클론</td></tr>
+        <tr><td>원본 사이트</td><td>saju-kid.com</td></tr>
+        <tr><td>프레임워크</td><td>Next.js 15 (App Router)</td></tr>
+        <tr><td>스타일링</td><td>Tailwind CSS</td></tr>
+        <tr><td>AI 엔진</td><td>OpenAI GPT-4o</td></tr>
+        <tr><td>결제</td><td>토스페이먼츠</td></tr>
+      </table>
+      <div class="tech-stack" style="margin-top: 1rem;">
+        <span class="tech-pill next">&#9650; Next.js 15</span>
+        <span class="tech-pill tailwind">&#10022; Tailwind</span>
+        <span class="tech-pill openai">&#9672; GPT-4o</span>
+        <span class="tech-pill toss">&#8377; 토스페이먼츠</span>
+      </div>
+    </div>
+
+    <!-- 완성도 링 -->
+    <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      <div class="card-header" style="align-self: flex-start;">
+        <div class="card-icon green">&#9673;</div>
+        <div class="card-title">전체 완성도</div>
+      </div>
+      <div class="progress-ring-wrapper">
+        <div class="progress-ring-container">
+          <svg viewBox="0 0 140 140" width="140" height="140">
+            <defs>
+              <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3b82f6"/>
+                <stop offset="100%" stop-color="#8b5cf6"/>
+              </linearGradient>
+            </defs>
+            <circle class="progress-ring-bg" cx="70" cy="70" r="60"/>
+            <circle class="progress-ring-fill" cx="70" cy="70" r="60"/>
+          </svg>
+          <div class="progress-ring-text">
+            <div class="progress-ring-value">90%</div>
+            <div class="progress-ring-label">Complete</div>
+          </div>
+        </div>
+      </div>
+      <div class="count-row" style="justify-content: center;">
+        <div class="count-badge"><span class="dot green-dot"></span> 10 완료</div>
+        <div class="count-badge"><span class="dot red-dot"></span> 9 미완료</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: 기능 완성도 -->
+  <div class="section-label">기능 완성도</div>
+  <div class="grid" style="margin-bottom: 2.5rem;">
+
+    <!-- 카테고리별 진행률 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon purple">&#9646;</div>
+        <div class="card-title">카테고리별 진행률</div>
+      </div>
+      <div class="progress-bar-group">
+        <div class="progress-bar-item">
+          <div class="progress-bar-header">
+            <span class="progress-bar-label">프론트엔드 UI</span>
+            <span class="progress-bar-value">90%</span>
+          </div>
+          <div class="progress-bar-track"><div class="progress-bar-fill fill-green" style="width: 90%;"></div></div>
+        </div>
+        <div class="progress-bar-item">
+          <div class="progress-bar-header">
+            <span class="progress-bar-label">AI 서비스 (사주/궁합/운세)</span>
+            <span class="progress-bar-value">100%</span>
+          </div>
+          <div class="progress-bar-track"><div class="progress-bar-fill fill-blue" style="width: 100%;"></div></div>
+        </div>
+        <div class="progress-bar-item">
+          <div class="progress-bar-header">
+            <span class="progress-bar-label">결제 시스템</span>
+            <span class="progress-bar-value">60%</span>
+          </div>
+          <div class="progress-bar-track"><div class="progress-bar-fill fill-orange" style="width: 60%;"></div></div>
+        </div>
+        <div class="progress-bar-item">
+          <div class="progress-bar-header">
+            <span class="progress-bar-label">인프라 / 배포</span>
+            <span class="progress-bar-value">10%</span>
+          </div>
+          <div class="progress-bar-track"><div class="progress-bar-fill fill-purple" style="width: 10%;"></div></div>
+        </div>
+        <div class="progress-bar-item">
+          <div class="progress-bar-header">
+            <span class="progress-bar-label">사용자 계정 / 데이터</span>
+            <span class="progress-bar-value">5%</span>
+          </div>
+          <div class="progress-bar-track"><div class="progress-bar-fill fill-orange" style="width: 5%;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 완료 기능 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon green">&#10003;</div>
+        <div class="card-title">완료된 기능</div>
+      </div>
+      <ul class="feature-list">
+        <li class="feature-item">
+          <span class="feature-status done">&#10003;</span>
+          <span class="feature-text done-text">프론트엔드 디자인 (원본 90% 일치)</span>
+          <span class="feature-tag tag-ui">UI</span>
+        </li>
+        <li class="feature-item">
+          <span class="feature-status done">&#10003;</span>
+          <span class="feature-text done-text">사주풀이 (만세력 + AI 13섹션 + 스트리밍)</span>
+          <span class="feature-tag tag-ai">AI</span>
+        </li>
+        <li class="feature-item">
+          <span class="feature-status done">&#10003;</span>
+          <span class="feature-text done-text">궁합 서비스 (AI 7섹션 + 점수/카테고리)</span>
+          <span class="feature-tag tag-ai">AI</span>
+        </li>
+        <li class="feature-item">
+          <span class="feature-status done">&#10003;</span>
+          <span class="feature-text done-text">2026 운세 (AI 8섹션 + 월별 운세)</span>
+          <span class="feature-tag tag-ai">AI</span>
+        </li>
+        <li class="feature-item">
+          <span class="feature-status done">&#10003;</span>
+          <span class="feature-text done-text">페이월 UI + 토스페이먼츠 (테스트)</span>
+          <span class="feature-tag tag-pay">PAY</span>
+        </li>
+        <li class="feature-item">
+          <span class="feature-status done">&#10003;</span>
+          <span class="feature-text done-text">결제 성공/실패 페이지</span>
+          <span class="feature-tag tag-pay">PAY</span>
+        </li>
+        <li class="feature-item">
+          <span class="feature-status done">&#10003;</span>
+          <span class="feature-text done-text">로그인 페이지 (UI 껍데기)</span>
+          <span class="feature-tag tag-ui">UI</span>
+        </li>
+        <li class="feature-item">
+          <span class="feature-status done">&#10003;</span>
+          <span class="feature-text done-text">회사소개 / 이용약관 / 개인정보처리방침</span>
+          <span class="feature-tag tag-ui">UI</span>
+        </li>
+        <li class="feature-item">
+          <span class="feature-status done">&#10003;</span>
+          <span class="feature-text done-text">공유 기능 (카카오톡, X, 링크복사)</span>
+          <span class="feature-tag tag-core">CORE</span>
+        </li>
+        <li class="feature-item">
+          <span class="feature-status done">&#10003;</span>
+          <span class="feature-text done-text">AI 프롬프트 원본 스타일 맞춤</span>
+          <span class="feature-tag tag-ai">AI</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 미완료 기능 -->
+    <div class="card grid-full">
+      <div class="card-header">
+        <div class="card-icon red">&#10007;</div>
+        <div class="card-title">미완료 작업</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0;">
+        <ul class="feature-list">
+          <li class="feature-item">
+            <span class="feature-status todo">&#10007;</span>
+            <span class="feature-text todo-text">Vercel 배포</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-status todo">&#10007;</span>
+            <span class="feature-text todo-text">도메인 연결</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-status todo">&#10007;</span>
+            <span class="feature-text todo-text">토스페이먼츠 라이브 키</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-status todo">&#10007;</span>
+            <span class="feature-text todo-text">DB (결제기록, 유저, 분석이력)</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-status todo">&#10007;</span>
+            <span class="feature-text todo-text">소셜 로그인 (카카오/네이버/구글)</span>
+          </li>
+        </ul>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <span class="feature-status todo">&#10007;</span>
+            <span class="feature-text todo-text">SEO 메타태그</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-status todo">&#10007;</span>
+            <span class="feature-text todo-text">Google Analytics</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-status todo">&#10007;</span>
+            <span class="feature-text todo-text">카카오 공유 SDK</span>
+          </li>
+          <li class="feature-item">
+            <span class="feature-status todo">&#10007;</span>
+            <span class="feature-text todo-text">마이페이지</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: 수익화 로드맵 -->
+  <div class="section-label">수익화 로드맵</div>
+  <div class="grid" style="margin-bottom: 2.5rem;">
+
+    <div class="card grid-full">
+      <div class="card-header">
+        <div class="card-icon cyan">&#9776;</div>
+        <div class="card-title">출시 타임라인</div>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot phase1"></div>
+          <div class="timeline-phase p1">Phase 1 &mdash; Day 1</div>
+          <div class="timeline-title">배포</div>
+          <ul class="timeline-tasks">
+            <li class="timeline-task">Vercel 배포 (next build &amp; deploy)</li>
+            <li class="timeline-task">도메인 연결 (DNS 설정)</li>
+            <li class="timeline-task">테스트 URL 공유 및 QA</li>
+          </ul>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot phase2"></div>
+          <div class="timeline-phase p2">Phase 2 &mdash; Day 2~4</div>
+          <div class="timeline-title">결제 활성화</div>
+          <ul class="timeline-tasks">
+            <li class="timeline-task">토스페이먼츠 라이브 키 신청 및 발급</li>
+            <li class="timeline-task">Supabase DB 연결 (결제기록 저장)</li>
+            <li class="timeline-task">결제 플로우 end-to-end 테스트</li>
+          </ul>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot phase3"></div>
+          <div class="timeline-phase p3">Phase 3 &mdash; Week 2</div>
+          <div class="timeline-title">성장 기반</div>
+          <ul class="timeline-tasks">
+            <li class="timeline-task">SEO 메타태그 + OG 이미지 최적화</li>
+            <li class="timeline-task">Google Analytics 연동</li>
+            <li class="timeline-task">카카오 공유 SDK 연동</li>
+            <li class="timeline-task">소셜 로그인 (카카오 우선)</li>
+          </ul>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot phase4"></div>
+          <div class="timeline-phase p4">Phase 4 &mdash; Week 3~4</div>
+          <div class="timeline-title">확장</div>
+          <ul class="timeline-tasks">
+            <li class="timeline-task">마이페이지 (결제내역/분석이력)</li>
+            <li class="timeline-task">추가 서비스 (타로, 꿈해몽 등)</li>
+            <li class="timeline-task">광고 연동</li>
+            <li class="timeline-task">앱 래핑 (PWA)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: 비용 구조 + KPI -->
+  <div class="section-label">비용 구조 &amp; KPI</div>
+  <div class="grid" style="margin-bottom: 2.5rem;">
+
+    <!-- 비용 구조 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon orange">&#8361;</div>
+        <div class="card-title">비용 구조</div>
+      </div>
+      <table class="cost-table">
+        <tr><td>OpenAI API (GPT-4o)</td><td>~50원/건</td></tr>
+        <tr><td>Vercel 호스팅</td><td>무료 tier</td></tr>
+        <tr><td>Supabase DB</td><td>무료 tier</td></tr>
+        <tr><td>도메인</td><td>~2만원/년</td></tr>
+        <tr><td>토스 수수료</td><td>3.3%</td></tr>
+        <tr><td>매출 단가</td><td>990원/건</td></tr>
+      </table>
+      <div class="cost-highlight">
+        <div class="cost-highlight-label">건당 순이익</div>
+        <div class="cost-highlight-value">~900원</div>
+        <div class="cost-highlight-sub">마진율 약 91% (API 50원 + 수수료 33원 차감)</div>
+      </div>
+    </div>
+
+    <!-- KPI -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon purple">&#9733;</div>
+        <div class="card-title">핵심 KPI 목표</div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-value blue">10,000</div>
+          <div class="kpi-label">목표 MAU</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value green">5~10%</div>
+          <div class="kpi-label">전환율 목표</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value purple">50~100만</div>
+          <div class="kpi-label">월 매출 목표</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value orange">~500건</div>
+          <div class="kpi-label">BEP (월)</div>
+        </div>
+      </div>
+      <div class="cost-highlight" style="margin-top: 1.25rem; border-color: rgba(139,92,246,0.15); background: rgba(139,92,246,0.06);">
+        <div class="cost-highlight-label" style="color: var(--accent-purple);">수익 시뮬레이션</div>
+        <table class="cost-table" style="margin-top: 0.5rem;">
+          <tr><td style="color: var(--text-muted);">MAU 10,000 x 전환 5%</td><td>500건</td></tr>
+          <tr><td style="color: var(--text-muted);">월 매출</td><td>495,000원</td></tr>
+          <tr><td style="color: var(--text-muted);">API 비용</td><td>-25,000원</td></tr>
+          <tr><td style="color: var(--text-muted);">토스 수수료</td><td>-16,335원</td></tr>
+          <tr><td style="color: var(--accent-green); font-weight: 700;">월 순이익</td><td style="color: var(--accent-green);">~453,665원</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: 파일 구조 -->
+  <div class="section-label">파일 구조</div>
+  <div class="grid" style="margin-bottom: 2.5rem;">
+    <div class="card grid-full">
+      <div class="card-header">
+        <div class="card-icon cyan">&#128193;</div>
+        <div class="card-title">핵심 파일 구조</div>
+      </div>
+      <div class="file-tree"><span class="ft-dir">src/</span>
+<span class="ft-dir">├── app/</span>
+<span class="ft-dir">│   ├──</span> <span class="ft-file">page.tsx</span>                        <span class="ft-comment">  # 메인 - 3탭 서비스 (사주/궁합/운세)</span>
+<span class="ft-dir">│   ├── api/</span>
+<span class="ft-dir">│   │   ├──</span> <span class="ft-api">saju/route.ts</span>               <span class="ft-comment">  # 사주풀이 API (만세력+AI)</span>
+<span class="ft-dir">│   │   ├──</span> <span class="ft-api">gunghap/route.ts</span>            <span class="ft-comment">  # 궁합 API (두 사람 사주+AI)</span>
+<span class="ft-dir">│   │   ├──</span> <span class="ft-api">fortune/route.ts</span>            <span class="ft-comment">  # 2026 운세 API (AI 8섹션)</span>
+<span class="ft-dir">│   │   └──</span> <span class="ft-api">payment/route.ts</span>            <span class="ft-comment">  # 결제 확인 API (토스)</span>
+<span class="ft-dir">│   ├──</span> <span class="ft-file">auth/login/page.tsx</span>              <span class="ft-comment">  # 로그인 페이지</span>
+<span class="ft-dir">│   ├──</span> <span class="ft-file">info/{about,terms,privacy}/</span>      <span class="ft-comment">  # 정보 페이지</span>
+<span class="ft-dir">│   └──</span> <span class="ft-file">payment/{success,fail}/</span>          <span class="ft-comment">  # 결제 결과 페이지</span>
+<span class="ft-dir">├── components/</span>
+<span class="ft-dir">│   ├──</span> <span class="ft-component">SajuForm.tsx</span> / <span class="ft-component">SajuResult.tsx</span>   <span class="ft-comment">  # 사주 입력/결과</span>
+<span class="ft-dir">│   ├──</span> <span class="ft-component">GunghapForm.tsx</span> / <span class="ft-component">GunghapResult.tsx</span> <span class="ft-comment"># 궁합 입력/결과</span>
+<span class="ft-dir">│   ├──</span> <span class="ft-component">FortuneForm.tsx</span>                 <span class="ft-comment">  # 운세 입력 폼</span>
+<span class="ft-dir">│   ├──</span> <span class="ft-component">AnalysisRenderer.tsx</span>            <span class="ft-comment">  # AI 결과 렌더러</span>
+<span class="ft-dir">│   ├──</span> <span class="ft-component">PaywallOverlay.tsx</span>              <span class="ft-comment">  # 페이월 (토스 연동)</span>
+<span class="ft-dir">│   ├──</span> <span class="ft-component">ShareButtons.tsx</span>                <span class="ft-comment">  # 공유 버튼 (카카오/X/링크)</span>
+<span class="ft-dir">│   └──</span> <span class="ft-component">ServiceTabs.tsx</span>                 <span class="ft-comment">  # 서비스 탭 전환</span>
+<span class="ft-dir">└── lib/</span>
+<span class="ft-dir">    └──</span> <span class="ft-lib">saju.ts</span>                          <span class="ft-comment">  # 만세력 계산 + 궁합 로직</span></div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <span class="footer-date">2026-02-24</span> 기준 &middot; 사주AI 클론 프로젝트 대시보드
+</footer>
+
+</body>
+</html>

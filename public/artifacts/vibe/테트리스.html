@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>테트리스</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c; /* Tailwind gray-900 equivalent */
+            color: #e2e8f0; /* Tailwind gray-200 equivalent */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars */
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* Tailwind gap-6 */
+            background-color: #2d3748; /* Tailwind gray-700 equivalent */
+            padding: 2rem; /* Tailwind p-8 */
+            border-radius: 1rem; /* Tailwind rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Tailwind shadow-lg */
+            border: 2px solid #4a5568; /* Tailwind gray-600 equivalent */
+        }
+
+        .game-area {
+            display: flex;
+            gap: 1.5rem; /* Tailwind gap-6 */
+        }
+
+        canvas {
+            max-width: 100vw;
+            height: auto;
+            background-color: #000;
+            border: 2px solid #4a5568;
+            border-radius: 0.5rem; /* Tailwind rounded-md */
+            display: block;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem; /* Tailwind gap-4 */
+            width: 150px; /* Fixed width for sidebar */
+        }
+
+        .info-box {
+            background-color: #4a5568; /* Tailwind gray-600 equivalent */
+            padding: 1rem; /* Tailwind p-4 */
+            border-radius: 0.75rem; /* Tailwind rounded-lg */
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.125rem; /* Tailwind text-lg */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #667eea; /* Tailwind indigo-500 equivalent */
+        }
+
+        .next-piece-display {
+            background-color: #4a5568;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100px; /* Ensure enough space for next piece */
+            border: 1px solid #667eea;
+        }
+
+        .next-piece-canvas {
+            background-color: #333; /* Darker background for next piece canvas */
+            border-radius: 0.25rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem; /* Tailwind gap-3 */
+            margin-top: 1rem;
+        }
+
+        .control-button {
+            background-color: #667eea; /* Tailwind indigo-500 equivalent */
+            color: white;
+            padding: 0.75rem 1.5rem; /* Tailwind py-3 px-6 */
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: none;
+            outline: none;
+        }
+
+        .control-button:hover {
+            background-color: #5a67d8; /* Tailwind indigo-600 equivalent */
+            transform: translateY(-2px);
+        }
+
+        .control-button:active {
+            background-color: #4c51bf; /* Tailwind indigo-700 equivalent */
+            transform: translateY(0);
+        }
+
+        .game-over-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            flex-direction: column;
+            gap: 1rem;
+            border-radius: 1rem;
+        }
+
+        .game-over-text {
+            font-size: 3rem; /* Tailwind text-5xl */
+            font-weight: bold;
+            color: #fc8181; /* Tailwind red-400 equivalent */
+            text-shadow: 0 0 10px rgba(252, 129, 129, 0.8);
+        }
+
+        .message-box {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4a5568;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none; /* Allows clicks to pass through */
+        }
+
+        .message-box.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                flex-direction: column;
+                padding: 1.5rem;
+                gap: 1rem;
+            }
+
+            .game-area {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: center;
+            }
+
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .info-box, .next-piece-display {
+                flex: 1;
+                min-width: 120px;
+            }
+
+            .controls {
+                margin-top: 0.5rem;
+            }
+
+            .control-button {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .game-over-text {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="text-3xl font-bold text-center text-indigo-400 mb-4">테트리스</h1>
+        <div class="game-area">
+            <canvas id="gameCanvas"></canvas>
+            <div class="sidebar">
+                <div class="info-box">
+                    점수: <span id="score">0</span>
+                </div>
+                <div class="info-box">
+                    레벨: <span id="level">1</span>
+                </div>
+                <div class="info-box">
+                    다음 블록:
+                    <div class="next-piece-display">
+                        <canvas id="nextPieceCanvas" class="next-piece-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="controls">
+            <button id="startButton" class="control-button">시작</button>
+            <button id="pauseButton" class="control-button" disabled>일시정지</button>
+            <button id="resetButton" class="control-button" disabled>재시작</button>
+        </div>
+        <!-- 모바일 전용 터치 조작 버튼 -->
+        <div id="mobileControls" class="controls" style="display:none; flex-wrap:nowrap; gap:0.5rem; margin-top:0.5rem;">
+            <button class="control-button" id="leftBtn" style="min-width:48px;">◀️</button>
+            <button class="control-button" id="rightBtn" style="min-width:48px;">▶️</button>
+            <button class="control-button" id="rotateBtn" style="min-width:48px;">🔄</button>
+            <button class="control-button" id="downBtn" style="min-width:48px;">⬇️</button>
+            <button class="control-button" id="dropBtn" style="min-width:48px;">⬇️⬇️</button>
+        </div>
+        <div id="messageBox" class="message-box"></div>
+    </div>
+
+    <script>
+        // Canvas setup
+        const gameCanvas = document.getElementById('gameCanvas');
+        const ctx = gameCanvas.getContext('2d');
+        const nextPieceCanvas = document.getElementById('nextPieceCanvas');
+        const nextCtx = nextPieceCanvas.getContext('2d');
+
+        // Game parameters
+        const COLS = 10;
+        const ROWS = 20;
+        let BLOCK_SIZE = 30; // Size of each block in pixels
+        const BLOCK_CORNER_RADIUS = 3; // Radius for rounded corners of blocks
+
+        // Game state variables
+        let board = [];
+        let currentPiece;
+        let nextPiece;
+        let score = 0;
+        let level = 1;
+        let dropInterval;
+        let gameStarted = false;
+        let paused = false;
+        let gameOver = false;
+        let isAnimatingLineClear = false; // Flag to prevent piece movement during animation
+
+        // DOM elements
+        const scoreDisplay = document.getElementById('score');
+        const levelDisplay = document.getElementById('level');
+        const startButton = document.getElementById('startButton');
+        const pauseButton = document.getElementById('pauseButton');
+        const resetButton = document.getElementById('resetButton');
+        const messageBox = document.getElementById('messageBox');
+
+        // Sound effects using Tone.js
+        const synth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: {
+                type: "sine"
+            },
+            envelope: {
+                attack: 0.005,
+                decay: 0.1,
+                sustain: 0.05,
+                release: 0.1
+            }
+        }).toDestination();
+
+        const lineClearSynth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: {
+                type: "triangle"
+            },
+            envelope: {
+                attack: 0.01,
+                decay: 0.2,
+                sustain: 0.1,
+                release: 0.3
+            }
+        }).toDestination();
+
+        const gameOverNoise = new Tone.NoiseSynth({
+            envelope: {
+                attack: 0.001,
+                decay: 0.3,
+                sustain: 0,
+                release: 0.05
+            }
+        }).toDestination();
+
+        /**
+         * Displays a temporary message box at the bottom of the screen.
+         * @param {string} message The message to display.
+         * @param {number} duration The duration in milliseconds for which the message should be visible.
+         */
+        function showMessageBox(message, duration = 2000) {
+            messageBox.textContent = message;
+            messageBox.classList.add('show');
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, duration);
+        }
+
+        // Tetromino shapes and colors
+        const TETROMINOS = [
+            // I
+            {
+                shape: [
+                    [0, 0, 0, 0],
+                    [1, 1, 1, 1],
+                    [0, 0, 0, 0],
+                    [0, 0, 0, 0]
+                ],
+                color: '#00FFFF' // Cyan
+            },
+            // J
+            {
+                shape: [
+                    [1, 0, 0],
+                    [1, 1, 1],
+                    [0, 0, 0]
+                ],
+                color: '#0000FF' // Blue
+            },
+            // L
+            {
+                shape: [
+                    [0, 0, 1],
+                    [1, 1, 1],
+                    [0, 0, 0]
+                ],
+                color: '#FFA500' // Orange
+            },
+            // O
+            {
+                shape: [
+                    [1, 1],
+                    [1, 1]
+                ],
+                color: '#FFFF00' // Yellow
+            },
+            // S
+            {
+                shape: [
+                    [0, 1, 1],
+                    [1, 1, 0],
+                    [0, 0, 0]
+                ],
+                color: '#00FF00' // Green
+            },
+            // T
+            {
+                shape: [
+                    [0, 1, 0],
+                    [1, 1, 1],
+                    [0, 0, 0]
+                ],
+                color: '#800080' // Purple
+            },
+            // Z
+            {
+                shape: [
+                    [1, 1, 0],
+                    [0, 1, 1],
+                    [0, 0, 0]
+                ],
+                color: '#FF0000' // Red
+            }
+        ];
+
+        /**
+         * Initializes the game board with empty (0) cells.
+         */
+        function initBoard() {
+            board = Array(ROWS).fill(0).map(() => Array(COLS).fill(0));
+        }
+
+        /**
+         * Generates a random tetromino piece.
+         * @returns {object} A new tetromino piece object.
+         */
+        function generatePiece() {
+            const randIndex = Math.floor(Math.random() * TETROMINOS.length);
+            const tetromino = TETROMINOS[randIndex];
+            return {
+                shape: tetromino.shape,
+                color: tetromino.color,
+                x: Math.floor((COLS - tetromino.shape[0].length) / 2), // Center the piece horizontally
+                y: 0 // Start at the top
+            };
+        }
+
+        /**
+         * Draws a single block on the canvas with rounded corners, gradient, and inner shadow.
+         * @param {number} x The x-coordinate of the block.
+         * @param {number} y The y-coordinate of the block.
+         * @param {string} color The base color of the block.
+         * @param {CanvasRenderingContext2D} context The canvas rendering context to draw on.
+         */
+        function drawBlock(x, y, color, context) {
+            const px = x * BLOCK_SIZE;
+            const py = y * BLOCK_SIZE;
+            const size = BLOCK_SIZE;
+            const radius = BLOCK_CORNER_RADIUS;
+
+            // Create a slightly darker version of the color for the gradient and border
+            const hexToRgb = (hex) => {
+                const r = parseInt(hex.slice(1, 3), 16);
+                const g = parseInt(hex.slice(3, 5), 16);
+                const b = parseInt(hex.slice(5, 7), 16);
+                return { r, g, b };
+            };
+
+            const rgb = hexToRgb(color);
+            const darkerColor = `rgb(${Math.max(0, rgb.r - 50)}, ${Math.max(0, rgb.g - 50)}, ${Math.max(0, rgb.b - 50)})`;
+            const lighterColor = `rgb(${Math.min(255, rgb.r + 50)}, ${Math.min(255, rgb.g + 50)}, ${Math.min(255, rgb.b + 50)})`;
+
+            // Draw rounded rectangle path
+            context.beginPath();
+            context.moveTo(px + radius, py);
+            context.lineTo(px + size - radius, py);
+            context.quadraticCurveTo(px + size, py, px + size, py + radius);
+            context.lineTo(px + size, py + size - radius);
+            context.quadraticCurveTo(px + size, py + size, px + size - radius, py + size);
+            context.lineTo(px + radius, py + size);
+            context.quadraticCurveTo(px, py + size, px, py + size - radius);
+            context.lineTo(px, py + radius);
+            context.quadraticCurveTo(px, py, px + radius, py);
+            context.closePath();
+
+            // Apply gradient fill
+            const gradient = context.createLinearGradient(px, py, px + size, py + size);
+            gradient.addColorStop(0, lighterColor);
+            gradient.addColorStop(1, darkerColor);
+            context.fillStyle = gradient;
+            context.fill();
+
+            // Add inner shadow (simulated with a darker border on one side)
+            context.strokeStyle = darkerColor;
+            context.lineWidth = 2;
+            context.stroke();
+
+            // Add a subtle highlight (lighter border on the other side)
+            context.strokeStyle = lighterColor;
+            context.lineWidth = 1;
+            context.beginPath();
+            context.moveTo(px + radius, py + 1);
+            context.lineTo(px + size - radius, py + 1);
+            context.quadraticCurveTo(px + size - 1, py + 1, px + size - 1, py + radius);
+            context.stroke();
+        }
+
+        /**
+         * Draws the entire game board.
+         */
+        function drawBoard() {
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    if (board[r][c]) {
+                        drawBlock(c, r, board[r][c], ctx);
+                    } else {
+                        ctx.fillStyle = '#000'; // Empty cell color
+                        ctx.fillRect(c * BLOCK_SIZE, r * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+                    }
+                }
+            }
+        }
+
+        /**
+         * Draws the current falling piece.
+         */
+        function drawPiece(piece, context) {
+            piece.shape.forEach((row, r) => {
+                row.forEach((value, c) => {
+                    if (value) {
+                        drawBlock(piece.x + c, piece.y + r, piece.color, context);
+                    }
+                });
+            });
+        }
+
+        /**
+         * Clears the canvas.
+         * @param {CanvasRenderingContext2D} context The canvas rendering context to clear.
+         * @param {number} width The width of the canvas.
+         * @param {number} height The height of the canvas.
+         */
+        function clearCanvas(context, width, height) {
+            context.clearRect(0, 0, width, height);
+        }
+
+        /**
+         * Checks if the current piece can move to a new position.
+         * @param {object} piece The piece to check.
+         * @param {number} offsetX The horizontal offset.
+         * @param {number} offsetY The vertical offset.
+         * @param {Array<Array<number>>} newShape The new shape after rotation (optional).
+         * @returns {boolean} True if the move is valid, false otherwise.
+         */
+        function isValidMove(piece, offsetX, offsetY, newShape) {
+            const shape = newShape || piece.shape;
+            for (let r = 0; r < shape.length; r++) {
+                for (let c = 0; c < shape[r].length; c++) {
+                    if (shape[r][c]) {
+                        const newX = piece.x + c + offsetX;
+                        const newY = piece.y + r + offsetY;
+
+                        // Check boundaries
+                        if (newX < 0 || newX >= COLS || newY >= ROWS) {
+                            return false;
+                        }
+                        // Check collision with existing blocks on the board
+                        if (newY >= 0 && board[newY][newX]) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        /**
+         * Locks the current piece onto the board.
+         */
+        function lockPiece() {
+            currentPiece.shape.forEach((row, r) => {
+                row.forEach((value, c) => {
+                    if (value) {
+                        const boardX = currentPiece.x + c;
+                        const boardY = currentPiece.y + r;
+                        if (boardY < 0) { // Game over if piece locks above the board
+                            gameOver = true;
+                            gameOverNoise.triggerAttackRelease("8n"); // Game over sound
+                            return;
+                        }
+                        board[boardY][boardX] = currentPiece.color;
+                    }
+                });
+            });
+
+            if (gameOver) {
+                endGame();
+                return;
+            }
+
+            // Play a subtle sound when a piece locks
+            synth.triggerAttackRelease("C4", "8n");
+        }
+
+        /**
+         * Clears full lines and updates the score.
+         * This function now coordinates with the line clear animation.
+         */
+        function clearLines() {
+            const linesToClear = [];
+            for (let r = ROWS - 1; r >= 0; r--) {
+                if (board[r].every(cell => cell !== 0)) {
+                    linesToClear.push(r);
+                }
+            }
+
+            if (linesToClear.length > 0) {
+                isAnimatingLineClear = true; // Set flag to prevent input during animation
+                clearInterval(dropInterval); // Pause game drop during animation
+                flashLines(linesToClear, () => {
+                    // This callback runs after the animation finishes
+                    let linesClearedCount = linesToClear.length;
+                    for (const r of linesToClear.sort((a, b) => a - b)) { // Sort to remove from bottom up
+                        board.splice(r, 1);
+                        board.unshift(Array(COLS).fill(0));
+                    }
+
+                    // Score calculation (e.g., 100 for single, 300 for double, 500 for triple, 800 for Tetris)
+                    const scoreMultiplier = [0, 100, 300, 500, 800];
+                    score += scoreMultiplier[linesClearedCount] * level;
+                    scoreDisplay.textContent = score;
+
+                    // Play line clear sound
+                    lineClearSynth.triggerAttackRelease(["C5", "E5", "G5"], "8n");
+
+                    // Increase level
+                    if (score >= level * 1000) { // Adjust level up criteria
+                        level++;
+                        levelDisplay.textContent = level;
+                        showMessageBox(`레벨 ${level} 달성!`, 1500);
+                    }
+
+                    draw(); // Redraw board after lines are actually cleared
+                    isAnimatingLineClear = false; // Reset flag
+                    updateDropInterval(); // Resume game drop
+
+                    // After lines are cleared and animation is done, generate next piece
+                    currentPiece = nextPiece;
+                    nextPiece = generatePiece();
+                    drawNextPiece();
+                    if (!isValidMove(currentPiece, 0, 0)) { // Check for game over immediately after new piece
+                        gameOver = true;
+                        gameOverNoise.triggerAttackRelease("8n");
+                        endGame(); // Call endGame here immediately
+                    }
+                });
+            } else {
+                // No lines to clear, proceed immediately to next piece and game over check
+                currentPiece = nextPiece;
+                nextPiece = generatePiece();
+                drawNextPiece();
+                if (!isValidMove(currentPiece, 0, 0)) { // Check for game over immediately after new piece
+                    gameOver = true;
+                    gameOverNoise.triggerAttackRelease("8n");
+                    endGame(); // Call endGame here immediately
+                }
+            }
+        }
+
+        /**
+         * Plays a flashing animation for cleared lines.
+         * @param {Array<number>} lines The row indices of the lines to flash.
+         * @param {function} callback Function to call after animation completes.
+         */
+        function flashLines(lines, callback) {
+            const flashColor = '#FFFFFF'; // White flash
+            let flashCount = 0;
+            const maxFlashes = 3; // Number of flashes
+            const flashDuration = 100; // Duration of each flash/pause in ms
+
+            function animateFlash() {
+                if (flashCount < maxFlashes * 2) {
+                    // Flash on
+                    if (flashCount % 2 === 0) {
+                        lines.forEach(r => {
+                            for (let c = 0; c < COLS; c++) {
+                                // Only flash existing blocks, not empty cells
+                                if (board[r][c] !== 0) {
+                                    drawBlock(c, r, flashColor, ctx);
+                                }
+                            }
+                        });
+                    } else { // Flash off (draw current board state)
+                        draw(); // Redraw the entire board to show current (non-flashing) state
+                    }
+                    flashCount++;
+                    setTimeout(animateFlash, flashDuration);
+                } else {
+                    // Animation finished, call callback to clear lines and then redraw
+                    callback();
+                }
+            }
+            animateFlash();
+        }
+
+
+        /**
+         * Rotates the current piece clockwise.
+         */
+        function rotatePiece() {
+            const originalShape = currentPiece.shape;
+            const N = originalShape.length;
+            const newShape = Array(N).fill(0).map(() => Array(N).fill(0));
+
+            for (let r = 0; r < N; r++) {
+                for (let c = 0; c < N; c++) {
+                    newShape[c][N - 1 - r] = originalShape[r][c];
+                }
+            }
+
+            // Wall kick logic (simple implementation)
+            const kicks = [
+                [0, 0], [-1, 0], [1, 0], [0, -1], [0, 1] // Try moving left, right, up, down
+            ];
+
+            for (const [dx, dy] of kicks) {
+                if (isValidMove(currentPiece, dx, dy, newShape)) {
+                    currentPiece.shape = newShape;
+                    currentPiece.x += dx;
+                    currentPiece.y += dy;
+                    synth.triggerAttackRelease("D4", "16n"); // Rotation sound
+                    return;
+                }
+            }
+        }
+
+        /**
+         * Handles keyboard input for piece movement.
+         * @param {KeyboardEvent} event The keyboard event.
+         */
+        function handleKeyPress(event) {
+            if (!gameStarted || paused || gameOver || isAnimatingLineClear) return; // Prevent input during animation
+
+            let moved = false;
+            switch (event.key) {
+                case 'ArrowLeft':
+                    if (isValidMove(currentPiece, -1, 0)) {
+                        currentPiece.x--;
+                        moved = true;
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (isValidMove(currentPiece, 1, 0)) {
+                        currentPiece.x++;
+                        moved = true;
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (isValidMove(currentPiece, 0, 1)) {
+                        currentPiece.y++;
+                        moved = true;
+                    } else {
+                        lockPiece();
+                        clearLines(); // This now handles the animation and subsequent logic
+                    }
+                    break;
+                case 'ArrowUp':
+                    rotatePiece();
+                    moved = true; // Rotation counts as a move for sound
+                    break;
+                case ' ': // Spacebar for hard drop
+                    while (isValidMove(currentPiece, 0, 1)) {
+                        currentPiece.y++;
+                    }
+                    lockPiece();
+                    clearLines(); // This now handles the animation and subsequent logic
+                    moved = true; // Hard drop counts as a move for sound
+                    break;
+            }
+            if (moved) {
+                synth.triggerAttackRelease("E4", "32n"); // Movement sound
+                draw(); // Redraw after movement
+            }
+        }
+
+        /**
+         * Updates the game state (piece dropping).
+         */
+        function updateGame() {
+            if (paused || gameOver || isAnimatingLineClear) return; // Prevent update during animation
+
+            if (isValidMove(currentPiece, 0, 1)) {
+                currentPiece.y++;
+            } else {
+                lockPiece();
+                clearLines(); // This now handles the animation and subsequent logic
+            }
+            draw(); // Redraw after update
+
+            if (gameOver) {
+                endGame();
+            }
+        }
+
+        /**
+         * Draws everything on the main game canvas.
+         */
+        function draw() {
+            clearCanvas(ctx, gameCanvas.width, gameCanvas.height);
+            drawBoard();
+            if (currentPiece) {
+                drawPiece(currentPiece, ctx);
+            }
+        }
+
+        /**
+         * Draws the next piece on its dedicated canvas.
+         */
+        function drawNextPiece() {
+            clearCanvas(nextCtx, nextPieceCanvas.width, nextPieceCanvas.height);
+            if (nextPiece) {
+                // Calculate offset to center the piece in the next piece canvas
+                const pieceWidth = nextPiece.shape[0].length;
+                const pieceHeight = nextPiece.shape.length;
+                const offsetX = (nextPieceCanvas.width / BLOCK_SIZE - pieceWidth) / 2;
+                const offsetY = (nextPieceCanvas.height / BLOCK_SIZE - pieceHeight) / 2;
+
+                nextPiece.shape.forEach((row, r) => {
+                    row.forEach((value, c) => {
+                        if (value) {
+                            drawBlock(offsetX + c, offsetY + r, nextPiece.color, nextCtx);
+                        }
+                    });
+                });
+            }
+        }
+
+        /**
+         * Updates the drop interval based on the current level.
+         */
+        function updateDropInterval() {
+            clearInterval(dropInterval);
+            const dropSpeed = Math.max(100, 1000 - (level - 1) * 70); // Faster drop for higher levels, min 100ms
+            dropInterval = setInterval(updateGame, dropSpeed);
+        }
+
+        /**
+         * Starts the game.
+         */
+        function startGame() {
+            if (gameStarted && !gameOver) return; // Prevent multiple starts if already running and not game over
+
+            initBoard();
+            score = 0;
+            level = 1;
+            scoreDisplay.textContent = score;
+            levelDisplay.textContent = level;
+            gameOver = false;
+            paused = false;
+            gameStarted = true;
+            isAnimatingLineClear = false; // Reset animation flag
+
+            // Remove game over overlay if it exists
+            const existingOverlay = document.getElementById('gameOverOverlay');
+            if (existingOverlay) {
+                existingOverlay.remove();
+            }
+
+            currentPiece = generatePiece();
+            nextPiece = generatePiece();
+            drawNextPiece();
+            updateDropInterval();
+            draw();
+
+            startButton.disabled = true;
+            pauseButton.disabled = false;
+            resetButton.disabled = false;
+            pauseButton.textContent = '일시정지';
+            showMessageBox('게임 시작!', 1500);
+        }
+
+        /**
+         * Pauses or resumes the game.
+         */
+        function togglePause() {
+            if (!gameStarted || gameOver) return;
+
+            paused = !paused;
+            if (paused) {
+                clearInterval(dropInterval);
+                pauseButton.textContent = '계속';
+                showMessageBox('게임 일시정지', 1500);
+            } else {
+                updateDropInterval();
+                pauseButton.textContent = '일시정지';
+                showMessageBox('게임 재개', 1500);
+            }
+        }
+
+        /**
+         * Ends the game and displays game over message.
+         */
+        function endGame() {
+            clearInterval(dropInterval);
+            gameStarted = false;
+            pauseButton.disabled = true;
+            startButton.disabled = false;
+            pauseButton.textContent = '일시정지'; // Reset button text
+
+            // Create game over overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'gameOverOverlay';
+            overlay.className = 'game-over-overlay';
+            overlay.innerHTML = `
+                <div class="game-over-text">게임 오버!</div>
+                <button id="restartButtonOverlay" class="control-button">다시 시작</button>
+            `;
+            gameCanvas.parentNode.style.position = 'relative'; // Ensure parent is positioned for absolute overlay
+            gameCanvas.parentNode.insertBefore(overlay, gameCanvas.nextSibling);
+
+            document.getElementById('restartButtonOverlay').addEventListener('click', () => {
+                overlay.remove();
+                startGame();
+            });
+        }
+
+        // Event Listeners
+        document.addEventListener('keydown', handleKeyPress);
+        startButton.addEventListener('click', startGame);
+        pauseButton.addEventListener('click', togglePause);
+        resetButton.addEventListener('click', startGame); // Reset is essentially starting a new game
+
+        // Initial draw on window load
+        window.onload = function () {
+            initBoard();
+            drawBoard();
+            drawNextPiece();
+            resizeCanvas();
+            if (window.innerWidth <= 600) {
+                document.getElementById('mobileControls').style.display = 'flex';
+            }
+        };
+
+        // Handle window resize for responsiveness
+        window.addEventListener('resize', resizeCanvas);
+
+        // 모바일 터치 조작 버튼 이벤트
+        document.getElementById('leftBtn').addEventListener('touchstart', function(e){ e.preventDefault(); moveLeft(); });
+        document.getElementById('rightBtn').addEventListener('touchstart', function(e){ e.preventDefault(); moveRight(); });
+        document.getElementById('rotateBtn').addEventListener('touchstart', function(e){ e.preventDefault(); rotatePiece(); draw(); });
+        document.getElementById('downBtn').addEventListener('touchstart', function(e){ e.preventDefault(); moveDown(); });
+        document.getElementById('dropBtn').addEventListener('touchstart', function(e){ e.preventDefault(); hardDrop(); });
+        // 모바일 조작 함수
+        function moveLeft() {
+            if (gameStarted && !paused && !gameOver && !isAnimatingLineClear && isValidMove(currentPiece, -1, 0)) {
+                currentPiece.x--;
+                synth.triggerAttackRelease("E4", "32n");
+                draw();
+            }
+        }
+        function moveRight() {
+            if (gameStarted && !paused && !gameOver && !isAnimatingLineClear && isValidMove(currentPiece, 1, 0)) {
+                currentPiece.x++;
+                synth.triggerAttackRelease("E4", "32n");
+                draw();
+            }
+        }
+        function moveDown() {
+            if (gameStarted && !paused && !gameOver && !isAnimatingLineClear) {
+                if (isValidMove(currentPiece, 0, 1)) {
+                    currentPiece.y++;
+                    synth.triggerAttackRelease("E4", "32n");
+                    draw();
+                } else {
+                    lockPiece();
+                    clearLines();
+                }
+            }
+        }
+        function hardDrop() {
+            if (gameStarted && !paused && !gameOver && !isAnimatingLineClear) {
+                while (isValidMove(currentPiece, 0, 1)) {
+                    currentPiece.y++;
+                }
+                lockPiece();
+                clearLines();
+                synth.triggerAttackRelease("E4", "32n");
+                draw();
+            }
+        }
+        // 터치 스와이프(좌우/하강/회전)도 지원 (선택사항)
+        let touchStartX = null, touchStartY = null;
+        gameCanvas.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 1) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }
+        });
+        gameCanvas.addEventListener('touchend', function(e) {
+            if (touchStartX === null || touchStartY === null) return;
+            let dx = e.changedTouches[0].clientX - touchStartX;
+            let dy = e.changedTouches[0].clientY - touchStartY;
+            if (Math.abs(dx) > Math.abs(dy)) {
+                if (dx > 30) moveRight();
+                else if (dx < -30) moveLeft();
+            } else {
+                if (dy > 30) moveDown();
+                else if (dy < -30) rotatePiece();
+            }
+            touchStartX = null; touchStartY = null;
+        });
+
+        // 반응형 캔버스 크기 조정 함수
+        function resizeCanvas() {
+            let isMobile = window.innerWidth <= 600;
+            let blockSize = isMobile ? Math.floor(window.innerWidth * 0.98 / COLS) : 30;
+            blockSize = Math.max(16, Math.min(blockSize, 48)); // 모바일에서 더 크게 허용
+            BLOCK_SIZE = blockSize;
+            gameCanvas.width = COLS * BLOCK_SIZE;
+            gameCanvas.height = ROWS * BLOCK_SIZE;
+            nextPieceCanvas.width = BLOCK_SIZE * 4;
+            nextPieceCanvas.height = BLOCK_SIZE * 4;
+            draw();
+            drawNextPiece();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>무무익선 — 비즈니스 캔버스</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 30px;
+            overflow-x: auto;
+        }
+        
+        .canvas-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .canvas-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .canvas-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .canvas-header h1 {
+            font-size: 3em;
+            font-weight: 900;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .canvas-subtitle {
+            font-size: 1.3em;
+            font-weight: 300;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .canvas-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            min-height: 900px;
+            gap: 0;
+        }
+        
+        .canvas-section {
+            border: 1px solid rgba(230, 235, 240, 0.8);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+        }
+        
+        .canvas-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .canvas-section:hover::before {
+            opacity: 1;
+        }
+        
+        .canvas-section:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .section-number {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2em;
+            margin-right: 20px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .section-title {
+            font-weight: 700;
+            font-size: 1.3em;
+            color: #2c3e50;
+            line-height: 1.2;
+        }
+        
+        .section-subtitle {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            font-weight: 400;
+            margin-top: 5px;
+        }
+        
+        .section-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .content-item {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid #3498db;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .content-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateX(5px);
+            border-left-color: #e74c3c;
+        }
+        
+        .content-item .item-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 0.95em;
+        }
+        
+        .content-item .item-detail {
+            font-size: 0.85em;
+            color: #5a6c7d;
+            line-height: 1.4;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .metric {
+            background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            color: #d35400;
+        }
+        
+        /* 각 섹션별 독특한 배경 그라디언트 */
+        .key-partners {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+        }
+        
+        .key-activities {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+        }
+        
+        .key-resources {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+        }
+        
+        .value-propositions {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            grid-row: span 2;
+        }
+        
+        .customer-relationships {
+            background: linear-gradient(135deg, #e17055 0%, #f39c12 100%);
+        }
+        
+        .customer-segments {
+            background: linear-gradient(135deg, #0984e3 0%, #74b9ff 100%);
+        }
+        
+        .channels {
+            background: linear-gradient(135deg, #00b894 0%, #55a3ff 100%);
+        }
+        
+        .cost-structure {
+            background: linear-gradient(135deg, #e84393 0%, #fd79a8 100%);
+        }
+        
+        .revenue-streams {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        }
+        
+        /* 가치 제안 섹션 특별 스타일링 */
+        .value-propositions .section-number {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            box-shadow: 0 8px 20px rgba(0, 184, 148, 0.4);
+        }
+        
+        .value-propositions .content-item {
+            border-left-color: #00b894;
+        }
+        
+        /* 애니메이션 효과 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .canvas-section {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .canvas-section:nth-child(1) { animation-delay: 0.1s; }
+        .canvas-section:nth-child(2) { animation-delay: 0.2s; }
+        .canvas-section:nth-child(3) { animation-delay: 0.3s; }
+        .canvas-section:nth-child(4) { animation-delay: 0.4s; }
+        .canvas-section:nth-child(5) { animation-delay: 0.5s; }
+        .canvas-section:nth-child(6) { animation-delay: 0.6s; }
+        .canvas-section:nth-child(7) { animation-delay: 0.7s; }
+        .canvas-section:nth-child(8) { animation-delay: 0.8s; }
+        .canvas-section:nth-child(9) { animation-delay: 0.9s; }
+        
+        /* 반응형 조정 */
+        @media (max-width: 1400px) {
+            .canvas-grid {
+                min-height: 800px;
+            }
+            
+            .canvas-section {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        <div class="canvas-header">
+            <h1>🧠 뇌울림 4.0</h1>
+            <div class="canvas-subtitle">스마트 자전거 도난방지 솔루션 - 비즈니스 모델 캔버스</div>
+        </div>
+        
+        <div class="canvas-grid">
+            <!-- 첫 번째 행 -->
+            <div class="canvas-section key-partners">
+                <div class="section-header">
+                    <div class="section-number">8</div>
+                    <div>
+                        <div class="section-title">핵심 파트너십</div>
+                        <div class="section-subtitle">Key Partnerships</div>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="content-item">
+                        <div class="item-title">🔧 기술 개발 파트너</div>
+                        <div class="item-detail">• 트레스테크: UWB/블루투스 모듈 설계 및 제조<br>
+                        • 비앤비솔루션: 방수/방진 IP67 케이스 기구설계<br>
+                        • 배터리 최적화 및 저전력 설계 협력</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🏪 유통 네트워크</div>
+                        <div class="item-detail">• 오프라인: 롯데마트, 모토벨로 등 <span class="metric">190개 매장</span><br>
+                        • 온라인: 쿠팡, 11번가, G마켓 입점 완료<br>
+                        • 해외: 아마존 글로벌셀링 파트너십</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">✅ 인증 및 컴플라이언스</div>
+                        <div class="item-detail">• ㈜랩티: KC, FCC, CE 인증 대행<br>
+                        • 무선인증원: 전파 적합성 검증<br>
+                        • 국제표준 ISO27001 정보보안 인증</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">📢 마케팅 에이전시</div>
+                        <div class="item-detail">• 인플루언서: 자전거 유튜버 20명 독점계약<br>
+                        • 광고대행: 네이버, 구글, 페이스북 전문 에이전시<br>
+                        • PR: 언론사 네트워크 및 제품 리뷰 전문사</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="canvas-section key-activities">
+                <div class="section-header">
+                    <div class="section-number">7</div>
+                    <div>
+                        <div class="section-title">핵심 활동</div>
+                        <div class="section-subtitle">Key Activities</div>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="content-item">
+                        <div class="item-title">🚀 R&D 제품 개발</div>
+                        <div class="item-detail">• 하드웨어: UWB 정밀도 향상 (오차범위 30cm→10cm)<br>
+                        • 소프트웨어: 펌웨어 OTA 업데이트 시스템<br>
+                        • 배터리: 6개월→12개월 사용 시간 연장 기술</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🤖 AI 플랫폼 운영</div>
+                        <div class="item-detail">• 머신러닝 모델: 일일 10만건 위치데이터 학습<br>
+                        • 클라우드 인프라: AWS 기반 실시간 처리 시스템<br>
+                        • 앱 개발: iOS/Android 월 2회 정기 업데이트</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">📈 디지털 마케팅</div>
+                        <div class="item-detail">• 콘텐츠: 주 3회 자전거 안전 교육 영상 제작<br>
+                        • 퍼포먼스: 구글/네이버 검색광고 월 500만원 집행<br>
+                        • SNS: 인스타그램 라이브 방송 주 1회 진행</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">📊 데이터 사이언스</div>
+                        <div class="item-detail">• 고객분석: RFM 세그멘테이션 월 1회 실시<br>
+                        • 예측모델: 도난위험지역 히트맵 주간 업데이트<br>
+                        • A/B테스트: 앱 UI/UX 지속적 최적화</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="canvas-section value-propositions">
+                <div class="section-header">
+                    <div class="section-number">2</div>
+                    <div>
+                        <div class="section-title">가치 제안</div>
+                        <div class="section-subtitle">Value Propositions</div>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="content-item">
+                        <div class="item-title">📍 초정밀 실시간 추적</div>
+                        <div class="item-detail">• UWB 기반 <span class="highlight">10cm 오차범위</span> 위치 추적<br>
+                        • 실내/지하 GPS 음영지역도 블루투스로 위치 파악<br>
+                        • 도난 시 <span class="metric">30초 이내</span> 즉시 알림 발송</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🧠 AI 도난 예측 시스템</div>
+                        <div class="item-detail">• 시간대별/지역별 도난패턴 분석으로 <span class="highlight">사전 경고</span><br>
+                        • 95% 정확도의 위험상황 감지 알고리즘<br>
+                        • 날씨, 유동인구, 조명 등 30개 변수 종합 분석</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">📱 원터치 스마트 제어</div>
+                        <div class="item-detail">• <span class="highlight">5m 접근시 자동 해제</span>, 10m 이탈시 자동 잠금<br>
+                        • 음성인식: "뇌울림, 잠금해제" 명령어 지원<br>
+                        • 가족공유: 최대 5명까지 스마트폰 등록 가능</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🤝 소셜 시큐리티 네트워크</div>
+                        <div class="item-detail">• 반경 <span class="metric">1km 내</span> 뇌울림 사용자에게 SOS 알림<br>
+                        • 협력신고 시 포인트 적립 (월 최대 5만원 상당)<br>
+                        • 실시간 채팅으로 목격자-피해자 직접 연결</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🛒 옴니채널 최적화</div>
+                        <div class="item-detail">• 와디즈 펀딩: 40% 할인 + 무료배송<br>
+                        • 스마트스토어: 카카오페이 간편결제 연동<br>
+                        • 아마존: 해외배송 자동화 및 다국어 고객지원</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🔋 장기간 사용 보장</div>
+                        <div class="item-detail">• <span class="highlight">12개월 배터리</span> 지속시간 (업계 최장)<br>
+                        • IP67 방수방진: 폭우, 세차, 겨울철 염화칼슘 OK<br>
+                        • 3년 품질보증 + 무상 A/S 서비스</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="canvas-section customer-relationships">
+                <div class="section-header">
+                    <div class="section-number">4</div>
+                    <div>
+                        <div class="section-title">고객 관계</div>
+                        <div class="section-subtitle">Customer Relationships</div>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="content-item">
+                        <div class="item-title">💬 능동적 커뮤니티 운영</div>
+                        <div class="item-detail">• 월 1회 온라인 간담회 및 제품 로드맵 공유<br>
+                        • 사용자 피드백 48시간 내 검토 후 개발팀 전달<br>
+                        • 베타테스터 50명 운영 (신기능 우선 체험)</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🔔 맞춤형 알림 서비스</div>
+                        <div class="item-detail">• 개인별 라이딩 패턴 분석 후 최적 알림 설정<br>
+                        • 도난위험 높은 시간대 사전 알림 (정확도 92%)<br>
+                        • 배터리 잔량 20% 시 교체 안내 메시지</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🎁 로열티 프로그램</div>
+                        <div class="item-detail">• 와디즈 펀딩 참여자: <span class="highlight">평생 무료 A/S</span><br>
+                        • 조기구매자(1000명): 차세대 제품 50% 할인권<br>
+                        • 추천인 제도: 추천 시 양쪽 모두 3만원 적립금</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🤖 24/7 고객지원</div>
+                        <div class="item-detail">• AI 챗봇: 일반 문의 85% 즉시 해결<br>
+                        • 전담 상담사: 평일 09:00-18:00 실시간 채팅<br>
+                        • 원격지원: TeamViewer 통한 앱 설정 도움</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">📱 맞춤형 앱 경험</div>
+                        <div class="item-detail">• 사용패턴별 대시보드 개인화 (6가지 테마)<br>
+                        • 라이딩 기록 SNS 자동 공유 기능<br>
+                        • 가족 모드: 자녀 자전거 위치 실시간 모니터링</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="canvas-section customer-segments">
+                <div class="section-header">
+                    <div class="section-number">1</div>
+                    <div>
+                        <div class="section-title">고객 세그먼트</div>
+                        <div class="section-subtitle">Customer Segments</div>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="content-item">
+                        <div class="item-title">🚴‍♂️ 프리미엄 자전거 오너</div>
+                        <div class="item-detail">• 200만원 이상 고가 자전거 소유자 <span class="metric">88만 명</span><br>
+                        • 전기자전거(e-bike) 증가세: 연 40% 성장<br>
+                        • 도난보험 가입률 12%로 보안 관심도 높음</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🌟 일상 라이더 (메인 타겟)</div>
+                        <div class="item-detail">• 주 3회 이상 자전거 이용자 <span class="metric">1,330만 명</span><br>
+                        • 연령대: 20-40대 직장인 (72%)<br>
+                        • 월 자전거 관련 지출: 평균 8.5만원</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🏢 도심 통근/통학족</div>
+                        <div class="item-detail">• 서울/부산/대구 도심 자전거 이용자 <span class="metric">520만 명</span><br>
+                        • 따릉이/누비자 등 공유자전거 이용 경험자<br>
+                        • 대학가 캠퍼스 내 자전거 이용 학생</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🏛️ B2B 기관 고객</div>
+                        <div class="item-detail">• 공유자전거 운영사: 따릉이, 누비자 등 15개사<br>
+                        • 지자체: 자전거 정책 담당 부서 (전국 243개)<br>
+                        • 대학교: 캠퍼스 내 자전거 관리 필요 기관</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🚴‍♀️ 레저/스포츠 라이더</div>
+                        <div class="item-detail">• 주말 라이딩 동호회 활동 참여자 <span class="metric">280만 명</span><br>
+                        • MTB, 로드바이크 등 전문 자전거 보유<br>
+                        • 연간 자전거 관련 소비: 평균 150만원</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 두 번째 행 -->
+            <div class="canvas-section key-resources">
+                <div class="section-header">
+                    <div class="section-number">6</div>
+                    <div>
+                        <div class="section-title">핵심 자원</div>
+                        <div class="section-subtitle">Key Resources</div>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="content-item">
+                        <div class="item-title">🔧 핵심 하드웨어 기술</div>
+                        <div class="item-detail">• <span class="highlight">UWB 칩셋</span>: 10cm 정밀도 위치추적<br>
+                        • 6축 자이로/가속도 센서: 진동패턴 분석<br>
+                        • LoRa 통신모듈: 3km 장거리 데이터 전송</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🧠 독자적 AI 알고리즘</div>
+                        <div class="item-detail">• 도난패턴 학습모델: 95% 예측 정확도<br>
+                        • 실시간 위험도 스코링 시스템<br>
+                        • <span class="metric">일일 10만건</span> 위치데이터 처리 능력</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">💻 소프트웨어 개발팀</div>
+                        <div class="item-detail">• iOS/Android 네이티브 개발 역량<br>
+                        • AWS 클라우드 인프라 운영 전문성<br>
+                        • 백엔드 API 개발 및 데이터베이스 관리</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🌐 마케팅 인플루언서 풀</div>
+                        <div class="item-detail">• 자전거 전문 유튜버 <span class="metric">20명 전속계약</span><br>
+                        • 총 구독자 수: <span class="metric">누적 40만+</span><br>
+                        • 인스타그램 마이크로 인플루언서 150명</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">📋 인증 및 특허</div>
+                        <div class="item-detail">• KC, FCC, CE 전자파 적합성 인증 보유<br>
+                        • 도난방지 알고리즘 특허 출원 (3건)<br>
+                        • ISO27001 정보보안 관리체계 인증</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="canvas-section channels">
+                <div class="section-header">
+                    <div class="section-number">3</div>
+                    <div>
+                        <div class="section-title">채널</div>
+                        <div class="section-subtitle">Channels</div>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="content-item">
+                        <div class="item-title">🏪 오프라인 리테일</div>
+                        <div class="item-detail">• 대형마트: 롯데마트 전국 112개점 입점<br>
+                        • 전문매장: 모토벨로, 자이언트 등 <span class="metric">190개 매장</span><br>
+                        • 백화점: 신세계/롯데백화점 스포츠용품 코너</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">💻 이커머스 플랫폼</div>
+                        <div class="item-detail">• 자사몰: 스마트스토어 월 평균 1,200건 주문<br>
+                        • 오픈마켓: 쿠팡, 11번가, G마켓 동시 운영<br>
+                        • 해외진출: 아마존 글로벌셀링 (미국/일본)</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">📱 소셜미디어 마케팅</div>
+                        <div class="item-detail">• 유튜브: 자전거 리뷰어 20명과 협업<br>
+                        • 인스타그램: 해시태그 광고 월 200만원 집행<br>
+                        • 틱톡: 자전거 라이프스타일 숏폼 콘텐츠</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">👥 커뮤니티 기반 마케팅</div>
+                        <div class="item-detail">• 자출사(자전거로 출근하는 사람들) <span class="metric">80만 회원</span><br>
+                        • 네이버 카페: 자전거 동호회 15개 커뮤니티<br>
+                        • 오프라인 이벤트: 라이딩 클럽 정기 모임 참여</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🎯 크라우드펀딩</div>
+                        <div class="item-detail">• 와디즈: 목표 대비 <span class="highlight">478% 달성</span> (23억원)<br>
+                        • 킥스타터: 해외 크라우드펀딩 진행 예정<br>
+                        • 체험단: 100명 베타테스터 운영</div>
+                    </div>
+                </div>뮤니티</div>
+                        <div class="item-detail">자출사 등 <span class="metric">80만 회원</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="canvas-section cost-structure">
+                <div class="section-header">
+                    <div class="section-number">9</div>
+                    <div>
+                        <div class="section-title">비용 구조</div>
+                        <div class="section-subtitle">Cost Structure</div>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="content-item">
+                        <div class="item-title">🏭 개발/제조</div>
+                        <div class="item-detail">제품 개발 및 양산 비용</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">💻 IT 운영</div>
+                        <div class="item-detail">앱 및 서버 운영 비용</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">📈 마케팅</div>
+                        <div class="item-detail"><span class="highlight">SNS, 체험단, SEO</span> 광고비</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🚚 운영</div>
+                        <div class="item-detail">고객지원, 배송, AS 비용</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🤝 파트너</div>
+                        <div class="item-detail">커미션 및 유통 수수료</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="canvas-section revenue-streams">
+                <div class="section-header">
+                    <div class="section-number">5</div>
+                    <div>
+                        <div class="section-title">수익원</div>
+                        <div class="section-subtitle">Revenue Streams</div>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="content-item">
+                        <div class="item-title">📱 제품 판매</div>
+                        <div class="item-detail">스마트 도난방지 기기 <span class="highlight">뇌울림 4.0</span></div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">💰 SaaS 구독</div>
+                        <div class="item-detail">도난예측 AI 플랫폼 <span class="metric">월 9,900원</span></div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">🏢 B2B 공급</div>
+                        <div class="item-detail">기업/지자체 대상 대량 공급</div>
+                    </div>
+                    <div class="content-item">
+                        <div class="item-title">📊 부가 수익</div>
+                        <div class="item-detail">광고 및 데이터 분석 기반 (예정)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

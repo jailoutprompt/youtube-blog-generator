@@ -29,3 +29,16 @@ export interface TranscriptResult {
   text: string;
   source: 'subtitle' | 'whisper' | 'mock';
 }
+
+export interface EbookOutline {
+  title: string;
+  subtitle: string;
+  chapterOrder: number[];
+  chapterTitles: string[];
+  introDirection: string;
+  conclusionDirection: string;
+}
+
+export interface EbookChapterResult {
+  content: string;
+}

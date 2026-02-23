@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlogBot 데모 — 임팩트 그래디언트</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #000000;
+  --bg-card: #0d0d14;
+  --bg-elevated: #111119;
+  --text: #ededed;
+  --text-secondary: #888;
+  --text-muted: #555;
+  --blue: #3b82f6;
+  --purple: #8b5cf6;
+  --pink: #ec4899;
+  --green: #22c55e;
+  --border: rgba(255,255,255,0.06);
+  --gradient: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+  --gradient-subtle: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1), rgba(236,72,153,0.1));
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Pretendard Variable', -apple-system, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── Navbar ── */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 56px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 800; font-size: 16px; color: var(--text);
+  text-decoration: none;
+}
+.nav-logo-icon {
+  width: 24px; height: 24px; border-radius: 6px;
+  background: var(--gradient);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 900; color: #fff;
+}
+.nav-links { display: flex; align-items: center; gap: 8px; }
+.nav-links a {
+  font-size: 13px; color: var(--text-secondary); text-decoration: none;
+  padding: 6px 14px; border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+}
+.nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+.nav-cta {
+  padding: 7px 18px; border-radius: 8px; border: none;
+  background: #fff; color: #000;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+}
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  overflow: hidden;
+}
+/* Mesh gradient bg */
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(59,130,246,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 30% 60%, rgba(139,92,246,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 70% 70%, rgba(236,72,153,0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+/* Grid lines */
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black, transparent);
+  pointer-events: none;
+}
+
+.hero h1 {
+  font-size: clamp(40px, 6vw, 68px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  position: relative;
+  letter-spacing: -0.02em;
+}
+.hero h1 .glow {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .subtitle {
+  font-size: 17px; color: var(--text-secondary);
+  max-width: 440px; line-height: 1.7;
+  margin-bottom: 48px;
+  position: relative;
+}
+
+.hero-input-wrap {
+  width: 100%; max-width: 560px;
+  display: flex; align-items: center;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03);
+  padding: 5px 5px 5px 18px;
+  position: relative;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.hero-input-wrap:focus-within {
+  border-color: rgba(139,92,246,0.5);
+  box-shadow: 0 0 40px rgba(139,92,246,0.1);
+}
+.hero-input-wrap input {
+  flex: 1; background: none; border: none; outline: none;
+  font-size: 14px; color: var(--text); font-family: inherit;
+}
+.hero-input-wrap input::placeholder { color: var(--text-muted); }
+.hero-input-wrap button {
+  padding: 11px 24px; border-radius: 8px; border: none;
+  background: #fff; color: #000;
+  font-size: 13px; font-weight: 800; cursor: pointer; font-family: inherit;
+  transition: opacity 0.2s;
+}
+.hero-input-wrap button:hover { opacity: 0.9; }
+
+.hero-outputs {
+  display: flex; gap: 10px; margin-top: 28px;
+  position: relative;
+}
+.hero-output-tag {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 100px;
+  border: 1px solid var(--border);
+  font-size: 12px; color: var(--text-secondary);
+  background: rgba(255,255,255,0.02);
+}
+.hero-output-tag .check { color: var(--green); font-weight: 700; }
+
+/* ── Output types ── */
+section { padding: 100px 24px; position: relative; }
+.section-container { max-width: 1000px; margin: 0 auto; }
+
+.outputs-section { }
+.outputs-header { text-align: center; margin-bottom: 64px; }
+.outputs-label {
+  font-size: 12px; font-weight: 700; color: var(--blue);
+  text-transform: uppercase; letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+.outputs-title {
+  font-size: clamp(24px, 3.5vw, 38px);
+  font-weight: 800; letter-spacing: -0.01em;
+}
+
+.outputs-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--border);
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.output-cell {
+  background: var(--bg-card);
+  padding: 36px 28px;
+  transition: background 0.3s;
+}
+.output-cell:hover { background: var(--bg-elevated); }
+.output-cell .emoji {
+  font-size: 28px; margin-bottom: 16px;
+  display: block;
+}
+.output-cell h3 {
+  font-size: 16px; font-weight: 700; margin-bottom: 8px;
+}
+.output-cell p {
+  font-size: 13px; color: var(--text-secondary); line-height: 1.7;
+}
+.output-cell .stat {
+  margin-top: 16px;
+  font-size: 24px; font-weight: 800;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Revenue Calculator ── */
+.calc-section {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+}
+.calc-container {
+  max-width: 700px; margin: 0 auto;
+  text-align: center;
+}
+.calc-label {
+  font-size: 12px; font-weight: 700; color: var(--green);
+  text-transform: uppercase; letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+.calc-title {
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: 800; margin-bottom: 12px;
+}
+.calc-desc {
+  font-size: 14px; color: var(--text-secondary);
+  margin-bottom: 48px;
+}
+
+.calc-slider-wrap {
+  margin-bottom: 48px;
+}
+.calc-slider-label {
+  font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;
+}
+.calc-slider-value {
+  font-size: 48px; font-weight: 900; margin-bottom: 16px;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.calc-slider-value span { font-size: 20px; }
+input[type=range] {
+  -webkit-appearance: none; width: 100%; max-width: 400px;
+  height: 4px; border-radius: 2px;
+  background: rgba(255,255,255,0.1);
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; cursor: pointer;
+  box-shadow: 0 0 12px rgba(255,255,255,0.3);
+}
+
+.calc-results {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--border);
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+.calc-result-cell {
+  background: var(--bg);
+  padding: 24px 16px;
+  text-align: center;
+}
+.calc-result-cell .num {
+  font-size: 28px; font-weight: 800;
+  margin-bottom: 4px;
+}
+.calc-result-cell .num.green { color: var(--green); }
+.calc-result-cell .num.blue { color: var(--blue); }
+.calc-result-cell .num.purple { color: var(--purple); }
+.calc-result-cell .label {
+  font-size: 12px; color: var(--text-muted);
+}
+
+.calc-total {
+  padding: 24px 32px;
+  border-radius: 12px;
+  background: var(--gradient-subtle);
+  border: 1px solid rgba(139,92,246,0.15);
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.calc-total .icon { font-size: 24px; }
+.calc-total .amount {
+  font-size: 36px; font-weight: 900;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.calc-total .suffix {
+  font-size: 14px; color: var(--text-secondary);
+}
+
+.calc-footnote {
+  margin-top: 16px;
+  font-size: 11px; color: var(--text-muted);
+}
+
+/* ── Live Feed ── */
+.feed-section { }
+.feed-container {
+  max-width: 700px; margin: 0 auto;
+  text-align: center;
+}
+.feed-label {
+  font-size: 12px; font-weight: 700; color: var(--pink);
+  text-transform: uppercase; letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+.feed-title {
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: 800; margin-bottom: 48px;
+}
+
+.feed-list {
+  display: flex; flex-direction: column; gap: 1px;
+  background: var(--border);
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+.feed-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px;
+  background: var(--bg-card);
+  animation: feedSlide 0.5s ease-out;
+}
+@keyframes feedSlide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.feed-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse2 2s infinite;
+}
+@keyframes pulse2 {
+  0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
+}
+.feed-dot.green { background: var(--green); }
+.feed-dot.blue { background: var(--blue); }
+.feed-dot.purple { background: var(--purple); }
+.feed-dot.pink { background: var(--pink); }
+.feed-content { flex: 1; }
+.feed-content .title {
+  font-size: 13px; font-weight: 600; margin-bottom: 2px;
+}
+.feed-content .result {
+  font-size: 12px; color: var(--text-secondary);
+}
+.feed-time {
+  font-size: 11px; color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ── CTA ── */
+.cta-section {
+  min-height: 50vh;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(59,130,246,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 40% 60%, rgba(139,92,246,0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+.cta-section h2 {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 900; margin-bottom: 12px;
+  position: relative;
+}
+.cta-section p {
+  font-size: 15px; color: var(--text-secondary);
+  margin-bottom: 36px;
+  position: relative;
+}
+.cta-btn {
+  display: inline-block;
+  padding: 16px 48px; border-radius: 12px; border: none;
+  background: #fff; color: #000;
+  font-size: 16px; font-weight: 800; cursor: pointer;
+  font-family: inherit;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255,255,255,0.1);
+}
+
+footer {
+  padding: 40px 24px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 12px; color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .nav-links a:not(.nav-cta-link) { display: none; }
+  .outputs-grid { grid-template-columns: 1fr; }
+  .calc-results { grid-template-columns: 1fr; }
+  .hero-outputs { flex-wrap: wrap; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">B</div>
+    BlogBot
+  </a>
+  <div class="nav-links">
+    <a href="#outputs">기능</a>
+    <a href="#calc">수익</a>
+    <a href="#feed">실시간</a>
+    <button class="nav-cta" style="margin-left:12px;">시작하기</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <h1>
+    YouTube URL<br>
+    <span class="glow">하나면 끝.</span>
+  </h1>
+  <p class="subtitle">
+    블로그 · 전자책 · 스크립트<br>
+    AI가 3분 만에 만들어드립니다.
+  </p>
+
+  <div class="hero-input-wrap">
+    <input type="text" placeholder="https://youtube.com/watch?v=...">
+    <button>생성 →</button>
+  </div>
+
+  <div class="hero-outputs">
+    <div class="hero-output-tag"><span class="check">✓</span> 블로그 글</div>
+    <div class="hero-output-tag"><span class="check">✓</span> 전자책</div>
+    <div class="hero-output-tag"><span class="check">✓</span> SEO 태그</div>
+    <div class="hero-output-tag"><span class="check">✓</span> 요약본</div>
+  </div>
+</section>
+
+<!-- Outputs -->
+<section class="outputs-section" id="outputs">
+  <div class="section-container">
+    <div class="outputs-header">
+      <div class="outputs-label">Outputs</div>
+      <div class="outputs-title">URL 하나로 만들 수 있는 것들</div>
+    </div>
+
+    <div class="outputs-grid">
+      <div class="output-cell">
+        <span class="emoji">📝</span>
+        <h3>SEO 블로그</h3>
+        <p>5가지 톤 × 5가지 템플릿. 검색 최적화된 3,000~5,000자 블로그 글.</p>
+        <div class="stat">3분</div>
+      </div>
+      <div class="output-cell">
+        <span class="emoji">📚</span>
+        <h3>전자책</h3>
+        <p>영상 여러 개를 선택해 목차, 서론, 결론 포함 전자책 자동 생성.</p>
+        <div class="stat">PDF</div>
+      </div>
+      <div class="output-cell">
+        <span class="emoji">📋</span>
+        <h3>스크립트 추출</h3>
+        <p>채널 URL로 전체 영상 스크립트 일괄 추출. 전자책의 원재료.</p>
+        <div class="stat">128+</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Revenue Calculator -->
+<section class="calc-section" id="calc">
+  <div class="calc-container">
+    <div class="calc-label">Revenue Simulator</div>
+    <div class="calc-title">수익 시뮬레이션</div>
+    <div class="calc-desc">영상 개수를 조절하면 예상 월 수익을 확인할 수 있습니다.</div>
+
+    <div class="calc-slider-wrap">
+      <div class="calc-slider-label">보유 영상 수</div>
+      <div class="calc-slider-value" id="videoCount">30<span>개</span></div>
+      <input type="range" id="videoSlider" min="5" max="100" value="30" step="5">
+    </div>
+
+    <div class="calc-results">
+      <div class="calc-result-cell">
+        <div class="num blue" id="blogCount">30</div>
+        <div class="label">블로그 글</div>
+      </div>
+      <div class="calc-result-cell">
+        <div class="num purple" id="ebookCount">3</div>
+        <div class="label">전자책</div>
+      </div>
+      <div class="calc-result-cell">
+        <div class="num green" id="timeSaved">1.5</div>
+        <div class="label">절약 시간 (시간)</div>
+      </div>
+    </div>
+
+    <div class="calc-total">
+      <div class="icon">💰</div>
+      <div>
+        <div class="amount" id="totalRevenue">₩119,700</div>
+        <div class="suffix">예상 월 수익</div>
+      </div>
+    </div>
+
+    <div class="calc-footnote">
+      * 블로그 글당 월 평균 ₩3,000 (광고 수익), 전자책 권당 ₩9,900 기준 추정치
+    </div>
+  </div>
+</section>
+
+<!-- Live Feed -->
+<section class="feed-section" id="feed">
+  <div class="feed-container">
+    <div class="feed-label">Live Activity</div>
+    <div class="feed-title">지금 이 순간에도 만들어지고 있습니다</div>
+
+    <div class="feed-list" id="feedList">
+      <div class="feed-item">
+        <div class="feed-dot green"></div>
+        <div class="feed-content">
+          <div class="title">"2024 비트코인 전망 완벽정리"</div>
+          <div class="result">→ 블로그 3,241자 + 태그 8개 생성</div>
+        </div>
+        <div class="feed-time">방금 전</div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-dot blue"></div>
+        <div class="feed-content">
+          <div class="title">"초보 투자자를 위한 ETF 가이드"</div>
+          <div class="result">→ 전자책 챕터 5개 + PDF 생성</div>
+        </div>
+        <div class="feed-time">2분 전</div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-dot purple"></div>
+        <div class="feed-content">
+          <div class="title">"다이어트 식단 브이로그"</div>
+          <div class="result">→ 블로그 4,102자 + 요약본 생성</div>
+        </div>
+        <div class="feed-time">5분 전</div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-dot pink"></div>
+        <div class="feed-content">
+          <div class="title">"영어 회화 30일 챌린지"</div>
+          <div class="result">→ 전자책 8챕터 + 서론/결론 생성</div>
+        </div>
+        <div class="feed-time">8분 전</div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-dot green"></div>
+        <div class="feed-content">
+          <div class="title">"프리랜서 월 500 버는 법"</div>
+          <div class="result">→ 블로그 3,892자 + SEO 최적화</div>
+        </div>
+        <div class="feed-time">12분 전</div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-dot blue"></div>
+        <div class="feed-content">
+          <div class="title">"@투자의정석" 채널</div>
+          <div class="result">→ 47개 영상 스크립트 일괄 추출</div>
+        </div>
+        <div class="feed-time">15분 전</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-bg"></div>
+  <div class="section-container">
+    <h2>시작하세요. 무료입니다.</h2>
+    <p>첫 3회 생성은 완전 무료. 카드 등록 없이.</p>
+    <button class="cta-btn">지금 바로 시작하기 →</button>
+  </div>
+</section>
+
+<footer>
+  <p>© 2024 BlogBot</p>
+</footer>
+
+<script>
+const slider = document.getElementById('videoSlider');
+const videoCount = document.getElementById('videoCount');
+const blogCount = document.getElementById('blogCount');
+const ebookCount = document.getElementById('ebookCount');
+const timeSaved = document.getElementById('timeSaved');
+const totalRevenue = document.getElementById('totalRevenue');
+
+slider.addEventListener('input', () => {
+  const v = parseInt(slider.value);
+  videoCount.innerHTML = v + '<span>개</span>';
+  blogCount.textContent = v;
+  const ebooks = Math.floor(v / 10);
+  ebookCount.textContent = ebooks;
+  const hours = (v * 0.05).toFixed(1);
+  timeSaved.textContent = hours;
+  const rev = v * 3000 + ebooks * 9900;
+  totalRevenue.textContent = '₩' + rev.toLocaleString();
+});
+
+// Simulate live feed
+const feedData = [
+  { title: '"주식 초보 가이드 총정리"', result: '→ 블로그 3,567자 + 태그 7개 생성', color: 'green' },
+  { title: '"노코드로 앱 만들기"', result: '→ 튜토리얼 블로그 5,201자 생성', color: 'purple' },
+  { title: '"@부동산스터디" 채널', result: '→ 62개 영상 스크립트 추출', color: 'blue' },
+  { title: '"3개월 만에 영어 마스터"', result: '→ 전자책 6챕터 + PDF 생성', color: 'pink' },
+  { title: '"ChatGPT 활용법 50가지"', result: '→ 블로그 4,330자 + 요약본 생성', color: 'green' },
+];
+
+let feedIdx = 0;
+setInterval(() => {
+  const list = document.getElementById('feedList');
+  const d = feedData[feedIdx % feedData.length];
+  const item = document.createElement('div');
+  item.className = 'feed-item';
+  item.innerHTML = `
+    <div class="feed-dot ${d.color}"></div>
+    <div class="feed-content">
+      <div class="title">${d.title}</div>
+      <div class="result">${d.result}</div>
+    </div>
+    <div class="feed-time">방금 전</div>
+  `;
+  list.insertBefore(item, list.firstChild);
+  if (list.children.length > 8) list.removeChild(list.lastChild);
+  feedIdx++;
+}, 5000);
+</script>
+
+</body>
+</html>

@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BlogBot - YouTube 요약</title>
+  <title>BlogBot - YouTube to Blog</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236663FD'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='white'>B</text></svg>">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
   <style>
@@ -454,330 +455,39 @@
     .r-btn.primary:hover { filter: brightness(0.95); }
     .r-btn.copied { border-color: #22c55e; color: #16a34a; }
 
-    /* Result Body */
-    .result-body {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    /* Left Panel */
-    .panel-left {
-      width: 440px;
-      min-width: 380px;
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      background: var(--bg);
-      flex-shrink: 0;
-    }
-
-    /* YouTube Card */
-    .yt-card {
-      margin: 16px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-    .yt-card .video-wrap {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16/9;
-      background: #000;
-    }
-    .yt-card iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    .yt-info {
-      padding: 14px 16px;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-    }
-    .yt-avatar {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--bg-light);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-    .yt-details { flex: 1; }
-    .yt-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-primary);
-      line-height: 1.4;
-      margin-bottom: 4px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .yt-meta {
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-
-    /* Script Button */
-    .script-btn-wrap {
-      padding: 0 16px 12px;
-      flex-shrink: 0;
-    }
-    .script-btn {
-      width: 100%;
-      padding: 9px 16px;
-      border: 1px solid var(--border);
-      border-radius: 1000px;
-      background: var(--bg);
-      font-size: 13px;
-      color: var(--text-primary);
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 500;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    .script-btn:hover { background: var(--bg-light); }
-    .script-btn svg { width: 14px; height: 14px; }
-
-    /* Transcript Panel */
-    .transcript-panel {
+    /* ── Single-Column Result Layout ── */
+    .result-scroll {
       flex: 1;
       overflow-y: auto;
-      overscroll-behavior: contain;
-      padding: 0;
-      display: none;
+      overflow-x: hidden;
     }
-    .transcript-panel.show { display: block; }
-    .transcript-panel::-webkit-scrollbar { width: 4px; }
-    .transcript-panel::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
-    .transcript-line {
-      padding: 8px 16px;
-      font-size: 14px;
-      line-height: 1.6;
-      color: var(--text-muted);
-      border-left: 3px solid transparent;
-      transition: all 0.2s;
-      cursor: pointer;
+    .result-scroll::-webkit-scrollbar { width: 5px; }
+    .result-scroll::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 5px; }
+    .result-container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
     }
-    .transcript-line:hover { background: var(--bg-light); }
-    .transcript-line.active {
-      border-left-color: var(--accent);
+
+    /* Title Area */
+    .result-title {
+      font-size: 32px;
+      font-weight: 800;
       color: var(--text-primary);
-      background: #F5F3FF;
-    }
-
-    /* Right Panel */
-    .panel-right {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      background: var(--bg);
-    }
-
-    /* Template Tabs */
-    .template-bar {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 12px 28px;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-      overflow-x: auto;
-    }
-    .tmpl-tab {
-      padding: 7px 16px;
-      border: 1px solid var(--border);
-      border-radius: 1000px;
-      background: var(--bg);
-      font-size: 13px;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 500;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-    .tmpl-tab:hover { border-color: #ccc; color: var(--text-primary); }
-    .tmpl-tab.active {
-      background: var(--text-primary);
-      color: var(--bg);
-      border-color: var(--text-primary);
-    }
-
-    /* Content Area */
-    .content-scroll {
-      flex: 1;
-      overflow-y: auto;
-      padding: 36px 60px 60px;
-      max-width: 728px;
-    }
-    .content-scroll::-webkit-scrollbar { width: 5px; }
-    .content-scroll::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 5px; }
-
-    .content-pane { display: none; }
-    .content-pane.active { display: block; }
-
-    /* Blog Content Styles */
-    .note-title {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--text-primary);
-      line-height: 1.4;
-      margin-bottom: 28px;
-    }
-    .note-body {
-      font-size: 16px;
-      line-height: 1.8;
-      color: #3F3F46;
-    }
-    .note-body h1 {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin: 36px 0 14px;
-      line-height: 1.5;
-    }
-    .note-body h2 {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin: 32px 0 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
-      line-height: 1.5;
-    }
-    .note-body h3 {
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin: 24px 0 10px;
-    }
-    .note-body h1:first-child,
-    .note-body h2:first-child { margin-top: 0; }
-    .note-body p { margin-bottom: 14px; }
-    .note-body strong { color: var(--text-primary); font-weight: 600; }
-    .note-body ul, .note-body ol {
-      margin: 12px 0;
-      padding-left: 24px;
-    }
-    .note-body li {
-      margin-bottom: 6px;
-      line-height: 1.7;
-    }
-    .note-body blockquote {
-      margin: 16px 0;
-      padding: 12px 16px;
-      border-left: 3px solid var(--accent);
-      background: #F5F3FF;
-      border-radius: 0 8px 8px 0;
-      color: #52525B;
-      font-size: 15px;
-    }
-
-    /* Outline (Timeline) Styles */
-    .timeline-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-    .timeline-item {
-      display: flex;
-      gap: 16px;
-      padding: 20px 0;
-      border-bottom: 1px solid var(--bg-light);
-    }
-    .timeline-item:last-child { border-bottom: none; }
-    .timeline-num {
-      width: 32px;
-      height: 32px;
-      background: var(--bg-light);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--accent);
-      flex-shrink: 0;
-    }
-    .timeline-content {
-      flex: 1;
-    }
-    .timeline-title {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-primary);
-      line-height: 1.5;
-      margin-bottom: 4px;
-    }
-    .timeline-expand {
-      margin-top: 10px;
-      width: 100%;
-      padding: 8px;
-      background: var(--primary);
-      border: none;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #000;
-      cursor: pointer;
-      font-family: inherit;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      transition: filter 0.2s;
-    }
-    .timeline-expand:hover { filter: brightness(0.95); }
-
-    /* Summary Styles */
-    .summary-card {
-      background: var(--bg-light);
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 20px;
-    }
-    .summary-card-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--accent);
+      line-height: 1.35;
       margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      letter-spacing: -0.02em;
     }
-    .summary-card-body {
-      font-size: 15px;
-      line-height: 1.8;
-      color: #3F3F46;
+    .result-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 16px;
     }
-    .summary-card-body ul {
-      padding-left: 20px;
-      margin: 8px 0;
-    }
-    .summary-card-body li {
-      margin-bottom: 6px;
-    }
-
-    /* Tags */
-    .tag-list {
+    .result-tags {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      margin-top: 16px;
       margin-bottom: 24px;
     }
     .tag-badge {
@@ -790,13 +500,367 @@
       font-weight: 500;
     }
 
-    /* Subtitle */
-    .note-subtitle {
-      font-size: 16px;
-      color: var(--text-secondary);
-      line-height: 1.5;
-      margin-top: -20px;
+    /* Video Embed (collapsible) */
+    .result-video {
+      margin-bottom: 28px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .result-video-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #000;
+    }
+    .result-video-wrap.collapsed { display: none; }
+    .result-video-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .result-video-toggle {
+      width: 100%;
+      padding: 10px;
+      background: var(--bg-light);
+      border: none;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    .result-video-toggle:hover { background: var(--bg-hover); }
+    .result-video-toggle svg { width: 14px; height: 14px; }
+
+    /* Model Toggle Badge */
+    .model-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: var(--bg-light);
+      border-radius: 1000px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .model-toggle-value {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* Primary Tabs (pill style, Row 1) */
+    .primary-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 4px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .ptab {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 1000px;
+      background: var(--bg-light);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .ptab:hover { color: var(--text-primary); background: #EEEEFF; }
+    .ptab.active { background: #F5F3FF; color: var(--accent); }
+
+    /* Secondary Tabs (underline style, Row 2) */
+    .secondary-tabs {
+      display: flex;
+      gap: 20px;
+      padding: 12px 0;
       margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .stab {
+      padding: 4px 0;
+      border: none;
+      background: none;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      position: relative;
+      transition: color 0.2s;
+    }
+    .stab:hover { color: var(--text-primary); }
+    .stab.active { color: var(--text-primary); font-weight: 600; }
+    .stab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -13px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 1px;
+    }
+
+    /* Tab Content */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Key Points (Lilys Q&A style) */
+    .key-points-section { margin-bottom: 32px; }
+    .key-point {
+      display: flex;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-light);
+    }
+    .key-point:last-child { border-bottom: none; }
+    .key-point-bullet {
+      flex-shrink: 0;
+      width: 8px;
+      height: 8px;
+      margin-top: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .key-point-text {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-primary);
+    }
+    .key-point-text strong { font-weight: 700; }
+
+    /* Table of Contents */
+    .toc-section {
+      margin-bottom: 32px;
+      padding: 20px 24px;
+      background: var(--bg-light);
+      border-radius: 12px;
+    }
+    .toc-heading {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+    .toc-list { display: flex; flex-direction: column; gap: 8px; }
+    .toc-item {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      cursor: pointer;
+      transition: color 0.2s;
+      padding: 2px 0;
+    }
+    .toc-item:hover .toc-item-title { color: var(--accent); }
+    .toc-item-num {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      min-width: 28px;
+    }
+    .toc-item-title {
+      font-size: 14px;
+      color: var(--text-primary);
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    /* Summary Box */
+    .summary-box {
+      margin-bottom: 32px;
+      padding: 20px 24px;
+      background: #F5F3FF;
+      border-radius: 12px;
+      border-left: 4px solid var(--accent);
+    }
+    .summary-box-content {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #3F3F46;
+    }
+    .summary-box-content strong { color: var(--text-primary); font-weight: 700; }
+    .summary-box-content p { margin-bottom: 8px; }
+    .summary-box-content p:last-child { margin-bottom: 0; }
+
+    /* Content Sections (numbered headers) */
+    .content-section { margin-bottom: 40px; }
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--text-primary);
+    }
+    .section-number {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+    .section-body {
+      font-size: 16px;
+      line-height: 1.85;
+      color: #3F3F46;
+    }
+    .section-body p { margin-bottom: 14px; }
+    .section-body strong { color: var(--text-primary); font-weight: 600; }
+    .section-body ul, .section-body ol { margin: 12px 0; padding-left: 24px; }
+    .section-body li { margin-bottom: 6px; line-height: 1.7; }
+    .section-body h3 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 24px 0 10px;
+    }
+    .section-body blockquote {
+      margin: 16px 0;
+      padding: 12px 16px;
+      border-left: 3px solid var(--accent);
+      background: #F5F3FF;
+      border-radius: 0 8px 8px 0;
+      color: #52525B;
+      font-size: 15px;
+    }
+
+    /* Section Thumbnail (Lilys-style inline video frame) */
+    .section-thumb {
+      margin-bottom: 16px;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      aspect-ratio: 16/9;
+      background: #000;
+    }
+    .section-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.45) blur(1px);
+    }
+    .section-thumb-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px 14px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.75));
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-thumb-play {
+      width: 32px;
+      height: 32px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .section-thumb-play svg { width: 12px; height: 12px; }
+    .section-thumb-caption {
+      font-size: 12px;
+      color: #fff;
+      font-weight: 500;
+      line-height: 1.4;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+    .section-thumb-badge {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-thumb-badge-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(102,99,253,0.85);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .section-thumb-badge-icon svg { width: 22px; height: 22px; }
+    .section-thumb-badge-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+      letter-spacing: 0.5px;
+    }
+    .section-thumb-ts {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.8);
+      font-weight: 500;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    }
+    .section-thumb-ts svg { width: 10px; height: 10px; }
+
+    /* Script Tab */
+    .script-source-badge { margin-bottom: 16px; }
+    .script-body { font-size: 15px; line-height: 1.8; color: var(--text-muted); }
+    .script-line { padding: 8px 0; border-bottom: 1px solid var(--bg-light); }
+
+    /* Key Report Tab */
+    .key-outline { display: flex; flex-direction: column; }
+    .key-outline-item {
+      display: flex;
+      gap: 14px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--bg-light);
+    }
+    .key-outline-item:last-child { border-bottom: none; }
+    .key-outline-num {
+      width: 32px;
+      height: 32px;
+      background: #F5F3FF;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .key-outline-text {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.5;
+      align-self: center;
     }
 
     /* Options Row */
@@ -984,21 +1048,805 @@
       font-weight: 500;
     }
 
+    /* ═══════════════════════════════════════════ */
+    /* ══ Channel Script Extractor Page         ══ */
+    /* ═══════════════════════════════════════════ */
+    .channel-page {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 50;
+      flex-direction: column;
+    }
+    .channel-page.active { display: flex; }
+
+    .channel-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .channel-scroll::-webkit-scrollbar { width: 5px; }
+    .channel-scroll::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 5px; }
+
+    .channel-container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+    }
+
+    /* Channel Input */
+    .ch-input-wrap {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .ch-input-field {
+      flex: 1;
+      position: relative;
+    }
+    .ch-input-field svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      width: 16px;
+      height: 16px;
+    }
+    .ch-input-field input {
+      width: 100%;
+      padding: 13px 14px 13px 42px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg-light);
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .ch-input-field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+      background: var(--bg);
+    }
+    .ch-input-field input::placeholder { color: #C4C4C7; }
+    .ch-fetch-btn {
+      padding: 13px 24px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      transition: filter 0.2s, transform 0.1s;
+    }
+    .ch-fetch-btn:hover { filter: brightness(0.9); transform: translateY(-1px); }
+    .ch-fetch-btn:active { transform: translateY(0); }
+    .ch-fetch-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* Channel Header Info */
+    .ch-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .ch-info-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ch-video-count {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .ch-extracted-count {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 600;
+      padding: 3px 10px;
+      background: #F5F3FF;
+      border-radius: 1000px;
+    }
+
+    /* Controls Bar */
+    .ch-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--bg-light);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .ch-controls-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .ch-controls-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ch-select-all {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+      user-select: none;
+    }
+    .ch-select-all input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .ch-search {
+      padding: 7px 12px 7px 32px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: inherit;
+      background: var(--bg);
+      outline: none;
+      width: 180px;
+      transition: border-color 0.2s;
+    }
+    .ch-search:focus { border-color: var(--accent); }
+    .ch-search-wrap {
+      position: relative;
+    }
+    .ch-search-wrap svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 13px;
+      height: 13px;
+      color: var(--text-secondary);
+    }
+    .ch-batch-btn {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ch-batch-btn.extract {
+      background: var(--accent);
+      color: #fff;
+    }
+    .ch-batch-btn.extract:hover { filter: brightness(0.9); }
+    .ch-batch-btn.extract:disabled { opacity: 0.4; cursor: not-allowed; }
+    .ch-batch-btn.stop {
+      background: #FEE2E2;
+      color: #DC2626;
+    }
+    .ch-batch-btn.stop:hover { background: #FECACA; }
+    .ch-batch-btn.download {
+      background: var(--bg);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+    .ch-batch-btn.download:hover { border-color: #ccc; box-shadow: 0 2px 6px var(--shadow); }
+    .ch-batch-btn.download:disabled { opacity: 0.3; cursor: not-allowed; }
+    .ch-batch-btn svg { width: 14px; height: 14px; }
+
+    /* Progress Bar */
+    .ch-progress {
+      display: none;
+      margin-bottom: 16px;
+      padding: 14px 18px;
+      background: #F5F3FF;
+      border: 1px solid #E0DFFE;
+      border-radius: 12px;
+    }
+    .ch-progress.active { display: block; }
+    .ch-progress-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .ch-progress-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    .ch-progress-count {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .ch-progress-bar {
+      height: 6px;
+      background: #E0DFFE;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .ch-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    /* Video List */
+    .ch-video-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .ch-video-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      transition: background 0.15s;
+      border: 1px solid transparent;
+    }
+    .ch-video-item:hover { background: var(--bg-light); }
+    .ch-video-item.extracting {
+      background: #F5F3FF;
+      border-color: #E0DFFE;
+    }
+    .ch-video-item.done {
+      background: #F0FDF4;
+      border-color: #BBF7D0;
+    }
+    .ch-video-item.failed {
+      background: #FEF2F2;
+      border-color: #FECACA;
+    }
+    .ch-video-check {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .ch-video-num {
+      font-size: 12px;
+      color: var(--text-secondary);
+      min-width: 28px;
+      text-align: right;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .ch-video-thumb {
+      width: 100px;
+      height: 56px;
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #f0f0f0;
+    }
+    .ch-video-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .ch-video-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .ch-video-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .ch-video-meta {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 3px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .ch-video-action {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ch-extract-btn {
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .ch-extract-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .ch-extract-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .ch-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 1000px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .ch-status-badge.extracting {
+      background: #F5F3FF;
+      color: var(--accent);
+    }
+    .ch-status-badge.done {
+      background: #ECFDF5;
+      color: #059669;
+      cursor: pointer;
+    }
+    .ch-status-badge.done:hover { background: #D1FAE5; }
+    .ch-status-badge.failed {
+      background: #FEF2F2;
+      color: #DC2626;
+    }
+    .ch-spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid #E0DFFE;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    /* Transcript Preview (expanded row) */
+    .ch-transcript-preview {
+      display: none;
+      margin: 0 14px 8px 70px;
+      padding: 14px 18px;
+      background: var(--bg-light);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .ch-transcript-preview.open { display: block; }
+    .ch-transcript-text {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-muted);
+      max-height: 150px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .ch-transcript-text::-webkit-scrollbar { width: 3px; }
+    .ch-transcript-text::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+    .ch-transcript-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .ch-transcript-action-btn {
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .ch-transcript-action-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Load More */
+    .ch-load-more {
+      text-align: center;
+      padding: 20px;
+    }
+    .ch-load-more-btn {
+      padding: 10px 32px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .ch-load-more-btn:hover { background: var(--bg-light); border-color: #ccc; }
+    .ch-load-more-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Empty State */
+    .ch-empty {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-secondary);
+    }
+    .ch-empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    .ch-empty-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .ch-empty-sub {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ═══════════════════════════════════════════ */
+    /* ══ Ebook Generator Page                 ══ */
+    /* ═══════════════════════════════════════════ */
+    .ebook-page {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 55;
+      flex-direction: column;
+    }
+    .ebook-page.active { display: flex; }
+    .ebook-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .ebook-scroll::-webkit-scrollbar { width: 5px; }
+    .ebook-scroll::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 5px; }
+    .ebook-container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+    }
+
+    /* Ebook Button in channel controls */
+    .ch-batch-btn.ebook {
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      color: #fff;
+    }
+    .ch-batch-btn.ebook:hover { filter: brightness(0.9); }
+    .ch-batch-btn.ebook:disabled { opacity: 0.4; cursor: not-allowed; filter: none; }
+
+    /* Ebook: Setup / Progress / Preview states */
+    .eb-state { display: none; }
+    .eb-state.active { display: block; }
+
+    /* Setup */
+    .eb-setup-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .eb-setup-sub {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+    .eb-chapter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+    .eb-chapter-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--bg-light);
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .eb-chapter-num {
+      width: 28px;
+      height: 28px;
+      background: #F5F3FF;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .eb-chapter-title {
+      flex: 1;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+    .eb-model-select {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .eb-model-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .eb-start-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: filter 0.2s;
+    }
+    .eb-start-btn:hover { filter: brightness(0.9); }
+    .eb-start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Progress */
+    .eb-progress-wrap {
+      margin-bottom: 24px;
+    }
+    .eb-progress-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+    .eb-progress-bar-wrap {
+      margin-bottom: 20px;
+    }
+    .eb-progress-bar-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .eb-progress-bar {
+      height: 8px;
+      background: #E0DFFE;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .eb-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #a78bfa);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+    .eb-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .eb-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+    .eb-step.active {
+      background: #F5F3FF;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .eb-step.done {
+      color: #059669;
+    }
+    .eb-step.failed {
+      color: #DC2626;
+      background: #FEF2F2;
+    }
+    .eb-step-icon {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .eb-step.active .eb-step-icon {
+      border-color: var(--accent);
+      animation: pulse 1.2s ease infinite;
+    }
+    .eb-step.done .eb-step-icon {
+      border-color: #059669;
+      background: #059669;
+      color: #fff;
+    }
+    .eb-step.failed .eb-step-icon {
+      border-color: #DC2626;
+      background: #DC2626;
+      color: #fff;
+    }
+
+    /* Preview */
+    .eb-preview-header {
+      text-align: center;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .eb-preview-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .eb-preview-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .eb-toc {
+      margin-bottom: 32px;
+      padding: 20px 24px;
+      background: var(--bg-light);
+      border-radius: 12px;
+    }
+    .eb-toc h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .eb-toc-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .eb-toc-item {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text-primary);
+      transition: color 0.2s;
+    }
+    .eb-toc-item:hover { color: var(--accent); }
+    .eb-toc-num {
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 32px;
+    }
+    .eb-chapter {
+      margin-bottom: 40px;
+    }
+    .eb-chapter-heading {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--text-primary);
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .eb-chapter-heading .num {
+      color: var(--accent);
+      font-weight: 800;
+    }
+    .eb-section-body {
+      font-size: 16px;
+      line-height: 1.85;
+      color: #3F3F46;
+    }
+    .eb-section-body p { margin-bottom: 14px; }
+    .eb-section-body strong { color: var(--text-primary); font-weight: 600; }
+    .eb-section-body h2 { font-size: 19px; font-weight: 700; margin: 28px 0 12px; color: var(--text-primary); }
+    .eb-section-body h3 { font-size: 17px; font-weight: 600; margin: 20px 0 10px; color: var(--text-primary); }
+    .eb-section-body ul, .eb-section-body ol { margin: 12px 0; padding-left: 24px; }
+    .eb-section-body li { margin-bottom: 6px; line-height: 1.7; }
+    .eb-section-body blockquote {
+      margin: 16px 0;
+      padding: 12px 16px;
+      border-left: 3px solid var(--accent);
+      background: #F5F3FF;
+      border-radius: 0 8px 8px 0;
+      color: #52525B;
+    }
+    .eb-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
+    }
+    .eb-download-bar {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      padding: 20px;
+      background: var(--bg-light);
+      border-radius: 12px;
+      margin-top: 32px;
+    }
+    .eb-download-btn {
+      padding: 10px 24px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-primary);
+    }
+    .eb-download-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .eb-download-btn svg { width: 16px; height: 16px; }
+    .eb-download-btn.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .eb-download-btn.primary:hover { filter: brightness(0.9); }
+
     /* ── Responsive ── */
     @media (max-width: 900px) {
       .hero h1 { font-size: 28px; }
       .navbar { padding: 8px 16px; }
       .nav-links { display: none; }
       .features { flex-direction: column; align-items: center; gap: 12px; }
-      .result-body { flex-direction: column; }
-      .panel-left {
-        width: 100%;
-        min-width: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-        max-height: 50vh;
-      }
-      .content-scroll { padding: 24px 20px; }
+      .result-title { font-size: 24px; }
+      .result-container { padding: 24px 16px 60px; }
+      .primary-tabs { gap: 6px; }
+      .ptab { padding: 7px 14px; font-size: 13px; }
+      .secondary-tabs { gap: 14px; }
+      .section-number { font-size: 18px; }
+      .section-title { font-size: 18px; }
+      .model-toggle { display: none; }
+      .channel-container { padding: 20px 14px 60px; }
+      .ch-video-thumb { width: 72px; height: 40px; }
+      .ch-video-num { display: none; }
+      .ch-controls { flex-direction: column; align-items: stretch; }
+      .ch-controls-right { justify-content: flex-end; }
+      .ch-search { width: 140px; }
+      .ch-transcript-preview { margin-left: 14px; }
     }
   </style>
 </head>
@@ -1007,44 +1855,29 @@
   <!-- ══════ Glassmorphic Navbar ══════ -->
   <div class="navbar-wrapper">
     <nav class="navbar">
-      <a class="nav-logo" href="#">
+      <a class="nav-logo" href="/" onclick="event.preventDefault();goBack();">
         <div class="nav-logo-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>
         </div>
         BlogBot
       </a>
-      <div class="nav-links">
-        <a href="#">Pricing</a>
-        <a href="#">Guide</a>
-        <a href="#">Blog</a>
-      </div>
-      <button class="nav-cta" style="background:var(--bg-light);color:var(--text-primary);margin-right:4px;" onclick="toggleHistory()">History</button>
-      <button class="nav-cta" onclick="document.getElementById('urlInput').focus()">Start for Free</button>
+      <div class="nav-links"></div>
+      <button class="nav-cta" style="background:var(--bg-light);color:var(--text-primary);margin-right:4px;" onclick="openChannelPage()">채널 스크립트</button>
+      <button class="nav-cta" style="background:var(--bg-light);color:var(--text-primary);margin-right:4px;" onclick="toggleHistory()">생성 기록</button>
+      <button class="nav-cta" onclick="document.getElementById('urlInput').focus()">무료로 시작</button>
     </nav>
   </div>
 
   <!-- ══════ Hero + Input ══════ -->
   <div class="hero" id="heroSection">
-    <h1>YouTube 영상을<br><span>완벽하게 요약</span>하세요</h1>
-    <p class="hero-sub">1분 안에 핵심 요약노트를 만들어드립니다<br>YouTube URL을 붙여넣으면 AI가 자동으로 분석합니다</p>
+    <h1>YouTube 영상을<br><span>블로그 글</span>로 변환하세요</h1>
+    <p class="hero-sub">YouTube URL을 붙여넣으면 AI가 자동으로 블로그 글을 작성합니다<br>톤, 템플릿, 모델을 선택해 원하는 스타일로 생성하세요</p>
     <div class="input-section">
       <div class="input-card">
         <div class="input-tabs">
           <button class="input-tab active">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
             YouTube
-          </button>
-          <button class="input-tab" disabled style="opacity:0.4">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9m-9 9a9 9 0 019-9"/></svg>
-            Web
-          </button>
-          <button class="input-tab" disabled style="opacity:0.4">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            PDF
-          </button>
-          <button class="input-tab" disabled style="opacity:0.4">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
-            Audio
           </button>
         </div>
         <div class="url-row">
@@ -1098,12 +1931,12 @@
   <!-- ══════ Loading Overlay ══════ -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loader-ring"></div>
-    <div class="loader-text">요약노트를 생성하고 있습니다</div>
+    <div class="loader-text">블로그 글을 생성하고 있습니다</div>
     <div class="loader-sub">잠시만 기다려주세요</div>
     <div class="loader-steps">
       <div class="loader-step" id="ls1"><div class="icon">&#10003;</div> YouTube 자막 추출</div>
       <div class="loader-step" id="ls2"><div class="icon">&#10003;</div> AI 콘텐츠 분석</div>
-      <div class="loader-step" id="ls3"><div class="icon">&#10003;</div> 요약 노트 작성</div>
+      <div class="loader-step" id="ls3"><div class="icon">&#10003;</div> 블로그 글 작성</div>
     </div>
   </div>
 
@@ -1114,7 +1947,7 @@
   <div class="history-overlay" id="historyOverlay" onclick="toggleHistory()"></div>
   <div class="history-panel" id="historyPanel">
     <div class="history-header">
-      <h3>History</h3>
+      <h3>생성 기록</h3>
       <button class="history-close" onclick="toggleHistory()">&#10005;</button>
     </div>
     <div class="history-list" id="historyList">
@@ -1135,6 +1968,10 @@
         BlogBot
       </div>
       <div class="result-actions">
+        <div class="model-toggle">
+          <span class="model-toggle-label">Advanced Model</span>
+          <span class="model-toggle-value" id="modelToggleValue">GPT-4o-mini</span>
+        </div>
         <button class="r-btn" onclick="copyAll(this)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
           복사
@@ -1146,61 +1983,269 @@
       </div>
     </div>
 
+    <!-- Single-column scrollable body -->
+    <div class="result-scroll" id="resultScroll">
+      <div class="result-container">
+        <!-- Title -->
+        <h1 class="result-title" id="resultTitle"></h1>
+        <p class="result-subtitle" id="resultSubtitle"></p>
+        <div class="result-tags" id="resultTags"></div>
+
+        <!-- Video (collapsible) -->
+        <div class="result-video" id="resultVideo" style="display:none;">
+          <div class="result-video-wrap" id="resultVideoWrap"></div>
+          <button class="result-video-toggle" id="videoToggleBtn" onclick="toggleVideoEmbed()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+            영상 숨기기
+          </button>
+        </div>
+
+        <!-- Row 1: Primary tabs -->
+        <div class="primary-tabs">
+          <button class="ptab active" data-tab="detailed" onclick="switchPrimaryTab('detailed')">상세 리포트</button>
+          <button class="ptab" data-tab="key" onclick="switchPrimaryTab('key')">핵심 리포트</button>
+          <button class="ptab" data-tab="script" onclick="switchPrimaryTab('script')">스크립트</button>
+        </div>
+
+        <!-- Row 2: Secondary tabs -->
+        <div class="secondary-tabs" id="secondaryTabs">
+          <button class="stab active" data-section="all" onclick="switchSecondaryTab('all')">전체</button>
+          <button class="stab" data-section="toc" onclick="switchSecondaryTab('toc')">목차</button>
+          <button class="stab" data-section="keypoints" onclick="switchSecondaryTab('keypoints')">핵심 포인트</button>
+        </div>
+
+        <!-- Tab: Detailed Report -->
+        <div class="tab-content active" id="tab-detailed">
+          <div class="key-points-section" id="keyPointsSection"></div>
+          <div class="toc-section" id="tocSection">
+            <h3 class="toc-heading">Table of Contents</h3>
+            <div class="toc-list" id="tocList"></div>
+          </div>
+          <div class="summary-box" id="summaryBox" style="display:none;">
+            <div class="summary-box-content" id="summaryBoxContent"></div>
+          </div>
+          <div class="sections-body" id="sectionsBody"></div>
+        </div>
+
+        <!-- Tab: Key Report -->
+        <div class="tab-content" id="tab-key">
+          <div class="summary-box" style="margin-bottom:32px;">
+            <div class="summary-box-content" id="keySummaryContent"></div>
+          </div>
+          <div class="key-outline" id="keyOutline"></div>
+        </div>
+
+        <!-- Tab: Script -->
+        <div class="tab-content" id="tab-script">
+          <div class="script-source-badge" id="scriptSourceBadge"></div>
+          <div class="script-body" id="scriptBody"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="result-footer">
+      <span id="elapsedTime"></span>
+      <div class="footer-badge">
+        <span style="color:var(--accent);">&#9679;</span> <span id="modelBadge">GPT-4o-mini</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ Channel Script Extractor Page ══════ -->
+  <div class="channel-page" id="channelPage">
+    <!-- Header -->
+    <div class="result-header">
+      <button class="result-back" onclick="closeChannelPage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        돌아가기
+      </button>
+      <div class="result-logo">
+        <div class="dot"></div>
+        BlogBot <span style="font-weight:400;font-size:13px;color:var(--text-muted);margin-left:6px;">채널 스크립트 추출</span>
+      </div>
+      <div style="width:80px;"></div>
+    </div>
+
     <!-- Body -->
-    <div class="result-body">
-      <!-- Left: Video -->
-      <div class="panel-left">
-        <div class="yt-card">
-          <div class="video-wrap" id="videoWrap"></div>
-          <div class="yt-info">
-            <div class="yt-avatar">YT</div>
-            <div class="yt-details">
-              <div class="yt-title" id="ytTitle">영상 제목</div>
-              <div class="yt-meta" id="ytMeta"></div>
+    <div class="channel-scroll">
+      <div class="channel-container">
+        <!-- Input -->
+        <div class="ch-input-wrap">
+          <div class="ch-input-field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+            </svg>
+            <input type="text" id="chUrlInput" placeholder="YouTube 채널 URL을 붙여넣으세요 (예: youtube.com/@channelname)" />
+          </div>
+          <button class="ch-fetch-btn" id="chFetchBtn" onclick="fetchChannelVideos()">영상 목록 가져오기</button>
+        </div>
+
+        <!-- Empty State (shown initially) -->
+        <div class="ch-empty" id="chEmpty">
+          <div class="ch-empty-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.2" opacity="0.4"><rect x="2" y="2" width="20" height="20" rx="3"/><polygon points="10 8 16 12 10 16 10 8" fill="var(--text-secondary)" stroke="none" opacity="0.3"/></svg>
+          </div>
+          <div class="ch-empty-text">채널 영상 스크립트 추출기</div>
+          <div class="ch-empty-sub">YouTube 채널이나 재생목록 URL을 입력하면<br>모든 영상의 스크립트를 한번에 추출할 수 있습니다</div>
+        </div>
+
+        <!-- Controls (hidden until videos loaded) -->
+        <div id="chControlsWrap" style="display:none;">
+          <div class="ch-info">
+            <div class="ch-info-left">
+              <span class="ch-video-count" id="chVideoCount">0개 영상</span>
+              <span class="ch-extracted-count" id="chExtractedCount" style="display:none;">0개 추출 완료</span>
+            </div>
+          </div>
+
+          <div class="ch-controls">
+            <div class="ch-controls-left">
+              <label class="ch-select-all">
+                <input type="checkbox" id="chSelectAll" onchange="chToggleSelectAll()">
+                전체 선택
+              </label>
+              <div class="ch-search-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <input type="text" class="ch-search" id="chSearch" placeholder="제목 검색..." oninput="chFilterVideos()">
+              </div>
+            </div>
+            <div class="ch-controls-right">
+              <button class="ch-batch-btn ebook" id="chEbookBtn" onclick="chStartEbook()" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                전자책 만들기
+              </button>
+              <button class="ch-batch-btn download" id="chDownloadBtn" onclick="chDownloadAll()" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                전체 다운로드
+              </button>
+              <button class="ch-batch-btn extract" id="chBatchBtn" onclick="chStartBatch()" disabled>
+                선택 추출 (0)
+              </button>
+              <button class="ch-batch-btn stop" id="chStopBtn" onclick="chStopBatch()" style="display:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+                중지
+              </button>
+            </div>
+          </div>
+
+          <!-- Progress -->
+          <div class="ch-progress" id="chProgress">
+            <div class="ch-progress-top">
+              <span class="ch-progress-label" id="chProgressLabel">추출 중...</span>
+              <span class="ch-progress-count" id="chProgressCount">0 / 0</span>
+            </div>
+            <div class="ch-progress-bar">
+              <div class="ch-progress-fill" id="chProgressFill"></div>
             </div>
           </div>
         </div>
-        <div class="script-btn-wrap">
-          <button class="script-btn" id="scriptBtn" onclick="toggleScript()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            스크립트 보기
-          </button>
-        </div>
-        <div class="transcript-panel" id="transcriptPanel"></div>
-      </div>
 
-      <!-- Right: Content -->
-      <div class="panel-right">
-        <div class="template-bar">
-          <button class="tmpl-tab active" data-tab="blog" onclick="switchTemplate('blog')">블로그 글</button>
-          <button class="tmpl-tab" data-tab="timeline" onclick="switchTemplate('timeline')">타임라인</button>
-          <button class="tmpl-tab" data-tab="summary" onclick="switchTemplate('summary')">핵심 요약</button>
+        <!-- Video List -->
+        <div class="ch-video-list" id="chVideoList"></div>
+
+        <!-- Load More -->
+        <div class="ch-load-more" id="chLoadMore" style="display:none;">
+          <button class="ch-load-more-btn" id="chLoadMoreBtn" onclick="chLoadMore()">더 불러오기 (50개씩)</button>
         </div>
-        <div class="content-scroll">
-          <!-- Blog -->
-          <div class="content-pane active" id="pane-blog">
-            <div class="note-title" id="noteTitle"></div>
-            <div class="note-subtitle" id="noteSubtitle"></div>
-            <div class="tag-list" id="tagList"></div>
-            <div class="note-body" id="noteBody"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="result-footer">
+      <span id="chFooterLeft">채널 URL을 입력하세요</span>
+      <div class="footer-badge">
+        <span style="color:var(--accent);">&#9679;</span> yt-dlp
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ Ebook Generator Page ══════ -->
+  <div class="ebook-page" id="ebookPage">
+    <div class="result-header">
+      <button class="result-back" onclick="closeEbookPage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        돌아가기
+      </button>
+      <div class="result-logo">
+        <div class="dot"></div>
+        BlogBot <span style="font-weight:400;font-size:13px;color:var(--text-muted);margin-left:6px;">전자책 생성</span>
+      </div>
+      <div style="width:80px;"></div>
+    </div>
+
+    <div class="ebook-scroll">
+      <div class="ebook-container">
+        <!-- State 1: Setup -->
+        <div class="eb-state active" id="ebSetup">
+          <div class="eb-setup-title">전자책 만들기</div>
+          <div class="eb-setup-sub">선택한 영상의 스크립트를 AI가 전자책으로 변환합니다</div>
+          <div class="eb-chapter-list" id="ebChapterList"></div>
+          <div class="eb-model-select">
+            <span class="eb-model-label">모델</span>
+            <div class="option-pills" id="ebModelPills">
+              <button class="option-pill active" data-value="gpt-4o-mini" onclick="selectEbookModel(this)">GPT-4o Mini</button>
+              <button class="option-pill" data-value="gpt-4o" onclick="selectEbookModel(this)">GPT-4o</button>
+            </div>
           </div>
-          <!-- Timeline -->
-          <div class="content-pane" id="pane-timeline">
-            <div class="note-title">타임라인</div>
-            <div class="timeline-list" id="timelineList"></div>
-          </div>
-          <!-- Summary -->
-          <div class="content-pane" id="pane-summary">
-            <div class="note-title">핵심 요약</div>
-            <div id="summaryCards"></div>
+          <button class="eb-start-btn" id="ebStartBtn" onclick="ebGenerate()">전자책 생성 시작</button>
+        </div>
+
+        <!-- State 2: Progress -->
+        <div class="eb-state" id="ebProgress">
+          <div class="eb-progress-wrap">
+            <div class="eb-progress-title" id="ebProgressTitle">전자책 생성 중...</div>
+            <div class="eb-progress-bar-wrap">
+              <div class="eb-progress-bar-top">
+                <span id="ebProgressLabel">아웃라인 생성 중...</span>
+                <span id="ebProgressPct">0%</span>
+              </div>
+              <div class="eb-progress-bar">
+                <div class="eb-progress-fill" id="ebProgressFill"></div>
+              </div>
+            </div>
+            <div class="eb-steps" id="ebSteps"></div>
           </div>
         </div>
-        <div class="result-footer">
-          <span id="elapsedTime"></span>
-          <div class="footer-badge">
-            <span style="color:var(--accent);">&#9679;</span> GPT-4o-mini
+
+        <!-- State 3: Preview -->
+        <div class="eb-state" id="ebPreview">
+          <div class="eb-preview-header">
+            <div class="eb-preview-title" id="ebPreviewTitle"></div>
+            <div class="eb-preview-subtitle" id="ebPreviewSubtitle"></div>
+          </div>
+          <div class="eb-toc" id="ebToc">
+            <h3>목차</h3>
+            <div class="eb-toc-list" id="ebTocList"></div>
+          </div>
+          <div id="ebContent"></div>
+          <div class="eb-download-bar">
+            <button class="eb-download-btn primary" onclick="ebDownloadMd()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              마크다운 다운로드
+            </button>
+            <button class="eb-download-btn" onclick="ebDownloadPdf(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              PDF 다운로드
+            </button>
+            <button class="eb-download-btn" onclick="ebDownloadHtml()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              HTML 다운로드
+            </button>
+            <button class="eb-download-btn" onclick="ebCopyAll()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              전체 복사
+            </button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="result-footer">
+      <span id="ebFooter">전자책 생성 준비</span>
+      <div class="footer-badge">
+        <span style="color:var(--accent);">&#9679;</span> <span id="ebModelBadge">GPT-4o-mini</span>
       </div>
     </div>
   </div>
@@ -1211,7 +2256,8 @@
 
     let rawContent = '';
     let rawTitle = '';
-    let scriptVisible = false;
+    let currentVideoId = null;
+    let videoVisible = true;
     let selectedTone = 'informative';
     let selectedModel = 'gpt-4o-mini';
     let selectedTemplate = 'general';
@@ -1233,6 +2279,10 @@
     async function generate() {
       const url = urlInput.value.trim();
       if (!url) { showError('YouTube URL을 입력해주세요.'); return; }
+      if (!/^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11}/.test(url)) {
+        showError('유효한 YouTube URL이 아닙니다. (예: youtube.com/watch?v=...)');
+        return;
+      }
 
       const btn = document.getElementById('submitBtn');
       const loading = document.getElementById('loadingOverlay');
@@ -1274,114 +2324,191 @@
         const { title, subtitle, outline, content, tags, summary } = json.data;
         const videoId = extractVideoId(url);
         const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+        const source = json.data.source || 'subtitle';
 
         rawContent = content;
         rawTitle = title;
+        currentVideoId = videoId;
 
         // Video embed
         if (videoId) {
-          document.getElementById('videoWrap').innerHTML =
+          document.getElementById('resultVideoWrap').innerHTML =
             `<iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>`;
-        }
-
-        // Video info
-        document.getElementById('ytTitle').textContent = title;
-        const source = json.data.source || 'subtitle';
-        const sourceLabel = source === 'whisper' ? 'Whisper STT' : '자막';
-        document.getElementById('ytMeta').innerHTML =
-          `${elapsed}초 소요 <span class="source-badge ${source}">${sourceLabel}</span>`;
-
-        // Transcript
-        const transcriptText = json.data.transcript || '';
-        const panel = document.getElementById('transcriptPanel');
-        if (transcriptText) {
-          const lines = transcriptText.split(/[.!?。]\s*/).filter(l => l.trim());
-          panel.innerHTML = lines.map((line, i) =>
-            `<div class="transcript-line${i === 0 ? ' active' : ''}">${line.trim()}</div>`
-          ).join('');
+          document.getElementById('resultVideo').style.display = 'block';
+          document.getElementById('resultVideoWrap').classList.remove('collapsed');
+          videoVisible = true;
         } else {
-          panel.innerHTML = '<div class="transcript-line" style="color:var(--text-secondary);">자막 데이터 없음</div>';
+          document.getElementById('resultVideo').style.display = 'none';
         }
 
-        // Blog pane
-        document.getElementById('noteTitle').textContent = title;
-        const subtitleEl = document.getElementById('noteSubtitle');
-        subtitleEl.textContent = subtitle || '';
-        subtitleEl.style.display = subtitle ? 'block' : 'none';
-
-        const tagListEl = document.getElementById('tagList');
-        if (tags && tags.length > 0) {
-          tagListEl.innerHTML = tags.map(t => `<span class="tag-badge">#${t}</span>`).join('');
-          tagListEl.style.display = 'flex';
-        } else {
-          tagListEl.style.display = 'none';
-        }
-
-        document.getElementById('noteBody').innerHTML = markdownToHtml(content);
-
-        // Timeline pane
-        const tlList = document.getElementById('timelineList');
-        tlList.innerHTML = outline.map((item, i) =>
-          `<div class="timeline-item">
-            <div class="timeline-num">${i + 1}</div>
-            <div class="timeline-content">
-              <div class="timeline-title">${item}</div>
-            </div>
-          </div>`
-        ).join('');
-
-        // Summary pane
-        const summaryCards = document.getElementById('summaryCards');
-        const summaryText = summary || content.split('\n').slice(0, 10).join('\n');
-        summaryCards.innerHTML = `
-          <div class="summary-card">
-            <div class="summary-card-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              AI 요약
-            </div>
-            <div class="summary-card-body">${markdownToHtml(summaryText)}</div>
-          </div>
-          <div class="summary-card">
-            <div class="summary-card-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              핵심 포인트
-            </div>
-            <div class="summary-card-body">
-              <ul>${outline.map(item => `<li>${item}</li>`).join('')}</ul>
-            </div>
-          </div>`;
+        // Render all tabs
+        renderDetailedReport(json.data);
+        renderKeyReport(json.data);
+        renderScriptTab(json.data.transcript || '', source);
 
         // Footer
         document.getElementById('elapsedTime').textContent = `${elapsed}초 소요`;
+        document.getElementById('modelBadge').textContent = selectedModel === 'gpt-4o' ? 'GPT-4o' : 'GPT-4o-mini';
+        document.getElementById('modelToggleValue').textContent = selectedModel === 'gpt-4o' ? 'GPT-4o' : 'GPT-4o-mini';
 
         // Show result
         document.getElementById('heroSection').style.display = 'none';
         document.getElementById('resultPage').classList.add('active');
-        switchTemplate('blog');
+        switchPrimaryTab('detailed');
 
       } catch (e) {
         loading.classList.remove('active');
-        showError('서버와 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요. (npm start)');
+        showError('서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.');
       } finally {
         btn.disabled = false;
       }
     }
 
-    function switchTemplate(name) {
-      document.querySelectorAll('.tmpl-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.content-pane').forEach(p => p.classList.remove('active'));
-      document.querySelector(`.tmpl-tab[data-tab="${name}"]`).classList.add('active');
-      document.getElementById(`pane-${name}`).classList.add('active');
+    // ── Section Thumbnail (mockup) ──
+    function buildSectionThumb(videoId, sectionNum, totalSections) {
+      // 가짜 타임스탬프 생성 (섹션 위치 기반)
+      const totalMin = 20 + Math.floor(Math.random() * 40); // 20~60분 영상 가정
+      const secStart = Math.floor((sectionNum - 1) / totalSections * totalMin);
+      const mm = String(secStart).padStart(2, '0');
+      const ss = String(Math.floor(Math.random() * 59)).padStart(2, '0');
+      const ts = `00:${mm}:${ss}`;
+
+      return `<div class="section-thumb" onclick="if(currentVideoId) window.open('https://youtube.com/watch?v='+currentVideoId+'&t=${secStart * 60}','_blank')">
+        <img src="https://img.youtube.com/vi/${videoId}/sddefault.jpg" alt="" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'">
+        <div class="section-thumb-ts">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          ${ts}
+        </div>
+        <div class="section-thumb-badge">
+          <div class="section-thumb-badge-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <span class="section-thumb-badge-text">영상 스크린샷 준비중</span>
+        </div>
+        <div class="section-thumb-overlay">
+          <div class="section-thumb-play">
+            <svg viewBox="0 0 24 24" fill="#333"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <span class="section-thumb-caption">섹션 ${sectionNum} · ${ts}</span>
+        </div>
+      </div>`;
     }
 
-    function toggleScript() {
-      const panel = document.getElementById('transcriptPanel');
-      const btn = document.getElementById('scriptBtn');
-      scriptVisible = !scriptVisible;
-      panel.classList.toggle('show', scriptVisible);
-      btn.innerHTML = scriptVisible
-        ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg> 스크립트 닫기`
-        : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> 스크립트 보기`;
+    // ── Content Parsing ──
+    function parseContentSections(md) {
+      const parts = md.split(/^## /gm);
+      const sections = [];
+      const intro = parts[0].trim();
+      if (intro) sections.push({ title: null, body: intro, isIntro: true });
+      for (let i = 1; i < parts.length; i++) {
+        const lines = parts[i].split('\n');
+        const title = lines[0].trim();
+        const body = lines.slice(1).join('\n').trim();
+        sections.push({ title, body, isIntro: false });
+      }
+      return sections;
+    }
+
+    function renderDetailedReport(data) {
+      const { title, subtitle, outline, content, tags, summary } = data;
+
+      // Title area
+      document.getElementById('resultTitle').textContent = title;
+      const subEl = document.getElementById('resultSubtitle');
+      subEl.textContent = subtitle || '';
+      subEl.style.display = subtitle ? 'block' : 'none';
+
+      // Tags
+      const tagsEl = document.getElementById('resultTags');
+      if (tags && tags.length > 0) {
+        tagsEl.innerHTML = tags.map(t => `<span class="tag-badge">#${t}</span>`).join('');
+        tagsEl.style.display = 'flex';
+      } else { tagsEl.style.display = 'none'; }
+
+      // Key Points (Lilys Q&A style)
+      document.getElementById('keyPointsSection').innerHTML = outline.map(item =>
+        `<div class="key-point"><div class="key-point-bullet"></div><div class="key-point-text"><strong>${item}</strong></div></div>`
+      ).join('');
+
+      // Table of Contents
+      document.getElementById('tocList').innerHTML = outline.map((item, i) =>
+        `<div class="toc-item" onclick="scrollToSection(${i + 1})"><span class="toc-item-num">${i + 1}.</span><span class="toc-item-title">${item}</span></div>`
+      ).join('');
+
+      // Summary box
+      const summaryBox = document.getElementById('summaryBox');
+      if (summary) {
+        document.getElementById('summaryBoxContent').innerHTML = markdownToHtml(summary);
+        summaryBox.style.display = 'block';
+      } else { summaryBox.style.display = 'none'; }
+
+      // Content sections (numbered)
+      const sections = parseContentSections(content);
+      let sectionNum = 0;
+      const totalSections = sections.filter(s => !s.isIntro).length;
+      document.getElementById('sectionsBody').innerHTML = sections.map(sec => {
+        if (sec.isIntro) {
+          return `<div class="content-section"><div class="section-body">${markdownToHtml(sec.body)}</div></div>`;
+        }
+        sectionNum++;
+        const thumbHtml = currentVideoId ? buildSectionThumb(currentVideoId, sectionNum, totalSections) : '';
+        return `<div class="content-section" id="section-${sectionNum}"><div class="section-header"><span class="section-number">${sectionNum}.</span><span class="section-title">${sec.title}</span></div>${thumbHtml}<div class="section-body">${markdownToHtml(sec.body)}</div></div>`;
+      }).join('');
+    }
+
+    function renderKeyReport(data) {
+      document.getElementById('keySummaryContent').innerHTML = markdownToHtml(data.summary || '');
+      document.getElementById('keyOutline').innerHTML = data.outline.map((item, i) =>
+        `<div class="key-outline-item"><div class="key-outline-num">${i + 1}</div><div class="key-outline-text">${item}</div></div>`
+      ).join('');
+    }
+
+    function renderScriptTab(transcript, source) {
+      const sourceLabel = source === 'whisper' ? 'Whisper STT' : '자막';
+      document.getElementById('scriptSourceBadge').innerHTML =
+        `<span class="source-badge ${source}">${sourceLabel}</span>`;
+      const body = document.getElementById('scriptBody');
+      if (transcript) {
+        const lines = transcript.split(/[.!?。]\s*/).filter(l => l.trim());
+        body.innerHTML = lines.map(line => `<div class="script-line">${line.trim()}</div>`).join('');
+      } else {
+        body.innerHTML = '<div class="script-line" style="color:var(--text-secondary);">스크립트 데이터 없음</div>';
+      }
+    }
+
+    // ── Tab Switching ──
+    function switchPrimaryTab(name) {
+      document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.ptab[data-tab="${name}"]`).classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
+      document.getElementById(`tab-${name}`).classList.add('active');
+      document.getElementById('secondaryTabs').style.display = name === 'detailed' ? 'flex' : 'none';
+      document.getElementById('resultScroll').scrollTop = 0;
+    }
+
+    function switchSecondaryTab(section) {
+      document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.stab[data-section="${section}"]`).classList.add('active');
+      if (section === 'toc') {
+        document.getElementById('tocSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (section === 'keypoints') {
+        document.getElementById('keyPointsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        document.getElementById('resultScroll').scrollTop = 0;
+      }
+    }
+
+    function scrollToSection(num) {
+      const el = document.getElementById(`section-${num}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function toggleVideoEmbed() {
+      videoVisible = !videoVisible;
+      document.getElementById('resultVideoWrap').classList.toggle('collapsed', !videoVisible);
+      document.getElementById('videoToggleBtn').innerHTML = videoVisible
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg> 영상 숨기기'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg> 영상 보기';
     }
 
     function goBack() {
@@ -1475,45 +2602,33 @@
 
         rawContent = d.content;
         rawTitle = d.title;
+        currentVideoId = d.video_id || null;
 
+        // Video
         if (d.video_id) {
-          document.getElementById('videoWrap').innerHTML =
+          document.getElementById('resultVideoWrap').innerHTML =
             `<iframe src="https://www.youtube.com/embed/${d.video_id}" allowfullscreen></iframe>`;
+          document.getElementById('resultVideo').style.display = 'block';
+          document.getElementById('resultVideoWrap').classList.remove('collapsed');
+          videoVisible = true;
+        } else {
+          document.getElementById('resultVideo').style.display = 'none';
         }
-        document.getElementById('ytTitle').textContent = d.title;
-        document.getElementById('ytMeta').innerHTML =
-          `${d.created_at} <span class="source-badge ${d.source}">${d.source === 'whisper' ? 'Whisper STT' : '자막'}</span>`;
 
-        document.getElementById('transcriptPanel').innerHTML =
-          '<div class="transcript-line" style="color:var(--text-secondary);">히스토리에서 불러옴</div>';
-
-        document.getElementById('noteTitle').textContent = d.title;
-        const subtitleEl = document.getElementById('noteSubtitle');
-        subtitleEl.textContent = d.subtitle || '';
-        subtitleEl.style.display = d.subtitle ? 'block' : 'none';
-
-        const tagListEl = document.getElementById('tagList');
-        if (d.tags && d.tags.length > 0) {
-          tagListEl.innerHTML = d.tags.map(t => `<span class="tag-badge">#${t}</span>`).join('');
-          tagListEl.style.display = 'flex';
-        } else { tagListEl.style.display = 'none'; }
-
-        document.getElementById('noteBody').innerHTML = markdownToHtml(d.content);
-
-        const tlList = document.getElementById('timelineList');
-        tlList.innerHTML = d.outline.map((item, i) =>
-          `<div class="timeline-item"><div class="timeline-num">${i+1}</div><div class="timeline-content"><div class="timeline-title">${item}</div></div></div>`
-        ).join('');
-
-        const summaryCards = document.getElementById('summaryCards');
-        summaryCards.innerHTML = `
-          <div class="summary-card"><div class="summary-card-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> AI 요약</div><div class="summary-card-body">${markdownToHtml(d.summary || d.content.split('\\n').slice(0,10).join('\\n'))}</div></div>
-          <div class="summary-card"><div class="summary-card-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> 핵심 포인트</div><div class="summary-card-body"><ul>${d.outline.map(item => `<li>${item}</li>`).join('')}</ul></div></div>`;
+        // Render tabs
+        renderDetailedReport(d);
+        renderKeyReport(d);
+        renderScriptTab('', d.source || 'subtitle');
+        document.getElementById('scriptBody').innerHTML =
+          '<div class="script-line" style="color:var(--text-secondary);">히스토리에서 불러옴</div>';
 
         document.getElementById('elapsedTime').textContent = '히스토리에서 불러옴';
+        document.getElementById('modelBadge').textContent = d.model === 'gpt-4o' ? 'GPT-4o' : 'GPT-4o-mini';
+        document.getElementById('modelToggleValue').textContent = d.model === 'gpt-4o' ? 'GPT-4o' : 'GPT-4o-mini';
+
         document.getElementById('heroSection').style.display = 'none';
         document.getElementById('resultPage').classList.add('active');
-        switchTemplate('blog');
+        switchPrimaryTab('detailed');
       } catch (e) { console.error('History item load error:', e); }
     }
 
@@ -1543,6 +2658,870 @@
         .replace(/<p><(h[123]|ul|li|blockquote)/g, '<$1')
         .replace(/<\/(h[123]|ul|li|blockquote)><\/p>/g, '</$1>');
     }
+
+    // ═══════════════════════════════════════════
+    // ══ Channel Script Extractor Logic       ══
+    // ═══════════════════════════════════════════
+    let chVideos = [];          // 로드된 영상 목록 [{ id, title, duration }]
+    let chTranscripts = {};     // videoId → { transcript, source, length }
+    let chSelected = new Set(); // 선택된 videoId 집합
+    let chCurrentPage = 1;
+    let chHasMore = false;
+    let chIsExtracting = false;
+    let chShouldStop = false;
+    let chChannelUrl = '';
+    let chSearchQuery = '';
+
+    const chUrlInput = document.getElementById('chUrlInput');
+    chUrlInput.addEventListener('keydown', e => { if (e.key === 'Enter') fetchChannelVideos(); });
+
+    function openChannelPage() {
+      document.getElementById('channelPage').classList.add('active');
+      setTimeout(() => chUrlInput.focus(), 100);
+    }
+
+    function closeChannelPage() {
+      if (chIsExtracting) {
+        if (!confirm('추출이 진행 중입니다. 정말 나가시겠습니까?')) return;
+        chShouldStop = true;
+      }
+      document.getElementById('channelPage').classList.remove('active');
+    }
+
+    async function fetchChannelVideos() {
+      const url = chUrlInput.value.trim();
+      if (!url) return;
+
+      // 유효성 검사 (느슨하게)
+      if (!url.includes('youtube.com/') && !url.includes('youtu.be/')) {
+        showError('유효한 YouTube 채널 또는 재생목록 URL이 아닙니다.');
+        return;
+      }
+
+      chChannelUrl = url;
+      chVideos = [];
+      chTranscripts = {};
+      chSelected = new Set();
+      chCurrentPage = 1;
+      chSearchQuery = '';
+      document.getElementById('chSearch').value = '';
+
+      const btn = document.getElementById('chFetchBtn');
+      btn.disabled = true;
+      btn.textContent = '불러오는 중...';
+
+      try {
+        const res = await fetch('/api/channel/videos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ channelUrl: url, page: 1, limit: 50 }),
+        });
+        const json = await res.json();
+
+        if (!json.success) {
+          showError(json.error || '영상 목록을 가져올 수 없습니다.');
+          return;
+        }
+
+        chVideos = json.data.videos;
+        chHasMore = json.data.hasMore;
+        chCurrentPage = 1;
+
+        if (chVideos.length === 0) {
+          showError('채널에 영상이 없거나 접근할 수 없습니다.');
+          return;
+        }
+
+        // UI 전환
+        document.getElementById('chEmpty').style.display = 'none';
+        document.getElementById('chControlsWrap').style.display = 'block';
+        document.getElementById('chLoadMore').style.display = chHasMore ? 'block' : 'none';
+
+        chRenderList();
+        chUpdateCounts();
+        document.getElementById('chFooterLeft').textContent = `${chVideos.length}개 영상 로드됨`;
+
+      } catch (e) {
+        showError('서버와 연결할 수 없습니다.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '영상 목록 가져오기';
+      }
+    }
+
+    async function chLoadMore() {
+      const btn = document.getElementById('chLoadMoreBtn');
+      btn.disabled = true;
+      btn.textContent = '불러오는 중...';
+
+      try {
+        chCurrentPage++;
+        const res = await fetch('/api/channel/videos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ channelUrl: chChannelUrl, page: chCurrentPage, limit: 50 }),
+        });
+        const json = await res.json();
+
+        if (json.success && json.data.videos.length > 0) {
+          chVideos = chVideos.concat(json.data.videos);
+          chHasMore = json.data.hasMore;
+          chRenderList();
+          chUpdateCounts();
+          document.getElementById('chFooterLeft').textContent = `${chVideos.length}개 영상 로드됨`;
+        } else {
+          chHasMore = false;
+        }
+
+        document.getElementById('chLoadMore').style.display = chHasMore ? 'block' : 'none';
+      } catch (e) {
+        showError('추가 목록을 불러올 수 없습니다.');
+        chCurrentPage--;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '더 불러오기 (50개씩)';
+      }
+    }
+
+    function chRenderList() {
+      const list = document.getElementById('chVideoList');
+      const query = chSearchQuery.toLowerCase();
+
+      list.innerHTML = chVideos.map((v, i) => {
+        // 검색 필터
+        if (query && !v.title.toLowerCase().includes(query)) return '';
+
+        const status = chGetStatus(v.id);
+        const isChecked = chSelected.has(v.id) ? 'checked' : '';
+
+        return `<div class="ch-video-item ${status}" id="chRow-${v.id}">
+          <input type="checkbox" class="ch-video-check" id="chCheck-${v.id}" ${isChecked} onchange="chUpdateSelection()">
+          <span class="ch-video-num">${i + 1}</span>
+          <div class="ch-video-thumb">
+            <img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" alt="" loading="lazy">
+          </div>
+          <div class="ch-video-info">
+            <div class="ch-video-title">${chEsc(v.title)}</div>
+            <div class="ch-video-meta">
+              ${v.duration ? '<span>' + v.duration + '</span>' : ''}
+              <span style="color:var(--text-secondary);">
+                <a href="https://youtube.com/watch?v=${v.id}" target="_blank" style="color:inherit;text-decoration:none;font-size:11px;" title="YouTube에서 보기">${v.id}</a>
+              </span>
+            </div>
+          </div>
+          <div class="ch-video-action">
+            ${chRenderAction(v.id)}
+          </div>
+        </div>
+        ${chRenderPreview(v.id)}`;
+      }).join('');
+
+      chUpdateSelection();
+    }
+
+    function chGetStatus(videoId) {
+      if (chTranscripts[videoId]) return chTranscripts[videoId].error ? 'failed' : 'done';
+      return '';
+    }
+
+    function chRenderAction(videoId) {
+      const data = chTranscripts[videoId];
+      if (!data) {
+        return `<button class="ch-extract-btn" onclick="chExtractSingle('${videoId}')" ${chIsExtracting ? 'disabled' : ''}>추출</button>`;
+      }
+      if (data.extracting) {
+        return `<span class="ch-status-badge extracting"><span class="ch-spinner"></span> 추출중</span>`;
+      }
+      if (data.error) {
+        return `<span class="ch-status-badge failed" title="${chEsc(data.error)}">실패</span>
+                <button class="ch-extract-btn" onclick="chExtractSingle('${videoId}')" style="margin-left:4px;">재시도</button>`;
+      }
+      return `<span class="ch-status-badge done" onclick="chTogglePreview('${videoId}')">&#10003; ${data.length.toLocaleString()}자</span>`;
+    }
+
+    function chRenderPreview(videoId) {
+      const data = chTranscripts[videoId];
+      if (!data || data.error || data.extracting) return '';
+      return `<div class="ch-transcript-preview" id="chPreview-${videoId}">
+        <div class="ch-transcript-text">${chEsc(data.transcript.slice(0, 800))}${data.transcript.length > 800 ? '...' : ''}</div>
+        <div class="ch-transcript-actions">
+          <button class="ch-transcript-action-btn" onclick="chCopyTranscript('${videoId}')">복사</button>
+          <button class="ch-transcript-action-btn" onclick="chDownloadSingle('${videoId}')">다운로드</button>
+          <button class="ch-transcript-action-btn" onclick="chTogglePreview('${videoId}')">닫기</button>
+        </div>
+      </div>`;
+    }
+
+    function chTogglePreview(videoId) {
+      const el = document.getElementById(`chPreview-${videoId}`);
+      if (el) el.classList.toggle('open');
+    }
+
+    function chEsc(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // ── Selection ──
+    function chToggleSelectAll() {
+      const checked = document.getElementById('chSelectAll').checked;
+      chVideos.forEach(v => {
+        if (checked) chSelected.add(v.id);
+        else chSelected.delete(v.id);
+      });
+      document.querySelectorAll('.ch-video-check').forEach(cb => { cb.checked = checked; });
+      chUpdateSelection();
+    }
+
+    function chUpdateSelection() {
+      // DOM에서 chSelected 동기화
+      document.querySelectorAll('.ch-video-check').forEach(cb => {
+        const videoId = cb.id.replace('chCheck-', '');
+        if (cb.checked) chSelected.add(videoId);
+        else chSelected.delete(videoId);
+      });
+
+      const count = chSelected.size;
+      const btn = document.getElementById('chBatchBtn');
+      btn.textContent = `선택 추출 (${count})`;
+      btn.disabled = count === 0 || chIsExtracting;
+
+      // 전체선택 체크박스 동기화
+      const allChecks = document.querySelectorAll('.ch-video-check');
+      const checkedCount = document.querySelectorAll('.ch-video-check:checked').length;
+      document.getElementById('chSelectAll').checked = allChecks.length > 0 && checkedCount === allChecks.length;
+    }
+
+    function chFilterVideos() {
+      chSearchQuery = document.getElementById('chSearch').value.trim();
+      chRenderList();
+    }
+
+    // ── Single Extraction ──
+    async function chExtractSingle(videoId) {
+      chTranscripts[videoId] = { extracting: true };
+      chUpdateRow(videoId);
+
+      try {
+        const res = await fetch('/api/channel/transcript', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ videoId }),
+        });
+        const json = await res.json();
+
+        if (!json.success) {
+          chTranscripts[videoId] = { error: json.error || '추출 실패' };
+        } else {
+          chTranscripts[videoId] = {
+            transcript: json.data.transcript,
+            source: json.data.source,
+            length: json.data.length,
+          };
+        }
+      } catch (e) {
+        chTranscripts[videoId] = { error: '네트워크 오류' };
+      }
+
+      chUpdateRow(videoId);
+      chUpdateCounts();
+    }
+
+    function chUpdateRow(videoId) {
+      const row = document.getElementById(`chRow-${videoId}`);
+      if (!row) return;
+
+      // 상태 클래스 업데이트
+      row.className = `ch-video-item ${chGetStatus(videoId)}`;
+
+      // 액션 영역 업데이트
+      const actionEl = row.querySelector('.ch-video-action');
+      if (actionEl) actionEl.innerHTML = chRenderAction(videoId);
+
+      // 프리뷰 영역 (done일 때만)
+      const existingPreview = document.getElementById(`chPreview-${videoId}`);
+      if (existingPreview) existingPreview.remove();
+
+      if (chTranscripts[videoId] && !chTranscripts[videoId].error && !chTranscripts[videoId].extracting) {
+        row.insertAdjacentHTML('afterend', chRenderPreview(videoId));
+      }
+    }
+
+    // ── Batch Extraction ──
+    async function chStartBatch() {
+      const videoIds = Array.from(chSelected)
+        .filter(id => !chTranscripts[id] || chTranscripts[id].error); // 이미 완료된 것 제외
+
+      if (videoIds.length === 0) {
+        showError('추출할 영상이 없습니다. (이미 추출된 영상은 건너뜁니다)');
+        return;
+      }
+
+      chIsExtracting = true;
+      chShouldStop = false;
+
+      // UI 업데이트
+      document.getElementById('chBatchBtn').style.display = 'none';
+      document.getElementById('chStopBtn').style.display = 'flex';
+      document.getElementById('chProgress').classList.add('active');
+      document.querySelectorAll('.ch-extract-btn').forEach(b => b.disabled = true);
+
+      let completed = 0;
+      const total = videoIds.length;
+
+      chUpdateProgress(completed, total);
+
+      for (const videoId of videoIds) {
+        if (chShouldStop) break;
+
+        chTranscripts[videoId] = { extracting: true };
+        chUpdateRow(videoId);
+        document.getElementById('chProgressLabel').textContent = `추출 중... (${videoId})`;
+
+        try {
+          const res = await fetch('/api/channel/transcript', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ videoId }),
+          });
+          const json = await res.json();
+
+          if (!json.success) {
+            chTranscripts[videoId] = { error: json.error || '추출 실패' };
+          } else {
+            chTranscripts[videoId] = {
+              transcript: json.data.transcript,
+              source: json.data.source,
+              length: json.data.length,
+            };
+          }
+        } catch (e) {
+          chTranscripts[videoId] = { error: '네트워크 오류' };
+        }
+
+        completed++;
+        chUpdateRow(videoId);
+        chUpdateProgress(completed, total);
+        chUpdateCounts();
+      }
+
+      // 완료
+      chIsExtracting = false;
+      chShouldStop = false;
+
+      document.getElementById('chBatchBtn').style.display = 'flex';
+      document.getElementById('chStopBtn').style.display = 'none';
+      document.querySelectorAll('.ch-extract-btn').forEach(b => b.disabled = false);
+
+      if (completed === total) {
+        document.getElementById('chProgressLabel').textContent = `추출 완료!`;
+      } else {
+        document.getElementById('chProgressLabel').textContent = `중지됨 (${completed}/${total})`;
+      }
+
+      chUpdateSelection();
+    }
+
+    function chStopBatch() {
+      chShouldStop = true;
+      document.getElementById('chStopBtn').textContent = '중지 중...';
+    }
+
+    function chUpdateProgress(completed, total) {
+      const pct = total > 0 ? (completed / total * 100) : 0;
+      document.getElementById('chProgressFill').style.width = pct + '%';
+      document.getElementById('chProgressCount').textContent = `${completed} / ${total}`;
+    }
+
+    function chUpdateCounts() {
+      const total = chVideos.length;
+      const extracted = Object.values(chTranscripts).filter(t => t.transcript && !t.error).length;
+      const failed = Object.values(chTranscripts).filter(t => t.error).length;
+
+      document.getElementById('chVideoCount').textContent = `${total}개 영상`;
+
+      const badge = document.getElementById('chExtractedCount');
+      if (extracted > 0) {
+        badge.textContent = `${extracted}개 추출 완료${failed > 0 ? ` · ${failed}개 실패` : ''}`;
+        badge.style.display = 'inline';
+      } else {
+        badge.style.display = 'none';
+      }
+
+      // 다운로드 + 전자책 버튼
+      document.getElementById('chDownloadBtn').disabled = extracted === 0;
+      document.getElementById('chEbookBtn').disabled = extracted < 2;
+
+      document.getElementById('chFooterLeft').textContent =
+        `${total}개 영상 · ${extracted}개 추출 완료${failed > 0 ? ` · ${failed}개 실패` : ''}`;
+    }
+
+    // ── Download ──
+    function chCopyTranscript(videoId) {
+      const data = chTranscripts[videoId];
+      if (!data || !data.transcript) return;
+      const video = chVideos.find(v => v.id === videoId);
+      const text = `[${video ? video.title : videoId}]\n\n${data.transcript}`;
+      navigator.clipboard.writeText(text).then(() => {
+        const badge = document.querySelector(`#chRow-${videoId} .ch-status-badge.done`);
+        if (badge) {
+          const orig = badge.innerHTML;
+          badge.innerHTML = '&#10003; 복사됨';
+          setTimeout(() => { badge.innerHTML = orig; }, 1500);
+        }
+      });
+    }
+
+    function chDownloadSingle(videoId) {
+      const data = chTranscripts[videoId];
+      if (!data || !data.transcript) return;
+      const video = chVideos.find(v => v.id === videoId);
+      const filename = `${(video ? video.title : videoId).replace(/[\/\\:*?"<>|]/g, '_')}.txt`;
+      const blob = new Blob([data.transcript], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function chDownloadAll() {
+      const entries = chVideos
+        .filter(v => chTranscripts[v.id] && chTranscripts[v.id].transcript)
+        .map(v => `${'='.repeat(60)}\n[${v.title}]\nhttps://youtube.com/watch?v=${v.id}\n${'='.repeat(60)}\n\n${chTranscripts[v.id].transcript}\n\n`);
+
+      if (entries.length === 0) return;
+
+      const text = `채널 스크립트 추출 결과\n추출일: ${new Date().toLocaleString('ko-KR')}\n총 ${entries.length}개 영상\n\n` + entries.join('\n');
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `channel-scripts-${new Date().toISOString().slice(0,10)}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ═══════════════════════════════════════════
+    // ══ Ebook Generator Logic                ══
+    // ═══════════════════════════════════════════
+    let ebookModel = 'gpt-4o-mini';
+    let ebookChapters = [];   // { videoId, title, transcript }
+    let ebookData = null;     // { title, subtitle, markdown, chapterTitles }
+    let ebookGenerating = false;
+
+    function selectEbookModel(el) {
+      el.parentElement.querySelectorAll('.option-pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      ebookModel = el.dataset.value;
+    }
+
+    function chStartEbook() {
+      // 추출 완료된 스크립트가 있는 영상만 수집
+      const selected = Array.from(chSelected)
+        .filter(id => chTranscripts[id] && chTranscripts[id].transcript)
+        .map(id => ({
+          videoId: id,
+          title: chVideos.find(v => v.id === id)?.title || id,
+          transcript: chTranscripts[id].transcript,
+        }));
+
+      if (selected.length < 2) {
+        showError('전자책을 만들려면 스크립트가 추출된 영상이 2개 이상 필요합니다.');
+        return;
+      }
+      if (selected.length > 20) {
+        showError('최대 20개 영상까지 선택할 수 있습니다.');
+        return;
+      }
+
+      ebookChapters = selected;
+      openEbookPage();
+    }
+
+    function openEbookPage() {
+      // 셋업 상태로 초기화
+      document.querySelectorAll('.eb-state').forEach(s => s.classList.remove('active'));
+      document.getElementById('ebSetup').classList.add('active');
+
+      // 챕터 목록 렌더
+      document.getElementById('ebChapterList').innerHTML = ebookChapters.map((c, i) =>
+        `<div class="eb-chapter-item">
+          <div class="eb-chapter-num">${i + 1}</div>
+          <div class="eb-chapter-title">${chEsc(c.title)}</div>
+        </div>`
+      ).join('');
+
+      document.getElementById('ebFooter').textContent = `${ebookChapters.length}개 영상 선택됨`;
+      document.getElementById('ebookPage').classList.add('active');
+    }
+
+    function closeEbookPage() {
+      if (ebookGenerating) {
+        if (!confirm('전자책 생성이 진행 중입니다. 정말 나가시겠습니까?')) return;
+      }
+      ebookGenerating = false;
+      document.getElementById('ebookPage').classList.remove('active');
+    }
+
+    async function ebGenerate() {
+      ebookGenerating = true;
+      const btn = document.getElementById('ebStartBtn');
+      btn.disabled = true;
+
+      // 진행 상태로 전환
+      document.querySelectorAll('.eb-state').forEach(s => s.classList.remove('active'));
+      document.getElementById('ebProgress').classList.add('active');
+
+      const totalSteps = ebookChapters.length + 3; // 아웃라인 + 서론 + N챕터 + 결론
+      let currentStep = 0;
+
+      // 스텝 목록 생성
+      const stepNames = ['아웃라인 구성', '서론 작성'];
+      ebookChapters.forEach((_, i) => stepNames.push(`제${i + 1}장 작성`));
+      stepNames.push('결론 작성');
+
+      document.getElementById('ebSteps').innerHTML = stepNames.map((name, i) =>
+        `<div class="eb-step" id="ebStep-${i}">
+          <div class="eb-step-icon">&#10003;</div>
+          <span>${name}</span>
+        </div>`
+      ).join('');
+
+      function setStep(idx, status) {
+        const el = document.getElementById(`ebStep-${idx}`);
+        if (!el) return;
+        el.className = `eb-step ${status}`;
+      }
+
+      function updateBar() {
+        const pct = Math.round(currentStep / totalSteps * 100);
+        document.getElementById('ebProgressFill').style.width = pct + '%';
+        document.getElementById('ebProgressPct').textContent = pct + '%';
+      }
+
+      try {
+        // ── 1. 아웃라인 ──
+        setStep(0, 'active');
+        document.getElementById('ebProgressLabel').textContent = '아웃라인 구성 중...';
+        updateBar();
+
+        const outlineRes = await fetch('/api/ebook/outline', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chapters: ebookChapters.map(c => ({
+              videoId: c.videoId,
+              title: c.title,
+              transcriptPreview: c.transcript.slice(0, 500),
+            })),
+            model: ebookModel,
+          }),
+        });
+        const outlineJson = await outlineRes.json();
+        if (!outlineJson.success) throw new Error(outlineJson.error || '아웃라인 생성 실패');
+        const outline = outlineJson.data;
+
+        setStep(0, 'done');
+        currentStep++;
+        updateBar();
+
+        // 챕터 순서 재배열
+        const orderedChapters = (outline.chapterOrder || ebookChapters.map((_, i) => i))
+          .map(i => ebookChapters[i])
+          .filter(Boolean);
+        const chapterTitles = outline.chapterTitles || orderedChapters.map(c => c.title);
+
+        // ── 2. 서론 ──
+        setStep(1, 'active');
+        document.getElementById('ebProgressLabel').textContent = '서론 작성 중...';
+
+        const introRes = await fetch('/api/ebook/intro-conclusion', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'intro',
+            ebookTitle: outline.title,
+            ebookSubtitle: outline.subtitle,
+            chapterTitles,
+            chapterSummaries: orderedChapters.map(c => c.transcript.slice(0, 300)),
+            direction: outline.introDirection || '',
+            model: ebookModel,
+          }),
+        });
+        const introJson = await introRes.json();
+        const introContent = introJson.success ? introJson.data.content : '[서론 생성 실패]';
+
+        setStep(1, introJson.success ? 'done' : 'failed');
+        currentStep++;
+        updateBar();
+
+        // ── 3. 챕터들 ──
+        const chaptersContent = [];
+        for (let i = 0; i < orderedChapters.length; i++) {
+          const stepIdx = 2 + i;
+          setStep(stepIdx, 'active');
+          document.getElementById('ebProgressLabel').textContent = `제${i + 1}장 작성 중...`;
+
+          try {
+            const chapRes = await fetch('/api/ebook/chapter', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                transcript: orderedChapters[i].transcript,
+                chapterTitle: chapterTitles[i],
+                chapterNum: i + 1,
+                totalChapters: orderedChapters.length,
+                ebookTitle: outline.title,
+                model: ebookModel,
+              }),
+            });
+            const chapJson = await chapRes.json();
+            if (chapJson.success) {
+              chaptersContent.push(chapJson.data.content);
+              setStep(stepIdx, 'done');
+            } else {
+              chaptersContent.push(`[제${i + 1}장 생성 실패: ${chapJson.error}]`);
+              setStep(stepIdx, 'failed');
+            }
+          } catch (e) {
+            chaptersContent.push(`[제${i + 1}장 생성 실패: 네트워크 오류]`);
+            setStep(stepIdx, 'failed');
+          }
+
+          currentStep++;
+          updateBar();
+        }
+
+        // ── 4. 결론 ──
+        const conclStepIdx = 2 + orderedChapters.length;
+        setStep(conclStepIdx, 'active');
+        document.getElementById('ebProgressLabel').textContent = '결론 작성 중...';
+
+        const conclRes = await fetch('/api/ebook/intro-conclusion', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'conclusion',
+            ebookTitle: outline.title,
+            ebookSubtitle: outline.subtitle,
+            chapterTitles,
+            chapterSummaries: chaptersContent.map(c => c.slice(0, 300)),
+            direction: outline.conclusionDirection || '',
+            model: ebookModel,
+          }),
+        });
+        const conclJson = await conclRes.json();
+        const conclContent = conclJson.success ? conclJson.data.content : '[결론 생성 실패]';
+
+        setStep(conclStepIdx, conclJson.success ? 'done' : 'failed');
+        currentStep++;
+        updateBar();
+
+        // ── 5. 조합 + 프리뷰 ──
+        ebookData = assembleEbook(outline, introContent, chaptersContent, conclContent, chapterTitles);
+
+        document.getElementById('ebProgressTitle').textContent = '전자책 생성 완료!';
+        document.getElementById('ebProgressLabel').textContent = '완료';
+        document.getElementById('ebFooter').textContent = `전자책 생성 완료 · ${ebookData.markdown.length.toLocaleString()}자`;
+
+        // 1초 후 프리뷰로 전환
+        await delay(1000);
+        renderEbookPreview();
+        document.querySelectorAll('.eb-state').forEach(s => s.classList.remove('active'));
+        document.getElementById('ebPreview').classList.add('active');
+
+      } catch (e) {
+        document.getElementById('ebProgressTitle').textContent = '생성 실패';
+        document.getElementById('ebProgressLabel').textContent = e.message || '알 수 없는 오류';
+        showError(e.message || '전자책 생성에 실패했습니다.');
+      } finally {
+        ebookGenerating = false;
+        btn.disabled = false;
+      }
+    }
+
+    function assembleEbook(outline, intro, chapters, conclusion, chapterTitles) {
+      let md = `# ${outline.title}\n\n`;
+      md += `*${outline.subtitle}*\n\n`;
+      md += `---\n\n`;
+
+      // 목차
+      md += `## 목차\n\n`;
+      md += `- 서론\n`;
+      chapterTitles.forEach((t, i) => { md += `- 제${i + 1}장: ${t}\n`; });
+      md += `- 결론\n`;
+      md += `\n---\n\n`;
+
+      // 서론
+      md += `## 서론\n\n${intro}\n\n---\n\n`;
+
+      // 챕터
+      chapters.forEach((content, i) => {
+        md += `## 제${i + 1}장: ${chapterTitles[i]}\n\n${content}\n\n---\n\n`;
+      });
+
+      // 결론
+      md += `## 결론\n\n${conclusion}\n`;
+
+      return {
+        title: outline.title,
+        subtitle: outline.subtitle,
+        markdown: md,
+        chapterTitles,
+      };
+    }
+
+    function renderEbookPreview() {
+      if (!ebookData) return;
+
+      document.getElementById('ebPreviewTitle').textContent = ebookData.title;
+      document.getElementById('ebPreviewSubtitle').textContent = ebookData.subtitle;
+
+      // 목차
+      let tocHtml = `<div class="eb-toc-item" onclick="document.getElementById('eb-intro').scrollIntoView({behavior:'smooth'})">
+        <span class="eb-toc-num">-</span><span>서론</span></div>`;
+      ebookData.chapterTitles.forEach((t, i) => {
+        tocHtml += `<div class="eb-toc-item" onclick="document.getElementById('eb-ch-${i}').scrollIntoView({behavior:'smooth'})">
+          <span class="eb-toc-num">제${i + 1}장</span><span>${chEsc(t)}</span></div>`;
+      });
+      tocHtml += `<div class="eb-toc-item" onclick="document.getElementById('eb-concl').scrollIntoView({behavior:'smooth'})">
+        <span class="eb-toc-num">-</span><span>결론</span></div>`;
+      document.getElementById('ebTocList').innerHTML = tocHtml;
+
+      // 본문 — 마크다운을 섹션별로 파싱
+      const sections = ebookData.markdown.split(/^---$/gm).filter(s => s.trim());
+      // sections[0] = 제목+부제, [1] = 목차, [2] = 서론, [3..N+2] = 챕터들, [N+3] = 결론
+      let contentHtml = '';
+
+      // 서론
+      const introMd = sections[2] || '';
+      contentHtml += `<div class="eb-chapter" id="eb-intro">
+        <div class="eb-chapter-heading"><span>서론</span></div>
+        <div class="eb-section-body">${markdownToHtml(introMd.replace(/^## 서론\s*/m, ''))}</div>
+      </div><hr class="eb-divider">`;
+
+      // 챕터들
+      ebookData.chapterTitles.forEach((title, i) => {
+        const secMd = sections[3 + i] || '';
+        const bodyMd = secMd.replace(/^## 제\d+장:.*$/m, '').trim();
+        contentHtml += `<div class="eb-chapter" id="eb-ch-${i}">
+          <div class="eb-chapter-heading"><span class="num">제${i + 1}장</span> <span>${chEsc(title)}</span></div>
+          <div class="eb-section-body">${markdownToHtml(bodyMd)}</div>
+        </div><hr class="eb-divider">`;
+      });
+
+      // 결론
+      const conclIdx = 3 + ebookData.chapterTitles.length;
+      const conclMd = sections[conclIdx] || '';
+      contentHtml += `<div class="eb-chapter" id="eb-concl">
+        <div class="eb-chapter-heading"><span>결론</span></div>
+        <div class="eb-section-body">${markdownToHtml(conclMd.replace(/^## 결론\s*/m, ''))}</div>
+      </div>`;
+
+      document.getElementById('ebContent').innerHTML = contentHtml;
+    }
+
+    function ebDownloadMd() {
+      if (!ebookData) return;
+      const blob = new Blob([ebookData.markdown], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${ebookData.title || 'ebook'}.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function ebDownloadHtml() {
+      if (!ebookData) return;
+      const html = `<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><title>${chEsc(ebookData.title)}</title>
+<style>
+body{font-family:'Pretendard',system-ui,sans-serif;max-width:800px;margin:0 auto;padding:40px 20px;line-height:1.85;color:#333;}
+h1{font-size:28px;margin-bottom:8px;text-align:center;}
+h2{font-size:22px;margin-top:48px;padding-bottom:8px;border-bottom:2px solid #333;}
+h3{font-size:18px;margin-top:24px;}
+hr{border:none;border-top:1px solid #eee;margin:40px 0;}
+p{margin-bottom:14px;}
+strong{color:#111;}
+blockquote{margin:16px 0;padding:12px 16px;border-left:3px solid #6663FD;background:#F5F3FF;border-radius:0 8px 8px 0;}
+ul,ol{padding-left:24px;}li{margin-bottom:6px;}
+</style></head>
+<body>${markdownToHtml(ebookData.markdown)}</body></html>`;
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${ebookData.title || 'ebook'}.html`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function ebDownloadPdf(btn) {
+      if (!ebookData) return;
+      const origText = btn.innerHTML;
+      btn.innerHTML = '<span class="ch-spinner"></span> PDF 생성 중...';
+      btn.disabled = true;
+
+      const html = `<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><title>${chEsc(ebookData.title)}</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+body{font-family:'Pretendard Variable',system-ui,sans-serif;max-width:100%;margin:0;padding:0 20px;line-height:1.85;color:#333;font-size:11pt;}
+h1{font-size:24pt;margin-bottom:4px;text-align:center;page-break-after:avoid;}
+h1+p{text-align:center;color:#666;font-style:italic;margin-bottom:32px;}
+h2{font-size:16pt;margin-top:36px;padding-bottom:6px;border-bottom:2px solid #333;page-break-after:avoid;}
+h3{font-size:13pt;margin-top:20px;page-break-after:avoid;}
+hr{border:none;border-top:1px solid #ddd;margin:28px 0;page-break-after:avoid;}
+p{margin-bottom:12px;text-align:justify;orphans:3;widows:3;}
+strong{color:#111;}
+blockquote{margin:14px 0;padding:10px 14px;border-left:3px solid #6663FD;background:#F5F3FF;border-radius:0 6px 6px 0;font-size:10pt;}
+ul,ol{padding-left:22px;}li{margin-bottom:4px;line-height:1.7;}
+</style></head>
+<body>${markdownToHtml(ebookData.markdown)}</body></html>`;
+
+      try {
+        const res = await fetch('/api/ebook/pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ html, title: ebookData.title }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || 'PDF 생성 실패');
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${ebookData.title || 'ebook'}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        showError(e.message || 'PDF 다운로드에 실패했습니다.');
+      } finally {
+        btn.innerHTML = origText;
+        btn.disabled = false;
+      }
+    }
+
+    function ebCopyAll() {
+      if (!ebookData) return;
+      navigator.clipboard.writeText(ebookData.markdown).then(() => {
+        document.getElementById('ebFooter').textContent = '클립보드에 복사됨!';
+        setTimeout(() => {
+          document.getElementById('ebFooter').textContent = `전자책 · ${ebookData.markdown.length.toLocaleString()}자`;
+        }, 2000);
+      });
+    }
+
   </script>
 </body>
 </html>

@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>뇌울림 — 가격 분석</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+    color: #ccd6f6;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+.container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+
+/* Header */
+.header { text-align: center; margin-bottom: 48px; }
+.header h1 {
+    font-size: 32px; font-weight: 700;
+    background: linear-gradient(135deg, #64ffda, #48c6ef, #6c63ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+}
+.header .subtitle { color: #8892b0; font-size: 15px; }
+.header .date-badge {
+    display: inline-block; margin-top: 12px; padding: 6px 16px;
+    background: rgba(100,255,218,0.08); border: 1px solid rgba(100,255,218,0.2);
+    border-radius: 20px; font-size: 12px; color: #64ffda;
+}
+
+/* Section Title */
+.section-title {
+    font-size: 20px; font-weight: 600; margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+}
+.section-title::before {
+    content: ""; width: 4px; height: 24px;
+    background: linear-gradient(180deg, #64ffda, #48c6ef);
+    border-radius: 2px;
+}
+
+/* Cards */
+.card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px; padding: 28px; margin-bottom: 24px;
+}
+.card-highlight {
+    border-color: rgba(100,255,218,0.2);
+    background: rgba(100,255,218,0.02);
+}
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+
+/* KPI Summary Cards */
+.summary-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 20px; text-align: center;
+}
+.summary-card .label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    color: #8892b0; margin-bottom: 8px;
+}
+.summary-card .value { font-size: 28px; font-weight: 700; color: #64ffda; }
+.summary-card .value.danger { color: #ff6b6b; }
+.summary-card .value.warning { color: #ffc107; }
+.summary-card .sub { font-size: 12px; color: #8892b0; margin-top: 4px; }
+.summary-card .change {
+    display: inline-block; margin-top: 6px; padding: 2px 8px;
+    border-radius: 10px; font-size: 11px; font-weight: 600;
+}
+.change.up { background: rgba(100,255,218,0.15); color: #64ffda; }
+.change.down { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+
+/* Chart container */
+.chart-wrap { position: relative; height: 350px; margin-top: 16px; }
+.chart-wrap-tall { position: relative; height: 420px; margin-top: 16px; }
+
+/* Year Tab */
+.year-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.year-tab {
+    padding: 8px 20px; border-radius: 10px; cursor: pointer;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    color: #8892b0; font-size: 13px; font-weight: 500; transition: all .2s;
+}
+.year-tab.active {
+    background: rgba(100,255,218,0.1); border-color: rgba(100,255,218,0.3);
+    color: #64ffda;
+}
+
+/* Data Table */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
+.data-table th {
+    text-align: left; padding: 10px 12px; border-bottom: 2px solid rgba(255,255,255,0.1);
+    color: #8892b0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+    font-weight: 600;
+}
+.data-table td {
+    padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.price-up { color: #ff6b6b; font-weight: 600; }
+.price-same { color: #8892b0; }
+.stockout { color: #ffc107; font-size: 11px; }
+.badge-season {
+    display: inline-block; padding: 2px 8px; border-radius: 8px;
+    font-size: 10px; font-weight: 600;
+}
+.badge-peak { background: rgba(100,255,218,0.15); color: #64ffda; }
+.badge-off { background: rgba(255,255,255,0.08); color: #8892b0; }
+.badge-transition { background: rgba(255,193,7,0.15); color: #ffc107; }
+
+/* Insight Cards */
+.insight-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.insight-card {
+    background: rgba(255,255,255,0.03); border-radius: 16px; padding: 24px;
+    border-left: 3px solid;
+}
+.insight-card.positive { border-left-color: #64ffda; }
+.insight-card.negative { border-left-color: #ff6b6b; }
+.insight-card.neutral { border-left-color: #ffc107; }
+.insight-card .insight-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.insight-card .insight-body { font-size: 13px; color: #a8b2d1; line-height: 1.8; }
+.insight-card .insight-body .hl-mint { color: #64ffda; font-weight: 600; }
+.insight-card .insight-body .hl-red { color: #ff6b6b; font-weight: 600; }
+.insight-card .insight-body .hl-yellow { color: #ffc107; font-weight: 600; }
+
+/* Action Timeline */
+.action-timeline { position: relative; padding-left: 28px; }
+.action-timeline::before {
+    content: ""; position: absolute; left: 8px; top: 0; bottom: 0;
+    width: 2px; background: rgba(100,255,218,0.2);
+}
+.action-item {
+    position: relative; margin-bottom: 24px; padding: 20px;
+    background: rgba(255,255,255,0.03); border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+.action-item::before {
+    content: ""; position: absolute; left: -24px; top: 24px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #64ffda; border: 3px solid #1a1a2e;
+}
+.action-item.urgent { border-color: rgba(255,107,107,0.3); }
+.action-item.urgent::before { background: #ff6b6b; }
+.action-timing { font-size: 11px; color: #64ffda; font-weight: 600; margin-bottom: 6px; letter-spacing: 0.5px; }
+.action-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+.action-desc { font-size: 13px; color: #a8b2d1; line-height: 1.6; }
+.action-tags { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+.action-tag {
+    padding: 3px 10px; border-radius: 8px; font-size: 11px;
+    background: rgba(100,255,218,0.08); color: #64ffda;
+}
+.action-tag.warn { background: rgba(255,193,7,0.1); color: #ffc107; }
+
+/* Elasticity meter */
+.elasticity-meter {
+    display: flex; align-items: center; gap: 12px; margin: 10px 0;
+}
+.meter-bar {
+    flex: 1; height: 8px; background: rgba(255,255,255,0.05);
+    border-radius: 4px; overflow: hidden;
+}
+.meter-fill {
+    height: 100%; border-radius: 4px; transition: width .3s;
+}
+.meter-label { font-size: 12px; font-weight: 600; min-width: 60px; text-align: right; }
+
+/* Comparison arrow */
+.compare-arrow { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+.compare-val { font-size: 18px; font-weight: 700; }
+.compare-icon { color: #8892b0; font-size: 20px; }
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .grid-5 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3, .grid-2, .insight-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+    .grid-5 { grid-template-columns: repeat(2, 1fr); }
+    .container { padding: 20px 12px; }
+    .header h1 { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+    <h1>🔒 뇌울림L 가격변동 × 판매량 분석</h1>
+    <div class="subtitle">Price Elasticity & Seasonal Demand Analysis</div>
+    <div class="date-badge">📅 분석 기간: 2023년 5월~10월 / 2025년 3월~5월</div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 1: 핵심 KPI 요약 -->
+<!-- ============================================ -->
+<div class="section-title">핵심 요약 — 2023 vs 2025 가격 인상 이력</div>
+<div class="grid-2" style="margin-bottom: 32px;">
+    <!-- 2023 Summary -->
+    <div class="card">
+        <div style="font-size:14px; font-weight:600; color:#8892b0; margin-bottom:16px;">📦 2023년 (5월~10월 · 성수기)</div>
+        <div class="grid-2" style="gap:12px;">
+            <div class="summary-card">
+                <div class="label">케이블타입 가격대</div>
+                <div class="value" style="font-size:18px;">36,800 → 56,800</div>
+                <div class="sub">+20,000원 (+54%)</div>
+                <div class="change down">7회 인상</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">쇠사슬타입 가격대</div>
+                <div class="value" style="font-size:18px;">41,800 → 64,800</div>
+                <div class="sub">+23,000원 (+55%)</div>
+                <div class="change down">7회 인상</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">케이블 총 판매</div>
+                <div class="value" style="font-size:22px;">562개</div>
+                <div class="sub">매출 27,835,600원</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">쇠사슬 총 판매</div>
+                <div class="value" style="font-size:22px;">669개</div>
+                <div class="sub">매출 35,145,200원</div>
+            </div>
+        </div>
+    </div>
+    <!-- 2025 Summary -->
+    <div class="card">
+        <div style="font-size:14px; font-weight:600; color:#8892b0; margin-bottom:16px;">🚀 2025년 (3월~5월 · 비수기→성수기 전환)</div>
+        <div class="grid-2" style="gap:12px;">
+            <div class="summary-card">
+                <div class="label">케이블타입 가격대</div>
+                <div class="value" style="font-size:18px;">56,800 → 64,800</div>
+                <div class="sub">+8,000원 (+14%)</div>
+                <div class="change down">2회 인상 (3천+5천)</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">쇠사슬타입 가격대</div>
+                <div class="value" style="font-size:18px;">64,800 → 72,800</div>
+                <div class="sub">+8,000원 (+12%)</div>
+                <div class="change down">2회 인상 (3천+5천)</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">케이블 총 판매</div>
+                <div class="value" style="font-size:22px;">219개</div>
+                <div class="sub">매출 13,534,400원</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">쇠사슬 총 판매</div>
+                <div class="value" style="font-size:22px;">323개</div>
+                <div class="sub">매출 22,599,400원</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 2: 2023 가격변동 × 판매량 차트 -->
+<!-- ============================================ -->
+<div class="section-title">2023년 가격변동 × 판매량 추이 (성수기 5~10월)</div>
+<div class="grid-2" style="margin-bottom: 32px;">
+    <div class="card">
+        <div style="font-size:14px; font-weight:600; margin-bottom:4px;">🔗 케이블타입</div>
+        <div style="font-size:12px; color:#8892b0; margin-bottom:8px;">36,800원 → 56,800원 · 7회 인상 · 총 562개</div>
+        <div class="chart-wrap-tall"><canvas id="chart23Cable"></canvas></div>
+    </div>
+    <div class="card">
+        <div style="font-size:14px; font-weight:600; margin-bottom:4px;">⛓️ 쇠사슬타입</div>
+        <div style="font-size:12px; color:#8892b0; margin-bottom:8px;">41,800원 → 64,800원 · 7회 인상 · 총 669개</div>
+        <div class="chart-wrap-tall"><canvas id="chart23Chain"></canvas></div>
+    </div>
+</div>
+
+<!-- 2023 Data Table -->
+<div class="card" style="margin-bottom:32px;">
+    <div style="font-size:14px; font-weight:600; margin-bottom:16px;">📋 2023년 주차별 상세 데이터</div>
+    <div style="overflow-x:auto;">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>기간</th>
+                <th>시즌</th>
+                <th>케이블 가격</th>
+                <th>케이블 판매</th>
+                <th>쇠사슬 가격</th>
+                <th>쇠사슬 판매</th>
+                <th>비고</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>5.9~15</td><td><span class="badge-season badge-peak">성수기</span></td><td>36,800</td><td>42</td><td>41,800</td><td>75</td><td></td></tr>
+            <tr><td>5.16~22</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-up">39,800 ↑</td><td>27 <span style="color:#ff6b6b;font-size:11px;">(-36%)</span></td><td class="price-up">44,800 ↑</td><td>39 <span style="color:#ff6b6b;font-size:11px;">(-48%)</span></td><td class="stockout">⚡ 첫 인상</td></tr>
+            <tr><td>6.13~19</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-same">39,800</td><td>29</td><td class="price-same">44,800</td><td>61</td><td></td></tr>
+            <tr><td>6.20~26</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-up">42,800 ↑</td><td>50 <span style="color:#64ffda;font-size:11px;">(+72%)</span></td><td class="price-up">47,800 ↑</td><td>77 <span style="color:#64ffda;font-size:11px;">(+26%)</span></td><td>시즌 피크 진입</td></tr>
+            <tr><td>6.28~7.4</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-up">45,800 ↑</td><td>51</td><td class="price-up">50,800 ↑</td><td>72</td><td></td></tr>
+            <tr><td>7.5~11</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-up">48,800 ↑</td><td style="color:#ffc107;">0 (품절)</td><td class="price-up">53,800 ↑</td><td style="color:#64ffda;font-weight:600;">94 🔥</td><td class="stockout">⚠️ 케이블 품절</td></tr>
+            <tr><td>7.25~31</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-same">48,800</td><td>46</td><td class="price-same">53,800</td><td>65</td><td></td></tr>
+            <tr><td>8.1~7</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-up">51,800 ↑</td><td style="color:#64ffda;font-weight:600;">56 🔥</td><td class="price-up">59,800 ↑</td><td>35</td><td class="stockout">⚠️ 쇠사슬 8/7 품절</td></tr>
+            <tr><td>8.8~14</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-same">51,800</td><td>55</td><td class="price-same">59,800</td><td>22</td><td class="stockout">⚠️ 양쪽 품절 시작</td></tr>
+            <tr><td>8.15~21</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-same">51,800</td><td style="color:#ffc107;">10 (품절)</td><td class="price-same">59,800</td><td style="color:#ffc107;">10 (품절)</td><td class="stockout">❌ 완전 품절</td></tr>
+            <tr><td>8.22~28</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-same">51,800</td><td>12</td><td class="price-same">59,800</td><td>16</td><td>8/25 재입고</td></tr>
+            <tr><td>8.30~9.5</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-up">56,800 ↑</td><td>50</td><td class="price-up">64,800 ↑</td><td>32</td><td class="stockout">⚠️ 쇠사슬 9/1 품절</td></tr>
+            <tr><td>9.6~12</td><td><span class="badge-season badge-transition">시즌 후반</span></td><td class="price-same">56,800</td><td>51</td><td class="price-same">64,800</td><td style="color:#ffc107;">1 (품절)</td><td></td></tr>
+            <tr><td>9.13~19</td><td><span class="badge-season badge-transition">시즌 후반</span></td><td class="price-same">56,800</td><td>11</td><td class="price-same">64,800</td><td style="color:#ffc107;">0 (품절)</td><td></td></tr>
+            <tr><td>9.20~26</td><td><span class="badge-season badge-transition">시즌 후반</span></td><td class="price-same">56,800</td><td>47</td><td class="price-same">64,800</td><td>54</td><td>9/20 재입고</td></tr>
+            <tr><td>9.27~10.3</td><td><span class="badge-season badge-off">비수기 전환</span></td><td class="price-same">56,800</td><td>25</td><td class="price-same">64,800</td><td>16</td><td>추석연휴</td></tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 3: 2025 가격변동 × 판매량 차트 -->
+<!-- ============================================ -->
+<div class="section-title">2025년 가격변동 × 판매량 추이 (비수기→성수기 전환)</div>
+<div class="grid-2" style="margin-bottom: 32px;">
+    <div class="card">
+        <div style="font-size:14px; font-weight:600; margin-bottom:4px;">🔗 케이블타입</div>
+        <div style="font-size:12px; color:#8892b0; margin-bottom:8px;">56,800원 → 64,800원 · 2회 인상 · 총 219개 (8주)</div>
+        <div class="chart-wrap-tall"><canvas id="chart25Cable"></canvas></div>
+    </div>
+    <div class="card">
+        <div style="font-size:14px; font-weight:600; margin-bottom:4px;">⛓️ 쇠사슬타입</div>
+        <div style="font-size:12px; color:#8892b0; margin-bottom:8px;">64,800원 → 72,800원 · 2회 인상 · 총 323개 (8주)</div>
+        <div class="chart-wrap-tall"><canvas id="chart25Chain"></canvas></div>
+    </div>
+</div>
+
+<!-- 2025 Data Table -->
+<div class="card" style="margin-bottom:32px;">
+    <div style="font-size:14px; font-weight:600; margin-bottom:16px;">📋 2025년 주차별 상세 데이터</div>
+    <div style="overflow-x:auto;">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>기간</th>
+                <th>시즌</th>
+                <th>케이블 가격</th>
+                <th>케이블 판매</th>
+                <th>일평균</th>
+                <th>쇠사슬 가격</th>
+                <th>쇠사슬 판매</th>
+                <th>일평균</th>
+                <th>비고</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>3.10~16</td><td><span class="badge-season badge-off">비수기</span></td><td>56,800</td><td>38</td><td>5.4</td><td>64,800</td><td>45</td><td>6.4</td><td></td></tr>
+            <tr><td>3.17~23</td><td><span class="badge-season badge-off">비수기</span></td><td class="price-same">56,800</td><td>36</td><td>5.1</td><td class="price-same">64,800</td><td>55</td><td>7.9</td><td></td></tr>
+            <tr><td>3.24~26</td><td><span class="badge-season badge-off">비수기</span></td><td class="price-up">59,800 ↑</td><td>14 <span style="font-size:11px;color:#8892b0">(3일)</span></td><td>4.7</td><td class="price-up">67,800 ↑</td><td>23 <span style="font-size:11px;color:#8892b0">(3일)</span></td><td>7.7</td><td class="stockout">⚡ +3,000원</td></tr>
+            <tr><td>3.27~30</td><td><span class="badge-season badge-off">비수기</span></td><td class="price-up">64,800 ↑</td><td>13 <span style="font-size:11px;color:#8892b0">(4일)</span></td><td style="color:#ff6b6b;font-weight:600;">3.2</td><td class="price-up">72,800 ↑</td><td>19 <span style="font-size:11px;color:#8892b0">(4일)</span></td><td style="color:#ff6b6b;font-weight:600;">4.8</td><td class="stockout">⚡ +5,000원 추가</td></tr>
+            <tr><td>3.31~4.6</td><td><span class="badge-season badge-transition">전환기</span></td><td class="price-same">64,800</td><td>29</td><td>4.1</td><td class="price-same">72,800</td><td>26</td><td>3.7</td><td class="stockout">⚠️ 4.3 품절</td></tr>
+            <tr><td>4.7~13</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-same">64,800</td><td>24</td><td style="color:#64ffda;font-weight:600;">8.0</td><td class="price-same">72,800</td><td>42</td><td style="color:#64ffda;font-weight:600;">14.0</td><td>🔥 시즌 진입</td></tr>
+            <tr><td>4.14~20</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-same">64,800</td><td>20</td><td>5.0</td><td class="price-same">72,800</td><td>43</td><td>10.8</td><td></td></tr>
+            <tr><td>4.21~27</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-same">64,800</td><td>22</td><td>3.1</td><td class="price-same">72,800</td><td>41</td><td>5.9</td><td></td></tr>
+            <tr><td>4.28~5.4</td><td><span class="badge-season badge-peak">성수기</span></td><td class="price-same">64,800</td><td>23</td><td>3.3</td><td class="price-same">72,800</td><td>29</td><td>4.1</td><td></td></tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 4: 가격 탄력성 분석 -->
+<!-- ============================================ -->
+<div class="section-title">가격 탄력성 분석 — 인상 직후 vs 안정화 구간</div>
+<div class="grid-2" style="margin-bottom: 32px;">
+    <div class="card">
+        <div style="font-size:14px; font-weight:600; margin-bottom:20px;">📉 가격 인상 직후 판매량 변화율 (품절 제외)</div>
+        <div class="chart-wrap"><canvas id="chartElasticity"></canvas></div>
+    </div>
+    <div class="card">
+        <div style="font-size:14px; font-weight:600; margin-bottom:20px;">💰 가격 인상률 vs 매출 변화 비교</div>
+        <div class="chart-wrap"><canvas id="chartRevenueImpact"></canvas></div>
+    </div>
+</div>
+
+<!-- Elasticity Summary Cards -->
+<div class="card" style="margin-bottom:32px;">
+    <div style="font-size:14px; font-weight:600; margin-bottom:20px;">🎯 가격 탄력성 핵심 지표</div>
+    <div class="grid-3">
+        <div class="summary-card" style="border:1px solid rgba(100,255,218,0.15);">
+            <div class="label">2023 성수기 평균 탄력성</div>
+            <div class="value" style="font-size:22px; color:#64ffda;">비탄력적</div>
+            <div class="sub" style="margin-top:8px; line-height:1.6; text-align:left; padding:0 8px;">
+                가격 인상에도 시즌 수요가 판매를 견인.<br>
+                인상 직후 1주 하락 → 2주차부터 회복 패턴
+            </div>
+        </div>
+        <div class="summary-card" style="border:1px solid rgba(255,107,107,0.15);">
+            <div class="label">2025 비수기 인상 탄력성</div>
+            <div class="value" style="font-size:22px; color:#ff6b6b;">탄력적</div>
+            <div class="sub" style="margin-top:8px; line-height:1.6; text-align:left; padding:0 8px;">
+                비수기 연속 인상으로 일평균 판매량 감소.<br>
+                케이블: 5.4 → 3.2개/일 (▼41%)<br>
+                쇠사슬: 7.9 → 4.8개/일 (▼39%)
+            </div>
+        </div>
+        <div class="summary-card" style="border:1px solid rgba(255,193,7,0.15);">
+            <div class="label">시즌 진입 후 회복력</div>
+            <div class="value" style="font-size:22px; color:#ffc107;">부분 회복</div>
+            <div class="sub" style="margin-top:8px; line-height:1.6; text-align:left; padding:0 8px;">
+                4월 성수기 진입 후 쇠사슬 급반등 (14.0개/일).<br>
+                케이블은 회복 느림 (8.0 → 3.3개/일).<br>
+                쇠사슬 > 케이블 수요 강도 확인
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 5: 시즌성 × 가격 교차 분석 -->
+<!-- ============================================ -->
+<div class="section-title">시즌성 × 가격 교차 분석</div>
+<div class="card" style="margin-bottom:32px;">
+    <div style="font-size:14px; font-weight:600; margin-bottom:16px;">📊 시즌별 가격 구간 × 일평균 판매량 히트맵</div>
+    <div class="chart-wrap-tall"><canvas id="chartSeasonPrice"></canvas></div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 6: 핵심 인사이트 -->
+<!-- ============================================ -->
+<div class="section-title">핵심 인사이트</div>
+<div class="insight-grid" style="margin-bottom: 32px;">
+    <div class="insight-card positive">
+        <div class="insight-title">✅ 성수기 가격 인상은 안전하다</div>
+        <div class="insight-body">
+            2023년 <span class="hl-mint">5개월간 7회 인상 (+54~55%)</span>에도 판매량이 유지/증가한 구간이 다수.
+            시즌 수요가 가격 저항을 압도하며, 특히 <span class="hl-mint">6~7월 피크 시즌</span>에는 인상 직후에도 판매량이 오히려 증가.
+            쇠사슬타입은 53,800원 시점에서 주간 <span class="hl-mint">94개(최고치)</span>를 기록.
+        </div>
+    </div>
+    <div class="insight-card negative">
+        <div class="insight-title">🚨 비수기 연속 인상은 위험하다</div>
+        <div class="insight-body">
+            2025년 3월 비수기에 <span class="hl-red">1주 간격 연속 2회 인상</span>(+3천 → +5천)은 일평균 판매량을 
+            <span class="hl-red">40% 가까이 하락</span>시킴. 비수기는 가격 민감도가 높아 인상 흡수력이 낮으며,
+            간격 없는 연속 인상이 충격을 증폭시킨 것으로 판단.
+        </div>
+    </div>
+    <div class="insight-card neutral">
+        <div class="insight-title">⚠️ 품절이 가격 인상보다 더 치명적</div>
+        <div class="insight-body">
+            2023년 <span class="hl-yellow">총 3회 품절 사태</span>로 최소 3~4주분 판매 손실 발생.
+            쇠사슬타입은 9월 중 <span class="hl-yellow">약 3주간 거의 0개 판매</span>.
+            가격 인상으로 인한 판매 감소보다 품절로 인한 기회비용이 압도적으로 큼.
+            2025년에도 4.3일 품절이 발생하여 해당 주 판매량 급감.
+        </div>
+    </div>
+    <div class="insight-card positive">
+        <div class="insight-title">💡 쇠사슬타입의 가격 저항력이 더 강하다</div>
+        <div class="insight-body">
+            모든 구간에서 쇠사슬타입이 케이블타입 대비 <span class="hl-mint">판매량 1.3~1.8배</span>,
+            매출 기준으로는 <span class="hl-mint">1.5~2배</span> 수준.
+            2025년 4월 시즌 진입 시 쇠사슬은 <span class="hl-mint">일평균 14개까지 급등</span>한 반면
+            케이블은 8개 수준에 그침. 쇠사슬이 주력 수익원임을 재확인.
+        </div>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 7: 제품별 비중 분석 -->
+<!-- ============================================ -->
+<div class="section-title">제품 타입별 비중 분석</div>
+<div class="grid-2" style="margin-bottom:32px;">
+    <div class="card">
+        <div style="font-size:14px; font-weight:600; margin-bottom:8px;">🔄 판매량 비중</div>
+        <div class="chart-wrap"><canvas id="chartTypeSales"></canvas></div>
+    </div>
+    <div class="card">
+        <div style="font-size:14px; font-weight:600; margin-bottom:8px;">💰 매출 비중</div>
+        <div class="chart-wrap"><canvas id="chartTypeRevenue"></canvas></div>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SECTION 8: 액션 플랜 -->
+<!-- ============================================ -->
+<div class="section-title">전략적 제언 & 액션 플랜</div>
+<div class="card" style="margin-bottom:32px;">
+    <div class="action-timeline">
+        <div class="action-item urgent">
+            <div class="action-timing">즉시 — 2025년 5~6월</div>
+            <div class="action-title">🛑 성수기 진입 시 추가 인상 자제</div>
+            <div class="action-desc">
+                3월 비수기 연속 인상의 충격이 아직 잔존 중. 현재가(케이블 64,800 / 쇠사슬 72,800)를 
+                최소 6월까지 유지하여 시즌 수요로 판매량을 회복시키는 것이 우선. 
+                가격 안정화 2개월 후 판매량 트렌드를 재평가.
+            </div>
+            <div class="action-tags">
+                <span class="action-tag warn">긴급</span>
+                <span class="action-tag">가격전략</span>
+            </div>
+        </div>
+        <div class="action-item">
+            <div class="action-timing">2025년 7월 — 성수기 피크</div>
+            <div class="action-title">📈 시즌 피크 타이밍에 1회 소폭 인상 검토</div>
+            <div class="action-desc">
+                2023년 데이터에서 7월 피크 시 인상에도 판매 증가 확인. 
+                7월 중순 기준 일평균 판매량이 10개/일 이상이면 3,000~5,000원 인상 가능.
+                단, 1회만 실시하고 8월까지 유지.
+            </div>
+            <div class="action-tags">
+                <span class="action-tag">가격전략</span>
+                <span class="action-tag">매출극대화</span>
+            </div>
+        </div>
+        <div class="action-item urgent">
+            <div class="action-timing">상시 — 재고 관리 필수</div>
+            <div class="action-title">🚨 품절 방지가 가격 전략보다 우선</div>
+            <div class="action-desc">
+                2023년 품절 3회로 추정 손실 매출 1,500만원+. 
+                월별 판매량 예측 기반 안전재고 확보. 쇠사슬타입 기준 월 250개 이상 확보 필수.
+                6~8월 피크 시즌은 월 300개 이상 권장.
+            </div>
+            <div class="action-tags">
+                <span class="action-tag warn">긴급</span>
+                <span class="action-tag">재고관리</span>
+                <span class="action-tag">SCM</span>
+            </div>
+        </div>
+        <div class="action-item">
+            <div class="action-timing">중기 — 가격 인상 원칙 수립</div>
+            <div class="action-title">📐 "시즌 인상, 비수기 유지" 원칙 확립</div>
+            <div class="action-desc">
+                데이터가 증명하는 최적 가격 전략: 비수기(11~3월)는 가격 유지 또는 프로모션으로 판매 기반 구축,
+                성수기(4~9월) 중 피크 시즌에 단발 인상. 인상 간격은 최소 4주 이상.
+                연속 인상(1~2주 간격)은 절대 금지.
+            </div>
+            <div class="action-tags">
+                <span class="action-tag">전략원칙</span>
+                <span class="action-tag">프라이싱</span>
+            </div>
+        </div>
+        <div class="action-item">
+            <div class="action-timing">중기 — 제품 포트폴리오</div>
+            <div class="action-title">⛓️ 쇠사슬타입 중심의 매출 전략 강화</div>
+            <div class="action-desc">
+                모든 데이터에서 쇠사슬타입이 판매량·매출·마진·가격 저항력 모두 우위.
+                마케팅 예산 배분, 광고 크리에이티브, 재고 확보 모두 쇠사슬 우선 전략.
+                케이블은 엔트리 모델(가격 접근성)로 포지셔닝.
+            </div>
+            <div class="action-tags">
+                <span class="action-tag">제품전략</span>
+                <span class="action-tag">마케팅</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div><!-- container -->
+
+<script>
+// ========== Chart.js Common Config ==========
+Chart.defaults.color = '#8892b0';
+Chart.defaults.font.family = 'Pretendard';
+
+const gridColor = 'rgba(255,255,255,0.05)';
+const mint = '#64ffda';
+const coral = '#ff6b6b';
+const amber = '#ffc107';
+const purple = '#6c63ff';
+const blue = '#48c6ef';
+
+function commonScales(yLabel = '') {
+    return {
+        y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: '#8892b0', font: { size: 11 } }, title: { display: !!yLabel, text: yLabel, color: '#8892b0' } },
+        x: { grid: { display: false }, ticks: { color: '#8892b0', font: { size: 10 }, maxRotation: 45 } }
+    };
+}
+
+// ========== 2023 Cable Chart ==========
+new Chart(document.getElementById('chart23Cable'), {
+    type: 'bar',
+    data: {
+        labels: ['5.9~15','5.16~22','6.13~19','6.20~26','6.28~7.4','7.5~11','7.25~31','8.1~7','8.8~14','8.15~21','8.22~28','8.30~9.5','9.6~12','9.13~19','9.20~26','9.27~10.3'],
+        datasets: [
+            {
+                label: '판매량',
+                data: [42,27,29,50,51,0,46,56,55,10,12,50,51,11,47,25],
+                backgroundColor: 'rgba(100,255,218,0.3)',
+                borderColor: mint,
+                borderWidth: 2,
+                borderRadius: 6,
+                yAxisID: 'y',
+                order: 2
+            },
+            {
+                label: '가격 (원)',
+                data: [36800,39800,39800,42800,45800,48800,48800,51800,51800,51800,51800,56800,56800,56800,56800,56800],
+                type: 'line',
+                borderColor: coral,
+                backgroundColor: 'rgba(255,107,107,0.1)',
+                pointBackgroundColor: coral,
+                pointRadius: 4,
+                pointBorderColor: '#1a1a2e',
+                pointBorderWidth: 2,
+                tension: 0.2,
+                yAxisID: 'y1',
+                order: 1
+            }
+        ]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'top', labels: { color: '#ccd6f6', font: { size: 11 } } },
+            tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + (ctx.datasetIndex === 1 ? ctx.raw.toLocaleString()+'원' : ctx.raw+'개'); }}}
+        },
+        scales: {
+            y: { beginAtZero: true, grid: { color: gridColor }, title: { display: true, text: '판매량 (개)', color: '#8892b0' } },
+            y1: { position: 'right', grid: { display: false }, title: { display: true, text: '가격 (원)', color: '#8892b0' }, min: 30000, max: 65000 },
+            x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 60 } }
+        }
+    }
+});
+
+// ========== 2023 Chain Chart ==========
+new Chart(document.getElementById('chart23Chain'), {
+    type: 'bar',
+    data: {
+        labels: ['5.9~15','5.16~22','6.13~19','6.20~26','6.28~7.4','7.5~11','7.25~31','8.1~7','8.8~14','8.15~21','8.22~28','8.30~9.5','9.6~12','9.13~19','9.20~26','9.27~10.3'],
+        datasets: [
+            {
+                label: '판매량',
+                data: [75,39,61,77,72,94,65,35,22,10,16,32,1,0,54,16],
+                backgroundColor: 'rgba(108,99,255,0.3)',
+                borderColor: purple,
+                borderWidth: 2,
+                borderRadius: 6,
+                yAxisID: 'y',
+                order: 2
+            },
+            {
+                label: '가격 (원)',
+                data: [41800,44800,44800,47800,50800,53800,53800,59800,59800,59800,59800,64800,64800,64800,64800,64800],
+                type: 'line',
+                borderColor: coral,
+                backgroundColor: 'rgba(255,107,107,0.1)',
+                pointBackgroundColor: coral,
+                pointRadius: 4,
+                pointBorderColor: '#1a1a2e',
+                pointBorderWidth: 2,
+                tension: 0.2,
+                yAxisID: 'y1',
+                order: 1
+            }
+        ]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'top', labels: { color: '#ccd6f6', font: { size: 11 } } },
+            tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + (ctx.datasetIndex === 1 ? ctx.raw.toLocaleString()+'원' : ctx.raw+'개'); }}}
+        },
+        scales: {
+            y: { beginAtZero: true, grid: { color: gridColor }, title: { display: true, text: '판매량 (개)', color: '#8892b0' } },
+            y1: { position: 'right', grid: { display: false }, title: { display: true, text: '가격 (원)', color: '#8892b0' }, min: 35000, max: 75000 },
+            x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 60 } }
+        }
+    }
+});
+
+// ========== 2025 Cable Chart ==========
+new Chart(document.getElementById('chart25Cable'), {
+    type: 'bar',
+    data: {
+        labels: ['3.10~16','3.17~23','3.24~26','3.27~30','3.31~4.6','4.7~13','4.14~20','4.21~27','4.28~5.4'],
+        datasets: [
+            {
+                label: '일평균 판매량',
+                data: [5.4,5.1,4.7,3.2,4.1,8.0,5.0,3.1,3.3],
+                backgroundColor: ['rgba(100,255,218,0.3)','rgba(100,255,218,0.3)','rgba(255,193,7,0.3)','rgba(255,107,107,0.3)','rgba(255,193,7,0.3)','rgba(100,255,218,0.5)','rgba(100,255,218,0.3)','rgba(100,255,218,0.3)','rgba(100,255,218,0.3)'],
+                borderColor: [mint,mint,amber,coral,amber,mint,mint,mint,mint],
+                borderWidth: 2,
+                borderRadius: 6,
+                yAxisID: 'y',
+                order: 2
+            },
+            {
+                label: '가격 (원)',
+                data: [56800,56800,59800,64800,64800,64800,64800,64800,64800],
+                type: 'line',
+                borderColor: coral,
+                pointBackgroundColor: coral,
+                pointRadius: 5,
+                pointBorderColor: '#1a1a2e',
+                pointBorderWidth: 2,
+                tension: 0.2,
+                yAxisID: 'y1',
+                order: 1
+            }
+        ]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'top', labels: { color: '#ccd6f6', font: { size: 11 } } } },
+        scales: {
+            y: { beginAtZero: true, grid: { color: gridColor }, title: { display: true, text: '일평균 판매량', color: '#8892b0' } },
+            y1: { position: 'right', grid: { display: false }, title: { display: true, text: '가격 (원)', color: '#8892b0' }, min: 50000, max: 75000 },
+            x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+        }
+    }
+});
+
+// ========== 2025 Chain Chart ==========
+new Chart(document.getElementById('chart25Chain'), {
+    type: 'bar',
+    data: {
+        labels: ['3.10~16','3.17~23','3.24~26','3.27~30','3.31~4.6','4.7~13','4.14~20','4.21~27','4.28~5.4'],
+        datasets: [
+            {
+                label: '일평균 판매량',
+                data: [6.4,7.9,7.7,4.8,3.7,14.0,10.8,5.9,4.1],
+                backgroundColor: ['rgba(108,99,255,0.3)','rgba(108,99,255,0.3)','rgba(255,193,7,0.3)','rgba(255,107,107,0.3)','rgba(255,193,7,0.3)','rgba(108,99,255,0.5)','rgba(108,99,255,0.4)','rgba(108,99,255,0.3)','rgba(108,99,255,0.3)'],
+                borderColor: [purple,purple,amber,coral,amber,purple,purple,purple,purple],
+                borderWidth: 2,
+                borderRadius: 6,
+                yAxisID: 'y',
+                order: 2
+            },
+            {
+                label: '가격 (원)',
+                data: [64800,64800,67800,72800,72800,72800,72800,72800,72800],
+                type: 'line',
+                borderColor: coral,
+                pointBackgroundColor: coral,
+                pointRadius: 5,
+                pointBorderColor: '#1a1a2e',
+                pointBorderWidth: 2,
+                tension: 0.2,
+                yAxisID: 'y1',
+                order: 1
+            }
+        ]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'top', labels: { color: '#ccd6f6', font: { size: 11 } } } },
+        scales: {
+            y: { beginAtZero: true, grid: { color: gridColor }, title: { display: true, text: '일평균 판매량', color: '#8892b0' } },
+            y1: { position: 'right', grid: { display: false }, title: { display: true, text: '가격 (원)', color: '#8892b0' }, min: 55000, max: 80000 },
+            x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+        }
+    }
+});
+
+// ========== Elasticity Chart ==========
+new Chart(document.getElementById('chartElasticity'), {
+    type: 'bar',
+    data: {
+        labels: ['23년 5/16\n+3,000','23년 6/20\n+3,000','23년 6/28\n+3,000','23년 7/5\n+3,000','23년 8/1\n+3,000','23년 8/30\n+5,000','25년 3/24\n+3,000','25년 3/27\n+5,000'],
+        datasets: [
+            {
+                label: '케이블 판매 변화율 (%)',
+                data: [-36, 72, 2, null, 10, null, -8, -32],
+                backgroundColor: 'rgba(100,255,218,0.4)',
+                borderColor: mint,
+                borderWidth: 2,
+                borderRadius: 6,
+            },
+            {
+                label: '쇠사슬 판매 변화율 (%)',
+                data: [-48, 26, -6, 31, -46, null, -3, -38],
+                backgroundColor: 'rgba(108,99,255,0.4)',
+                borderColor: purple,
+                borderWidth: 2,
+                borderRadius: 6,
+            }
+        ]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'top', labels: { color: '#ccd6f6', font: { size: 11 } } },
+            tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + (ctx.raw !== null ? ctx.raw+'%' : '품절'); }}}
+        },
+        scales: {
+            y: { grid: { color: gridColor }, title: { display: true, text: '판매량 변화율 (%)', color: '#8892b0' } },
+            x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 0 } }
+        }
+    }
+});
+
+// ========== Revenue Impact Chart ==========
+new Chart(document.getElementById('chartRevenueImpact'), {
+    type: 'bar',
+    data: {
+        labels: ['2023\n케이블', '2023\n쇠사슬', '2025\n케이블', '2025\n쇠사슬'],
+        datasets: [
+            {
+                label: '가격 인상률 (%)',
+                data: [54, 55, 14, 12],
+                backgroundColor: 'rgba(255,107,107,0.3)',
+                borderColor: coral,
+                borderWidth: 2,
+                borderRadius: 6,
+            },
+            {
+                label: '마진 총액 (만원)',
+                data: [1103, 1273, 400, 569],
+                backgroundColor: 'rgba(100,255,218,0.3)',
+                borderColor: mint,
+                borderWidth: 2,
+                borderRadius: 6,
+            }
+        ]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'top', labels: { color: '#ccd6f6', font: { size: 11 } } } },
+        scales: {
+            y: { beginAtZero: true, grid: { color: gridColor } },
+            x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+        }
+    }
+});
+
+// ========== Season × Price Chart ==========
+new Chart(document.getElementById('chartSeasonPrice'), {
+    type: 'bar',
+    data: {
+        labels: ['비수기\n인상 전', '비수기\n1차 인상', '비수기\n2차 인상', '전환기', '성수기\n1주차', '성수기\n2주차', '성수기\n3주차', '성수기\n4주차'],
+        datasets: [
+            {
+                label: '케이블 일평균',
+                data: [5.3, 4.7, 3.2, 4.1, 8.0, 5.0, 3.1, 3.3],
+                backgroundColor: 'rgba(100,255,218,0.4)',
+                borderColor: mint,
+                borderWidth: 2,
+                borderRadius: 8,
+            },
+            {
+                label: '쇠사슬 일평균',
+                data: [7.1, 7.7, 4.8, 3.7, 14.0, 10.8, 5.9, 4.1],
+                backgroundColor: 'rgba(108,99,255,0.4)',
+                borderColor: purple,
+                borderWidth: 2,
+                borderRadius: 8,
+            }
+        ]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'top', labels: { color: '#ccd6f6', font: { size: 11 } } },
+            annotation: {}
+        },
+        scales: {
+            y: { beginAtZero: true, grid: { color: gridColor }, title: { display: true, text: '일평균 판매량 (개)', color: '#8892b0' } },
+            x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 0 } }
+        }
+    }
+});
+
+// ========== Type Sales Donut ==========
+new Chart(document.getElementById('chartTypeSales'), {
+    type: 'doughnut',
+    data: {
+        labels: ['케이블 (2023)', '쇠사슬 (2023)', '케이블 (2025)', '쇠사슬 (2025)'],
+        datasets: [{
+            data: [562, 669, 219, 323],
+            backgroundColor: [
+                'rgba(100,255,218,0.6)', 'rgba(108,99,255,0.6)',
+                'rgba(100,255,218,0.3)', 'rgba(108,99,255,0.3)'
+            ],
+            borderColor: [mint, purple, mint, purple],
+            borderWidth: 2,
+        }]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom', labels: { color: '#ccd6f6', font: { size: 11 }, padding: 16 } },
+            tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.raw + '개'; }}}
+        }
+    }
+});
+
+// ========== Type Revenue Donut ==========
+new Chart(document.getElementById('chartTypeRevenue'), {
+    type: 'doughnut',
+    data: {
+        labels: ['케이블 (2023)', '쇠사슬 (2023)', '케이블 (2025)', '쇠사슬 (2025)'],
+        datasets: [{
+            data: [2784, 3515, 1353, 2260],
+            backgroundColor: [
+                'rgba(100,255,218,0.6)', 'rgba(108,99,255,0.6)',
+                'rgba(100,255,218,0.3)', 'rgba(108,99,255,0.3)'
+            ],
+            borderColor: [mint, purple, mint, purple],
+            borderWidth: 2,
+        }]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom', labels: { color: '#ccd6f6', font: { size: 11 }, padding: 16 } },
+            tooltip: { callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.raw + '만원'; }}}
+        }
+    }
+});
+</script>
+</body>
+</html>

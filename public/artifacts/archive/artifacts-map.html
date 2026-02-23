@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아티팩트 시스템 구조</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0a0f; --card: #111119; --border: rgba(255,255,255,0.06);
+  --text: #f1f5f9; --text2: #94a3b8; --text3: #64748b;
+  --purple: #8b5cf6; --blue: #3b82f6; --green: #22c55e;
+  --orange: #f59e0b; --red: #ef4444; --pink: #ec4899; --cyan: #06b6d4;
+}
+body {
+  font-family: 'Pretendard Variable', -apple-system, system-ui, sans-serif;
+  background: var(--bg); color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  padding: 48px 24px 100px;
+}
+.container { max-width: 960px; margin: 0 auto; }
+.header { margin-bottom: 40px; }
+.header h1 { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+.header .sub { font-size: 14px; color: var(--text3); line-height: 1.6; }
+.header .date { font-size: 11px; color: var(--text3); margin-top: 10px; padding: 4px 10px; border-radius: 100px; background: rgba(255,255,255,0.03); display: inline-block; }
+
+.section { margin-bottom: 56px; }
+.section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+.section-title { font-size: 22px; font-weight: 800; margin-bottom: 24px; }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border-radius: 14px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 32px; }
+.stat { background: var(--card); padding: 20px; text-align: center; }
+.stat .num { font-size: 28px; font-weight: 900; }
+.stat .label { font-size: 10px; color: var(--text3); margin-top: 4px; }
+
+/* Folder tree */
+.tree-wrap {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 32px; overflow-x: auto;
+}
+
+/* Artifact cards */
+.artifact-list { display: flex; flex-direction: column; gap: 12px; }
+.artifact-card {
+  display: grid; grid-template-columns: 60px 1fr auto;
+  gap: 16px; align-items: center;
+  padding: 20px; border-radius: 14px;
+  background: var(--card); border: 1px solid var(--border);
+  text-decoration: none; color: var(--text);
+  transition: all 0.2s;
+}
+.artifact-card:hover {
+  border-color: rgba(139,92,246,0.3);
+  transform: translateX(4px);
+}
+.a-icon {
+  width: 60px; height: 60px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+.a-info .a-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.a-info .a-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.a-info .a-meta { font-size: 10px; color: var(--text3); margin-top: 6px; }
+.a-tag {
+  padding: 4px 12px; border-radius: 100px;
+  font-size: 10px; font-weight: 700; white-space: nowrap;
+}
+.a-arrow { font-size: 18px; color: var(--text3); }
+
+/* How it works */
+.how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.how-card {
+  padding: 20px; border-radius: 12px; background: var(--card);
+  border: 1px solid var(--border); text-align: center;
+}
+.how-card .h-num { font-size: 24px; font-weight: 900; margin-bottom: 8px; }
+.how-card .h-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.how-card .h-desc { font-size: 11px; color: var(--text2); line-height: 1.6; }
+
+/* Category legend */
+.cat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+.cat-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 100px;
+  font-size: 12px; font-weight: 600;
+}
+.cat-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+@media (max-width: 768px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .how-grid { grid-template-columns: 1fr; }
+  .artifact-card { grid-template-columns: 48px 1fr; }
+  .a-arrow { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <h1>아티팩트 맵</h1>
+  <div class="sub">만들어둔 모든 시각화 문서를 한눈에. 뭐가 있고, 어디에 있고, 뭘 보여주는지.</div>
+  <div class="date">2026.02.24 기준</div>
+</div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat">
+    <div class="num" style="color:var(--purple);">6</div>
+    <div class="label">전체 아티팩트</div>
+  </div>
+  <div class="stat">
+    <div class="num" style="color:var(--blue);">2</div>
+    <div class="label">카테고리</div>
+  </div>
+  <div class="stat">
+    <div class="num" style="color:var(--green);">130KB</div>
+    <div class="label">총 용량</div>
+  </div>
+  <div class="stat">
+    <div class="num" style="color:var(--cyan);">1</div>
+    <div class="label">서빙 서버</div>
+  </div>
+</div>
+
+<!-- How it works -->
+<div class="section">
+  <div class="section-label" style="color:var(--cyan)">How It Works</div>
+  <div class="section-title">아티팩트가 뭐야?</div>
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="h-num" style="color:var(--purple);">1</div>
+      <div class="h-title">HTML 파일 생성</div>
+      <div class="h-desc">Claude가 시각화 문서를 HTML로 만들어서<br><code style="font-size:10px;color:var(--orange);">public/artifacts/</code> 폴더에 저장</div>
+    </div>
+    <div class="how-card">
+      <div class="h-num" style="color:var(--blue);">2</div>
+      <div class="h-title">폴더 = 카테고리</div>
+      <div class="h-desc"><code style="font-size:10px;color:var(--orange);">dev/</code> = 개발 내부용<br><code style="font-size:10px;color:var(--green);">showcase/</code> = 외부 공개용<br>폴더 넣으면 자동 분류</div>
+    </div>
+    <div class="how-card">
+      <div class="h-num" style="color:var(--green);">3</div>
+      <div class="h-title">브라우저로 보기</div>
+      <div class="h-desc">서버가 돌고 있으면<br><code style="font-size:10px;color:var(--orange);">localhost:3000/artifacts</code><br>에서 전체 목록 확인</div>
+    </div>
+  </div>
+</div>
+
+<!-- Folder Structure -->
+<div class="section">
+  <div class="section-label" style="color:var(--orange)">Structure</div>
+  <div class="section-title">저장 구조</div>
+  <div class="tree-wrap">
+    <svg viewBox="0 0 700 280" style="width:100%;min-width:500px;" xmlns="http://www.w3.org/2000/svg">
+      <!-- Root -->
+      <rect x="20" y="20" width="200" height="36" rx="8" fill="rgba(139,92,246,0.08)" stroke="rgba(139,92,246,0.2)" stroke-width="1"/>
+      <text x="32" y="43" fill="#8b5cf6" font-size="13" font-weight="700">public/artifacts/</text>
+
+      <!-- Lines -->
+      <line x1="40" y1="56" x2="40" y2="90" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <line x1="40" y1="90" x2="60" y2="90" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <line x1="40" y1="56" x2="40" y2="210" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <line x1="40" y1="210" x2="60" y2="210" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+      <!-- dev/ folder -->
+      <rect x="60" y="74" width="100" height="30" rx="6" fill="rgba(139,92,246,0.06)" stroke="rgba(139,92,246,0.15)" stroke-width="1"/>
+      <text x="72" y="94" fill="#8b5cf6" font-size="12" font-weight="600">dev/</text>
+
+      <!-- dev files -->
+      <line x1="90" y1="104" x2="90" y2="198" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+
+      <line x1="90" y1="120" x2="110" y2="120" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+      <rect x="110" y="108" width="240" height="24" rx="5" fill="rgba(34,197,94,0.04)" stroke="rgba(34,197,94,0.12)" stroke-width="1"/>
+      <text x="120" y="124" fill="#94a3b8" font-size="10">project-roadmap.html</text>
+      <text x="290" y="124" fill="#64748b" font-size="9">37KB</text>
+
+      <line x1="90" y1="142" x2="110" y2="142" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+      <rect x="110" y="130" width="240" height="24" rx="5" fill="rgba(34,197,94,0.04)" stroke="rgba(34,197,94,0.12)" stroke-width="1"/>
+      <text x="120" y="146" fill="#94a3b8" font-size="10">memory-system.html</text>
+      <text x="290" y="146" fill="#64748b" font-size="9">30KB</text>
+
+      <line x1="90" y1="164" x2="110" y2="164" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+      <rect x="110" y="152" width="240" height="24" rx="5" fill="rgba(59,130,246,0.04)" stroke="rgba(59,130,246,0.12)" stroke-width="1"/>
+      <text x="120" y="168" fill="#94a3b8" font-size="10">demo1.html · demo2.html · demo3.html</text>
+      <text x="308" y="168" fill="#64748b" font-size="9">63KB</text>
+
+      <line x1="90" y1="186" x2="110" y2="186" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+      <rect x="110" y="174" width="240" height="24" rx="5" fill="rgba(245,158,11,0.04)" stroke="rgba(245,158,11,0.12)" stroke-width="1"/>
+      <text x="120" y="190" fill="#f59e0b" font-size="10">artifacts-map.html (이 페이지)</text>
+
+      <!-- showcase/ folder -->
+      <rect x="60" y="196" width="100" height="30" rx="6" fill="rgba(34,197,94,0.06)" stroke="rgba(34,197,94,0.15)" stroke-width="1"/>
+      <text x="72" y="216" fill="#22c55e" font-size="12" font-weight="600">showcase/</text>
+      <text x="170" y="216" fill="#64748b" font-size="11" font-style="italic">비어있음 — 외부 공개용</text>
+
+      <!-- 설명 -->
+      <rect x="430" y="20" width="250" height="80" rx="10" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="1"/>
+      <text x="445" y="42" fill="#64748b" font-size="10" font-weight="700">자동 인덱싱</text>
+      <text x="445" y="58" fill="#4a5568" font-size="9">이 폴더에 HTML 넣으면</text>
+      <text x="445" y="72" fill="#4a5568" font-size="9">localhost:3000/artifacts 에서</text>
+      <text x="445" y="86" fill="#4a5568" font-size="9">자동으로 목록에 나타남</text>
+
+      <rect x="430" y="120" width="250" height="65" rx="10" fill="rgba(255,255,255,0.02)" stroke="var(--border)" stroke-width="1"/>
+      <text x="445" y="142" fill="#64748b" font-size="10" font-weight="700">카테고리 추가</text>
+      <text x="445" y="158" fill="#4a5568" font-size="9">새 폴더 만들면 자동 카테고리.</text>
+      <text x="445" y="172" fill="#4a5568" font-size="9">예: marketing/ → 마케팅 카테고리</text>
+    </svg>
+  </div>
+</div>
+
+<!-- All Artifacts -->
+<div class="section">
+  <div class="section-label" style="color:var(--green)">All Artifacts</div>
+  <div class="section-title">전체 아티팩트 목록</div>
+
+  <div class="cat-row">
+    <div class="cat-pill" style="background:rgba(139,92,246,0.08);"><div class="cat-dot" style="background:var(--purple);"></div>로드맵/현황</div>
+    <div class="cat-pill" style="background:rgba(59,130,246,0.08);"><div class="cat-dot" style="background:var(--blue);"></div>UI 시안</div>
+    <div class="cat-pill" style="background:rgba(245,158,11,0.08);"><div class="cat-dot" style="background:var(--orange);"></div>메타 (이 페이지)</div>
+  </div>
+
+  <div class="artifact-list">
+
+    <a href="/artifacts/dev/project-roadmap.html" class="artifact-card">
+      <div class="a-icon" style="background:rgba(139,92,246,0.08);">🗺</div>
+      <div class="a-info">
+        <div class="a-name">프로젝트 지도</div>
+        <div class="a-desc">BlogBot 전체 현황 + 수익화 로드맵. Phase 0~6 여정 지도, 진행도 28%, 수익 모델, 리스크 분석.</div>
+        <div class="a-meta">project-roadmap.html · 37KB · 2026.02.24</div>
+      </div>
+      <span class="a-tag" style="background:rgba(139,92,246,0.1);color:var(--purple);">로드맵</span>
+    </a>
+
+    <a href="/artifacts/dev/memory-system.html" class="artifact-card">
+      <div class="a-icon" style="background:rgba(139,92,246,0.08);">🧠</div>
+      <div class="a-info">
+        <div class="a-name">AI 세컨드 브레인</div>
+        <div class="a-desc">기억 시스템 현황 + 완성 로드맵. 비개발자용 비유 설명, Phase 0~4 여정, 현실적 주의사항.</div>
+        <div class="a-meta">memory-system.html · 30KB · 2026.02.24</div>
+      </div>
+      <span class="a-tag" style="background:rgba(139,92,246,0.1);color:var(--purple);">로드맵</span>
+    </a>
+
+    <a href="/artifacts/dev/demo1.html" class="artifact-card">
+      <div class="a-icon" style="background:rgba(59,130,246,0.08);">🌙</div>
+      <div class="a-info">
+        <div class="a-name">UI 시안 1 — Dark Premium</div>
+        <div class="a-desc">Jasper + Toss 스타일. 다크 배경, 보라빛 글로우, before/after 변환 데모.</div>
+        <div class="a-meta">demo1.html · 20KB · 2026.02.23</div>
+      </div>
+      <span class="a-tag" style="background:rgba(59,130,246,0.1);color:var(--blue);">UI 시안</span>
+    </a>
+
+    <a href="/artifacts/dev/demo2.html" class="artifact-card">
+      <div class="a-icon" style="background:rgba(59,130,246,0.08);">☀️</div>
+      <div class="a-info">
+        <div class="a-name">UI 시안 2 — Light Minimal</div>
+        <div class="a-desc">Wrtn + Notion 스타일. 화이트 배경, 3단계 워크플로우, 탭 기반 쇼케이스.</div>
+        <div class="a-meta">demo2.html · 23KB · 2026.02.23</div>
+      </div>
+      <span class="a-tag" style="background:rgba(59,130,246,0.1);color:var(--blue);">UI 시안</span>
+    </a>
+
+    <a href="/artifacts/dev/demo3.html" class="artifact-card">
+      <div class="a-icon" style="background:rgba(59,130,246,0.08);">⚡</div>
+      <div class="a-info">
+        <div class="a-name">UI 시안 3 — Impact Gradient</div>
+        <div class="a-desc">Linear + Vercel 스타일. 블랙 + 메쉬 그라디언트, 수익 계산기, 라이브 피드.</div>
+        <div class="a-meta">demo3.html · 20KB · 2026.02.23</div>
+      </div>
+      <span class="a-tag" style="background:rgba(59,130,246,0.1);color:var(--blue);">UI 시안</span>
+    </a>
+
+    <a href="/artifacts/dev/artifacts-map.html" class="artifact-card" style="border-color:rgba(245,158,11,0.2);">
+      <div class="a-icon" style="background:rgba(245,158,11,0.08);">📍</div>
+      <div class="a-info">
+        <div class="a-name">아티팩트 맵 (이 페이지)</div>
+        <div class="a-desc">전체 아티팩트 현황. 저장 구조, 작동 방식, 목록 + 설명.</div>
+        <div class="a-meta">artifacts-map.html · 지금 보고 있는 중</div>
+      </div>
+      <span class="a-tag" style="background:rgba(245,158,11,0.1);color:var(--orange);">메타</span>
+    </a>
+
+  </div>
+</div>
+
+<!-- What's next -->
+<div class="section">
+  <div class="section-label" style="color:var(--text3)">What's Next</div>
+  <div class="section-title">앞으로 만들 수 있는 것</div>
+  <div style="display:flex;flex-direction:column;gap:8px;">
+    <div style="padding:14px 18px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px dashed rgba(100,116,139,0.2);font-size:13px;color:var(--text3);display:flex;align-items:center;gap:10px;">
+      <span>📊</span> <span><strong style="color:var(--text2);">기억 뷰어</strong> — 저장된 AI 기억을 브라우저에서 보고 관리하는 대시보드</span>
+    </div>
+    <div style="padding:14px 18px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px dashed rgba(100,116,139,0.2);font-size:13px;color:var(--text3);display:flex;align-items:center;gap:10px;">
+      <span>💰</span> <span><strong style="color:var(--text2);">수익 대시보드</strong> — 런칭 후 유저/매출/전환율 실시간 추적</span>
+    </div>
+    <div style="padding:14px 18px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px dashed rgba(100,116,139,0.2);font-size:13px;color:var(--text3);display:flex;align-items:center;gap:10px;">
+      <span>🎨</span> <span><strong style="color:var(--text2);">showcase/ 아티팩트</strong> — 외부에 보여줄 수 있는 공개용 페이지</span>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

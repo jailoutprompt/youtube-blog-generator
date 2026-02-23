@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>낭만 — 한일연애 가이드</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: #2c3e50;
+            color: white;
+            overflow-y: auto;
+            padding: 2rem 0;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        
+        .sidebar-toggle {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 1001;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .sidebar h2 {
+            padding: 0 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar li {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar li:hover {
+            background: rgba(255,255,255,0.1);
+            border-left-color: #667eea;
+        }
+        
+        .sidebar li.active {
+            background: rgba(102, 126, 234, 0.3);
+            border-left-color: #667eea;
+        }
+        
+        .content {
+            padding: 3rem 2rem;
+        }
+        
+        .content h1 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        
+        .content h2 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            color: #667eea;
+        }
+        
+        .content h3 {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.8rem;
+            color: #555;
+        }
+        
+        .content p {
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+        
+        .punchline {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .script-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+        
+        .script-box h4 {
+            color: #667eea;
+            margin-bottom: 0.8rem;
+        }
+        
+        .script-box.bad {
+            border-left-color: #e74c3c;
+        }
+        
+        .script-box.bad h4 {
+            color: #e74c3c;
+        }
+        
+        .script-box.good {
+            border-left-color: #27ae60;
+        }
+        
+        .script-box.good h4 {
+            color: #27ae60;
+        }
+        
+        .summary {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        
+        @media print {
+            .sidebar, .sidebar-toggle {
+                display: none;
+            }
+            
+            .container {
+                max-width: 100%;
+                box-shadow: none;
+            }
+            
+            header {
+                page-break-after: always;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+            }
+            
+            .content {
+                padding: 2rem 1rem;
+            }
+            
+            header h1 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰ 목차</button>
+    
+    <div class="sidebar" id="sidebar">
+        <h2>📖 목차</h2>
+        <ul id="toc"></ul>
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1>한국 식대로 하다가 망하는 한일 연애</h1>
+            <p>일본 여자의 마음을 여는 27가지 실전 가이드</p>
+            <div style="margin-top: 1rem;">
+                <button onclick="window.print()" style="background: white; color: #667eea; border: 2px solid white; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                    📄 PDF로 저장
+                </button>
+            </div>
+        </header>
+        
+        <div class="content" id="content">
+            <div class="loading">로딩 중...</div>
+        </div>
+    </div>
+    
+    <script>
+        const chapters = [
+            { file: 'manuscript/01_prologue.md', title: '프롤로그' },
+            { file: 'manuscript/02_chapter01.md', title: 'Chapter 1: 안부 묻기가 왜 압박이 되는가?' },
+            { file: 'manuscript/03_chapter02.md', title: 'Chapter 2: 답장 템포를 존중하지 않으면 끝난다' },
+            { file: 'manuscript/04_chapter03.md', title: 'Chapter 3: 와리칸(더치페이)을 거부하면 호감도가 떨어진다' },
+            { file: 'manuscript/05_chapter04.md', title: 'Chapter 4: 와리칸 계산할 때 센스가 보인다' },
+            { file: 'manuscript/06_chapter05.md', title: 'Chapter 5: 공공장소에서 스킨십은 금기다' },
+            { file: 'manuscript/07_chapter06.md', title: 'Chapter 6: 스킨십은 단계별로 접근해야 한다' },
+            { file: 'manuscript/08_chapter07.md', title: 'Chapter 7: 고쿠하쿠(고백) 없이는 연애가 아니다' },
+            { file: 'manuscript/09_chapter08.md', title: 'Chapter 8: 썸과 연애의 경계를 명확히 해야 한다' },
+            { file: 'manuscript/10_chapter09.md', title: 'Chapter 9: 아이즈치(맞장구)를 하지 않으면 대화가 끊긴다' },
+            { file: 'manuscript/11_chapter10.md', title: 'Chapter 10: 직설적인 말투는 일본 여자에게 독이다' },
+            { file: 'manuscript/12_chapter11.md', title: 'Chapter 11: 선물을 너무 비싸게 주면 부담스럽다' },
+            { file: 'manuscript/13_chapter12.md', title: 'Chapter 12: 질문을 너무 많이 하면 압박이다' },
+            { file: 'manuscript/14_chapter13.md', title: 'Chapter 13: 약속 시간을 지키지 않으면 신뢰가 깨진다' },
+            { file: 'manuscript/15_chapter14.md', title: 'Chapter 14: 과도한 칭찬은 오히려 역효과다' },
+            { file: 'manuscript/16_chapter15.md', title: 'Chapter 15: 과도한 관심 표현은 집착으로 보인다' },
+            { file: 'manuscript/17_chapter16.md', title: 'Chapter 16: 과거 연애 이야기를 하면 불편해한다' },
+            { file: 'manuscript/18_chapter17.md', title: 'Chapter 17: 술자리에서 과도한 행동은 금기다' },
+            { file: 'manuscript/19_chapter18.md', title: 'Chapter 18: 친구들을 너무 빨리 소개하면 부담스럽다' },
+            { file: 'manuscript/20_chapter19.md', title: 'Chapter 19: SNS에서 과도한 활동은 집착으로 보인다' },
+            { file: 'manuscript/21_chapter20.md', title: 'Chapter 20: 과도한 질투는 독이다' },
+            { file: 'manuscript/22_chapter21.md', title: 'Chapter 21: 과도한 계획은 부담스럽다' },
+            { file: 'manuscript/23_chapter22.md', title: 'Chapter 22: 과도한 애정 표현은 부담스럽다' },
+            { file: 'manuscript/24_chapter23.md', title: 'Chapter 23: 과도한 관심은 독이다' },
+            { file: 'manuscript/25_chapter24.md', title: 'Chapter 24: 과도한 비교는 금기다' },
+            { file: 'manuscript/26_chapter25.md', title: 'Chapter 25: 과도한 제안은 부담스럽다' },
+            { file: 'manuscript/27_chapter26.md', title: 'Chapter 26: 과도한 설명은 지루하다' },
+            { file: 'manuscript/28_chapter27.md', title: 'Chapter 27: 과도한 약속은 신뢰를 깬다' },
+            { file: 'manuscript/29_chapter28.md', title: 'Chapter 28: 문화적 차이를 인정하지 않으면 끝난다' },
+            { file: 'manuscript/30_epilogue.md', title: '에필로그' }
+        ];
+        
+        let currentChapter = 0;
+        
+        // 목차 생성
+        function buildTOC() {
+            const toc = document.getElementById('toc');
+            chapters.forEach((chapter, index) => {
+                const li = document.createElement('li');
+                li.textContent = chapter.title;
+                li.onclick = () => loadChapter(index);
+                if (index === 0) li.classList.add('active');
+                toc.appendChild(li);
+            });
+        }
+        
+        // 챕터 로드
+        async function loadChapter(index) {
+            currentChapter = index;
+            const content = document.getElementById('content');
+            content.innerHTML = '<div class="loading">로딩 중...</div>';
+            
+            try {
+                const response = await fetch(chapters[index].file);
+                const text = await response.text();
+                
+                // 마크다운을 HTML로 변환
+                let html = marked.parse(text);
+                
+                // 특수 포맷팅 처리
+                html = html.replace(/\[Punchline\]:\s*"([^"]+)"/g, '<div class="punchline">$1</div>');
+                html = html.replace(/\[The Problem\]:/g, '<h2>❌ The Problem</h2>');
+                html = html.replace(/\[The Solution\]:/g, '<h2>✅ The Solution</h2>');
+                html = html.replace(/\[Script\]:/g, '<h2>💬 Script</h2>');
+                html = html.replace(/\[Summary\]:/g, '<div class="summary">📌 Summary: ');
+                html = html.replace(/(<div class="summary">[^<]+)/g, '$1</div>');
+                
+                // Bad/Good 스크립트 박스 처리
+                html = html.replace(/\*\*Bad[^:]*:\*\*/g, '<div class="script-box bad"><h4>❌ Bad</h4>');
+                html = html.replace(/\*\*Good[^:]*:\*\*/g, '<div class="script-box good"><h4>✅ Good</h4>');
+                
+                content.innerHTML = html;
+                
+                // 목차 활성화 업데이트
+                document.querySelectorAll('#toc li').forEach((li, i) => {
+                    li.classList.toggle('active', i === index);
+                });
+                
+                // 사이드바 닫기 (모바일)
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('open');
+                }
+                
+                // 스크롤 맨 위로
+                window.scrollTo(0, 0);
+            } catch (error) {
+                content.innerHTML = `<div class="loading">에러: ${error.message}<br>로컬 서버가 필요합니다. 아래 배포 방법을 참고하세요.</div>`;
+            }
+        }
+        
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+        
+        // 초기화
+        buildTOC();
+        loadChapter(0);
+        
+        // 키보드 네비게이션
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && currentChapter > 0) {
+                loadChapter(currentChapter - 1);
+            } else if (e.key === 'ArrowRight' && currentChapter < chapters.length - 1) {
+                loadChapter(currentChapter + 1);
+            }
+        });
+    </script>
+</body>
+</html>
+
