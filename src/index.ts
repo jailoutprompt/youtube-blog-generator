@@ -44,6 +44,30 @@ app.get('/health', async (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), python, ytTranscript });
 });
 
+// 디버그용 자막 테스트 (배포 안정화 후 제거)
+app.get('/test-transcript/:videoId', async (req, res) => {
+  const { execFile } = await import('child_process');
+  const { promisify } = await import('util');
+  const exec = promisify(execFile);
+  try {
+    const script = `
+import json, sys, traceback
+from youtube_transcript_api import YouTubeTranscriptApi
+ytt = YouTubeTranscriptApi()
+try:
+    result = ytt.fetch('${req.params.videoId}', languages=['ko','en'])
+    text = ' '.join([s.text for s in result.snippets])
+    print(json.dumps({"ok": True, "length": len(text), "preview": text[:200]}))
+except Exception as e:
+    print(json.dumps({"ok": False, "error": str(e)[:500], "type": type(e).__name__}))
+`;
+    const { stdout, stderr } = await exec('python3', ['-c', script], { timeout: 15000 });
+    res.json(JSON.parse(stdout.trim()));
+  } catch (err: unknown) {
+    res.json({ ok: false, error: (err as Error).message?.slice(0, 300) });
+  }
+});
+
 // 채널 스크립트 추출: IP당 시간당 30회 (영상 목록), 스크립트 추출은 100회
 const channelVideosLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
