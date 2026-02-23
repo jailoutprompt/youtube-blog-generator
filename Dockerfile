@@ -1,18 +1,10 @@
 FROM node:20-slim
 
-# System dependencies: yt-dlp + python3 (for whisper) + ffmpeg
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 python3-pip python3-venv ffmpeg curl \
+# yt-dlp만 설치 (whisper는 로컬 전용 — 서버에서는 자막 없으면 스킵)
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp \
+    && chmod a+rx /usr/local/bin/yt-dlp \
     && rm -rf /var/lib/apt/lists/*
-
-# Install yt-dlp
-RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp \
-    && chmod a+rx /usr/local/bin/yt-dlp
-
-# Install whisper in a virtual environment
-RUN python3 -m venv /opt/whisper-env \
-    && /opt/whisper-env/bin/pip install --no-cache-dir openai-whisper
-ENV PATH="/opt/whisper-env/bin:$PATH"
 
 WORKDIR /app
 
