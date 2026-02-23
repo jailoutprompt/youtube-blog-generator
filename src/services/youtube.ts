@@ -3,7 +3,6 @@ import { promisify } from 'util';
 import fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
-import { YoutubeTranscript } from 'youtube-transcript';
 import { TranscriptResult } from '../types/index.d';
 
 const execFileAsync = promisify(execFile);
@@ -38,34 +37,35 @@ function parseSrt(srt: string): string {
 }
 
 /**
- * youtube-transcript 패키지로 자막 추출 (클라우드 서버 호환)
+ * Python youtube-transcript-api로 자막 추출 (클라우드 서버 호환)
  */
-async function fetchTranscriptApi(videoId: string): Promise<string | null> {
-  try {
-    console.log('[transcript] youtube-transcript API 시도...');
-    const items = await YoutubeTranscript.fetchTranscript(videoId, { lang: 'ko' });
-    if (items && items.length > 0) {
-      const text = items.map((item: { text: string }) => item.text).join(' ').trim();
-      if (text.length > 50) {
-        console.log(`[transcript] API 성공 (ko). 글자 수: ${text.length}`);
-        return text;
-      }
-    }
-  } catch {
-    console.log('[transcript] 한국어 자막 없음, 영어 시도...');
-  }
+async function fetchTranscriptPython(videoId: string): Promise<string | null> {
+  const script = `
+import json, sys
+from youtube_transcript_api import YouTubeTranscriptApi
+ytt = YouTubeTranscriptApi()
+for lang in ['ko', 'en', 'ja']:
+    try:
+        result = ytt.fetch('${videoId}', languages=[lang])
+        text = ' '.join([s.text for s in result.snippets])
+        if len(text) > 50:
+            print(json.dumps({"text": text, "lang": lang}))
+            sys.exit(0)
+    except:
+        pass
+print(json.dumps({"text": "", "lang": ""}))
+`;
 
   try {
-    const items = await YoutubeTranscript.fetchTranscript(videoId, { lang: 'en' });
-    if (items && items.length > 0) {
-      const text = items.map((item: { text: string }) => item.text).join(' ').trim();
-      if (text.length > 50) {
-        console.log(`[transcript] API 성공 (en). 글자 수: ${text.length}`);
-        return text;
-      }
+    console.log('[transcript] python youtube-transcript-api 시도...');
+    const { stdout } = await execFileAsync('python3', ['-c', script], { timeout: 30000 });
+    const result = JSON.parse(stdout.trim());
+    if (result.text && result.text.length > 50) {
+      console.log(`[transcript] python API 성공 (${result.lang}). 글자 수: ${result.text.length}`);
+      return result.text;
     }
-  } catch {
-    console.log('[transcript] 영어 자막도 없음');
+  } catch (err) {
+    console.log('[transcript] python API 실패:', (err as Error).message?.slice(0, 100));
   }
 
   return null;
@@ -86,7 +86,6 @@ async function downloadAudio(url: string, tmpDir: string): Promise<string> {
     url,
   ], { timeout: 60000 });
 
-  // 실제 파일명 확인 (yt-dlp가 확장자 바꿀 수 있음)
   const files = await fs.readdir(tmpDir);
   const audioFile = files.find((f) => f.startsWith('audio'));
   if (!audioFile) throw new Error('오디오 다운로드 실패');
@@ -108,7 +107,6 @@ async function transcribeWithWhisper(audioPath: string, tmpDir: string): Promise
     '--output_dir', tmpDir,
   ], { timeout: WHISPER_TIMEOUT });
 
-  // 결과 txt 파일 찾기
   const files = await fs.readdir(tmpDir);
   const txtFile = files.find((f) => f.endsWith('.txt'));
   if (!txtFile) throw new Error('Whisper 변환 결과를 찾을 수 없습니다.');
@@ -121,10 +119,10 @@ export async function getTranscript(url: string): Promise<TranscriptResult> {
   const videoId = extractVideoId(url);
   if (!videoId) throw new Error('영상 ID를 추출할 수 없습니다.');
 
-  // 1) youtube-transcript API로 자막 시도 (클라우드 서버 호환)
-  const apiText = await fetchTranscriptApi(videoId);
-  if (apiText) {
-    return { text: apiText, source: 'subtitle' };
+  // 1) Python youtube-transcript-api (가장 안정적, 클라우드 호환)
+  const pyText = await fetchTranscriptPython(videoId);
+  if (pyText) {
+    return { text: pyText, source: 'subtitle' };
   }
 
   // 2) yt-dlp로 자막 시도 (로컬 환경 fallback)

@@ -15,7 +15,10 @@
     "express-rate-limit": "^8.2.1",
     "openai": "^4.78.1",
     "puppeteer": "^24.37.5",
-    "youtube-transcript": "^1.2.1"
+    "youtube-caption-extractor": "^1.9.1",
+    "youtube-captions-scraper": "^2.0.3",
+    "youtube-transcript": "^1.2.1",
+    "youtubei.js": "^16.0.1"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
