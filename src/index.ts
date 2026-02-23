@@ -30,8 +30,18 @@ const generateLimiter = rateLimit({
 });
 app.use('/generate-blog', generateLimiter);
 
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+app.get('/health', async (_req, res) => {
+  let python = false;
+  let ytTranscript = false;
+  try {
+    const { execFile } = await import('child_process');
+    const { promisify } = await import('util');
+    const exec = promisify(execFile);
+    const { stdout } = await exec('python3', ['-c', 'from youtube_transcript_api import YouTubeTranscriptApi; print("ok")'], { timeout: 5000 });
+    python = true;
+    ytTranscript = stdout.trim() === 'ok';
+  } catch { /* */ }
+  res.json({ status: 'ok', timestamp: new Date().toISOString(), python, ytTranscript });
 });
 
 // 채널 스크립트 추출: IP당 시간당 30회 (영상 목록), 스크립트 추출은 100회
@@ -235,6 +245,9 @@ body{font-family:'Pretendard Variable',-apple-system,system-ui,sans-serif;backgr
 <div class="folder-info">
   📂 저장 위치: <code>public/artifacts/</code> → <code>dev/</code> 개발용 · <code>showcase/</code> 공개용 · <code>archive/</code> 아카이브
 </div>
+<div style="margin-bottom:16px">
+  <input type="text" id="searchInput" placeholder="검색..." oninput="render()" style="width:100%;background:#111119;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:12px 16px;font-size:14px;color:#f1f5f9;font-family:inherit;outline:none">
+</div>
 <div class="tabs">
   <button class="tab tab-all active" style="--c:#f1f5f9" onclick="filterCat('all')">전체 <span class="tab-count">${totalCount}</span></button>
   ${filterTabs}
@@ -264,7 +277,9 @@ function filterCat(cat){
 }
 
 function render(){
-  const filtered=currentCat==='all'?cards:cards.filter(c=>c.category===currentCat);
+  const q=(document.getElementById('searchInput').value||'').toLowerCase();
+  let filtered=currentCat==='all'?cards:cards.filter(c=>c.category===currentCat);
+  if(q)filtered=filtered.filter(c=>c.title.toLowerCase().includes(q)||c.name.toLowerCase().includes(q)||(c.desc||'').toLowerCase().includes(q)||c.catLabel.toLowerCase().includes(q));
   const grid=document.getElementById('grid');
   if(!filtered.length){grid.innerHTML='<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">이 카테고리에 파일이 없습니다</div></div>';return;}
   grid.innerHTML=filtered.map((c,i)=>\`

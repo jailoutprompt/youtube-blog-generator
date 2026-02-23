@@ -156,7 +156,12 @@ export async function getTranscript(url: string): Promise<TranscriptResult> {
       }
     }
 
-    // 3) 자막 없음 → 오디오 다운로드 + Whisper STT
+    // 3) 서버 환경이면 여기서 명확한 에러 반환
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('자막을 추출할 수 없습니다. 이 영상에 자막(자동 생성 포함)이 있는지 확인해주세요.');
+    }
+
+    // 4) 로컬 전용: 오디오 다운로드 + Whisper STT
     console.log('[whisper] 자막 없음. Whisper fallback 시작...');
 
     const audioPath = await downloadAudio(url, tmpDir);
