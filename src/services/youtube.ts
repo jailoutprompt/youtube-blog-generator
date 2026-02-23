@@ -3,6 +3,7 @@ import { promisify } from 'util';
 import fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
+import { YoutubeTranscript } from 'youtube-transcript';
 import { TranscriptResult } from '../types/index.d';
 
 const execFileAsync = promisify(execFile);
@@ -34,6 +35,40 @@ function parseSrt(srt: string): string {
     .map((line) => line.replace(/<[^>]+>/g, '').trim())
     .filter(Boolean)
     .join(' ');
+}
+
+/**
+ * youtube-transcript 패키지로 자막 추출 (클라우드 서버 호환)
+ */
+async function fetchTranscriptApi(videoId: string): Promise<string | null> {
+  try {
+    console.log('[transcript] youtube-transcript API 시도...');
+    const items = await YoutubeTranscript.fetchTranscript(videoId, { lang: 'ko' });
+    if (items && items.length > 0) {
+      const text = items.map((item: { text: string }) => item.text).join(' ').trim();
+      if (text.length > 50) {
+        console.log(`[transcript] API 성공 (ko). 글자 수: ${text.length}`);
+        return text;
+      }
+    }
+  } catch {
+    console.log('[transcript] 한국어 자막 없음, 영어 시도...');
+  }
+
+  try {
+    const items = await YoutubeTranscript.fetchTranscript(videoId, { lang: 'en' });
+    if (items && items.length > 0) {
+      const text = items.map((item: { text: string }) => item.text).join(' ').trim();
+      if (text.length > 50) {
+        console.log(`[transcript] API 성공 (en). 글자 수: ${text.length}`);
+        return text;
+      }
+    }
+  } catch {
+    console.log('[transcript] 영어 자막도 없음');
+  }
+
+  return null;
 }
 
 /**
@@ -86,11 +121,17 @@ export async function getTranscript(url: string): Promise<TranscriptResult> {
   const videoId = extractVideoId(url);
   if (!videoId) throw new Error('영상 ID를 추출할 수 없습니다.');
 
+  // 1) youtube-transcript API로 자막 시도 (클라우드 서버 호환)
+  const apiText = await fetchTranscriptApi(videoId);
+  if (apiText) {
+    return { text: apiText, source: 'subtitle' };
+  }
+
+  // 2) yt-dlp로 자막 시도 (로컬 환경 fallback)
   const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'yt-sub-'));
   const outTemplate = path.join(tmpDir, videoId);
 
   try {
-    // 1) 자막 시도 (한국어 → 영어)
     for (const lang of ['ko', 'en']) {
       try {
         await execFileAsync('yt-dlp', [
@@ -117,7 +158,7 @@ export async function getTranscript(url: string): Promise<TranscriptResult> {
       }
     }
 
-    // 2) 자막 없음 → 오디오 다운로드 + Whisper STT
+    // 3) 자막 없음 → 오디오 다운로드 + Whisper STT
     console.log('[whisper] 자막 없음. Whisper fallback 시작...');
 
     const audioPath = await downloadAudio(url, tmpDir);
