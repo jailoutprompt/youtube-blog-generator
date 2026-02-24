@@ -37,7 +37,42 @@ function parseSrt(srt: string): string {
 }
 
 /**
- * Python youtube-transcript-api로 자막 추출 (클라우드 서버 호환)
+ * Supadata API로 자막 추출 (클라우드 서버 전용, 가장 안정적)
+ */
+async function fetchTranscriptSupadata(videoId: string): Promise<string | null> {
+  const apiKey = process.env.SUPADATA_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    console.log('[transcript] Supadata API 시도...');
+    const url = `https://api.supadata.ai/v1/transcript?url=https://www.youtube.com/watch?v=${videoId}`;
+    const res = await fetch(url, {
+      headers: { 'x-api-key': apiKey },
+      signal: AbortSignal.timeout(30000),
+    });
+
+    if (!res.ok) {
+      console.log(`[transcript] Supadata 실패: HTTP ${res.status}`);
+      return null;
+    }
+
+    const data = await res.json() as { lang?: string; content?: Array<{ text: string }> };
+    if (data.content && data.content.length > 0) {
+      const text = data.content.map((seg: { text: string }) => seg.text).join(' ').trim();
+      if (text.length > 50) {
+        console.log(`[transcript] Supadata 성공 (${data.lang}). 글자 수: ${text.length}`);
+        return text;
+      }
+    }
+  } catch (err) {
+    console.log('[transcript] Supadata 에러:', (err as Error).message?.slice(0, 100));
+  }
+
+  return null;
+}
+
+/**
+ * Python youtube-transcript-api로 자막 추출 (로컬/일부 서버 호환)
  */
 async function fetchTranscriptPython(videoId: string): Promise<string | null> {
   const script = `
@@ -119,13 +154,19 @@ export async function getTranscript(url: string): Promise<TranscriptResult> {
   const videoId = extractVideoId(url);
   if (!videoId) throw new Error('영상 ID를 추출할 수 없습니다.');
 
-  // 1) Python youtube-transcript-api (가장 안정적, 클라우드 호환)
+  // 1) Supadata API (클라우드 서버에서 가장 안정적)
+  const supadataText = await fetchTranscriptSupadata(videoId);
+  if (supadataText) {
+    return { text: supadataText, source: 'subtitle' };
+  }
+
+  // 2) Python youtube-transcript-api (로컬 또는 비차단 서버)
   const pyText = await fetchTranscriptPython(videoId);
   if (pyText) {
     return { text: pyText, source: 'subtitle' };
   }
 
-  // 2) yt-dlp로 자막 시도 (로컬 환경 fallback)
+  // 3) yt-dlp로 자막 시도 (로컬 환경 fallback)
   const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'yt-sub-'));
   const outTemplate = path.join(tmpDir, videoId);
 
@@ -156,12 +197,12 @@ export async function getTranscript(url: string): Promise<TranscriptResult> {
       }
     }
 
-    // 3) 서버 환경이면 여기서 명확한 에러 반환
+    // 4) 서버 환경이면 여기서 명확한 에러 반환
     if (process.env.NODE_ENV === 'production') {
       throw new Error('자막을 추출할 수 없습니다. 이 영상에 자막(자동 생성 포함)이 있는지 확인해주세요.');
     }
 
-    // 4) 로컬 전용: 오디오 다운로드 + Whisper STT
+    // 5) 로컬 전용: 오디오 다운로드 + Whisper STT
     console.log('[whisper] 자막 없음. Whisper fallback 시작...');
 
     const audioPath = await downloadAudio(url, tmpDir);
