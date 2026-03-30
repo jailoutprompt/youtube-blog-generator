@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 전자책 부업 완전 분석</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#f5f5f0;color:#1a1a1a;line-height:1.9;-webkit-font-smoothing:antialiased}
+.page{width:210mm;min-height:297mm;margin:0 auto 24px;padding:60px 65px;background:#fff;box-shadow:0 2px 20px rgba(0,0,0,.08);position:relative;page-break-after:always}
+@media print{body{background:#fff}.page{box-shadow:none;margin:0;padding:50px 60px}}
+
+/* Cover */
+.cover{display:flex;flex-direction:column;justify-content:center;padding:80px 65px;background:#fff;border-bottom:6px solid #1a1a1a}
+.cover .label{font-size:12px;font-weight:700;letter-spacing:6px;text-transform:uppercase;color:#888;margin-bottom:40px}
+.cover h1{font-family:'Noto Serif KR',serif;font-size:42px;font-weight:900;line-height:1.25;letter-spacing:-1px;color:#1a1a1a;margin-bottom:16px}
+.cover .subtitle{font-size:17px;color:#666;line-height:1.6;margin-bottom:48px}
+.cover .author{font-size:15px;font-weight:700;color:#1a1a1a;padding-top:24px;border-top:2px solid #eee}
+.cover .meta{position:absolute;bottom:60px;left:65px;font-size:11px;color:#bbb;letter-spacing:1px}
+
+/* TOC */
+.toc h2{font-family:'Noto Serif KR',serif;font-size:28px;font-weight:900;margin-bottom:32px;color:#1a1a1a}
+.toc-item{display:flex;align-items:baseline;padding:12px 0;border-bottom:1px solid #f0f0f0;gap:12px}
+.toc-num{font-size:13px;font-weight:700;color:#999;min-width:28px}
+.toc-title{font-size:15px;font-weight:500;color:#333}
+.toc-dots{flex:1;border-bottom:1px dotted #ddd;margin:0 8px;min-width:20px;align-self:flex-end;margin-bottom:4px}
+.toc-page{font-size:14px;font-weight:700;color:#999;min-width:24px;text-align:right}
+
+/* Chapter */
+.ch-header{margin-bottom:32px;padding-bottom:20px;border-bottom:3px solid #1a1a1a}
+.ch-num{font-size:12px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#999;display:block;margin-bottom:8px}
+.ch-header h2{font-family:'Noto Serif KR',serif;font-size:28px;font-weight:900;line-height:1.3;color:#1a1a1a}
+.ch-body{font-size:15px;color:#333;line-height:1.9}
+.ch-body .section-title{font-family:'Noto Serif KR',serif;font-size:19px;font-weight:700;color:#1a1a1a;margin:32px 0 16px;padding-top:16px;border-top:1px solid #eee}
+.ch-body p{margin-bottom:16px}
+.ch-body strong{color:#1a1a1a;font-weight:700}
+.ch-body ul{margin:12px 0 20px 0;padding-left:0;list-style:none}
+.ch-body li{position:relative;padding-left:20px;margin-bottom:8px;line-height:1.7}
+.ch-body li::before{content:'—';position:absolute;left:0;color:#999}
+.ch-body h4{font-size:16px;font-weight:700;color:#1a1a1a;margin:24px 0 12px}
+
+/* Page number */
+.page-num{position:absolute;bottom:40px;right:65px;font-size:12px;color:#bbb;font-weight:500}
+
+/* Ending */
+.ending{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:80px 65px}
+.ending h2{font-family:'Noto Serif KR',serif;font-size:28px;font-weight:900;margin-bottom:16px;color:#1a1a1a}
+.ending p{font-size:15px;color:#888;margin-bottom:8px}
+.ending .brand{margin-top:48px;font-size:12px;color:#bbb;letter-spacing:2px}
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<div class="page cover">
+  <div class="label">E-BOOK</div>
+  <h1>2026 전자책 부업 완전 분석</h1>
+  <p class="subtitle">카테고리별 수익 데이터 + 30일 실행 로드맵</p>
+  <p class="author">전자책 수익 연구소</p>
+  <p class="meta">2026 &middot; Made with MetaPress</p>
+</div>
+
+<!-- TOC -->
+<div class="page toc">
+  <h2>목차</h2>
+  <div class="toc-item"><span class="toc-num">01</span><span class="toc-title">1장. 당신이 전자책으로 돈을 못 버는 진짜 이유</span><span class="toc-dots"></span><span class="toc-page">03</span></div>
+<div class="toc-item"><span class="toc-num">02</span><span class="toc-title">1장. 당신이 전자책으로 돈을 못 버는 진짜 이유</span><span class="toc-dots"></span><span class="toc-page">04</span></div>
+<div class="toc-item"><span class="toc-num">03</span><span class="toc-title">4장. 수익 내는 전자책 시스템 — 6단계 공식</span><span class="toc-dots"></span><span class="toc-page">05</span></div>
+  <div class="page-num">02</div>
+</div>
+
+<!-- Chapters -->
+
+<div class="page">
+  <div class="ch-header">
+    <span class="ch-num">Chapter 01</span>
+    <h2>1장. 당신이 전자책으로 돈을 못 버는 진짜 이유</h2>
+  </div>
+  <div class="ch-body"><h3 class="section-title">80%가 월 10만원도 못 버는 잔인한 현실</h3>
+<p>당신은 지금 이 순간에도 누군가 자면서 돈을 벌고 있다는 사실을 알고 계십니까? 영상 편집도 없고, 얼굴 공개도 없고, 라이브 강의도 없습니다. 그저 PDF 파일 하나를 플랫폼에 올려두었을 뿐인데, 매일 아침 일어나면 통장에 돈이 들어와 있습니다. 이것이 2026년 현재 가장 조용하게, 그러나 가장 확실하게 돈을 버는 부업의 정체입니다. 바로 <strong>전자책 판매</strong>입니다.</p>
+<p>크몽에서 전자책만으로 월 840만원을 버는 셀러가 있습니다. 그는 첫 달에 330만원으로 시작해서 단 4개월 만에 이 금액을 달성했습니다. 하루 3시간만 투자하면서 월 500만원 이상을 안정적으로 버는 사람도 실제로 존재합니다. 1인 출판사를 운영하며 누적 3,000만원 매출을 찍은 사례도 확인되었습니다. 이들의 공통점은 단 하나입니다. <strong>글로만 돈을 벌고 있다</strong>는 것입니다.</p>
+<p>하지만 여기서 멈추지 마세요. 이 화려한 성공 사례 뒤에 숨겨진 잔인한 진실을 직시해야 합니다. 전자책을 올리는 사람의 <strong>80%는 월 10만원도 못 벌고 있습니다</strong>. 그들은 며칠 밤을 새워 전자책을 완성하고, 설레는 마음으로 플랫폼에 등록합니다. 그리고 기다립니다. 하루, 이틀, 일주일... 그러나 아무도 사지 않습니다. 조회수는 두 자릿수에 머물고, 리뷰는 0개입니다. 검색 결과 3페이지 아래로 묻혀버리고, 결국 포기합니다.</p>
+<h3 class="section-title">실패하는 사람들의 3가지 치명적 실수</h3>
+<p>왜 같은 전자책 시장에서 어떤 사람은 월 840만원을 벌고, 어떤 사람은 한 권도 팔지 못할까요? 답은 명확합니다. <strong>실패하는 사람들은 세 가지 치명적인 실수를 반복</strong>하고 있습니다.</p>
+<p>첫 번째 실수는 <strong>주제 선정의 오류</strong>입니다. 자신이 쓰고 싶은 것과 시장이 원하는 것은 완전히 다릅니다. "나의 여행 이야기", "내가 좋아하는 시 모음", "나만의 요리 레시피"... 이런 주제들은 당신에게는 의미 있지만, 시장에서는 누구도 돈을 내고 사지 않습니다. 돈이 되는 주제는 따로 있습니다. 사람들이 <strong>지금 당장 해결하고 싶은 고통</strong>이 있는 주제, <strong>돈을 내고서라도 알고 싶은 비밀</strong>이 담긴 주제만이 팔립니다.</p>
+<p>두 번째 실수는 <strong>리뷰 0개의 함정</strong>입니다. 크몽이든 리디북스든, 모든 전자책 플랫폼의 검색 알고리즘은 리뷰 개수와 별점에 민감하게 반응합니다. 리뷰가 0개면 아무리 좋은 내용이어도 검색 결과 하단으로 밀려납니다. 사람들은 리뷰가 없는 전자책을 신뢰하지 않습니다. "혹시 사기는 아닐까?", "내용이 형편없는 거 아닐까?"라는 의심이 구매를 막습니다. 초반 5개의 리뷰를 확보하지 못하면, 당신의 전자책은 영원히 어둠 속에 묻힙니다.</p>
+<p>세 번째 실수는 <strong>가격 책정의 착각</strong>입니다. 많은 초보자들이 "처음이니까 싸게 팔아야지"라고 생각합니다. 5,000원, 심지어 2,900원에 책정하는 경우도 있습니다. 그러나 이것은 역효과를 냅니다. <strong>너무 싼 가격은 오히려 가치 없는 콘텐츠라는 신호</strong>를 보냅니다. 사람들은 "이렇게 싸면 내용도 별로겠지"라고 판단하고 클릭조차 하지 않습니다. 반대로 14,900원이나 19,900원처럼 적절한 가격대는 "이 정도 가격이면 제대로 된 정보가 담겨 있겠구나"라는 신뢰를 줍니다.</p>
+<h3 class="section-title">데이터가 폭로하는 수익 구간의 진실</h3>
+<p>전자책 시장의 수익 구조는 극명하게 나뉩니다. 실제 데이터를 분석한 결과, 네 개의 수익 구간이 명확하게 드러났습니다.</p>
+<p><strong>구간 1: 월 0~10만원 (전체의 80%)</strong></p>
+<p>이 구간에 속한 사람들은 전자책을 올려놓기만 했을 뿐 판매가 거의 일어나지 않습니다. 리뷰가 0~2개이고, 검색 노출이 거의 없습니다. 주제 선정이 잘못되었거나, 제목과 표지가 클릭을 유도하지 못하거나, 상세페이지가 구매 욕구를 자극하지 못한 경우입니다. 이들은 대부분 3개월 이내에 포기합니다.</p>
+<p><strong>구간 2: 월 30~100만원 (전체의 15%)</strong></p>
+<p>이 구간에 진입한 사람들은 최소 3개월 이상을 버텼고, 리뷰를 5개 이상 확보했습니다. 검색 노출이 시작되면서 자동 판매가 조금씩 일어나기 시작합니다. 한 달에 20~40권 정도 팔리며, 안정적인 부수입원이 됩니다. 이 구간에 머물기 위해서는 <strong>꾸준한 리뷰 관리와 상세페이지 개선</strong>이 필수입니다.</p>
+<p><strong>구간 3: 월 100~500만원 (전체의 4%)</strong></p>
+<p>이 구간은 전자책 부업의 스위트 스팟입니다. 시리즈를 3권 이상 보유하고 있고, 멀티플랫폼 유통을 하며, SEO 최적화를 제대로 적용한 사람들입니다. 한 달에 70~150권이 팔리며, <strong>수동 소득의 실체를 경험</strong>하기 시작합니다. 여기까지 오면 전자책 판매가 단순한 부업이 아니라 본업 수준의 수익원이 됩니다.</p>
+<p><strong>구간 4: 월 500만원 이상 (상위 1%)</strong></p>
+<p>크몽의 끝판왕Kim처럼 월 840만원을 버는 사람들입니다. 이들은 사실상 마케팅 전문가이며, 전자책 판매를 하나의 비즈니스 시스템으로 구축했습니다. SEO, 리뷰 마케팅, 시리즈 확장, 멀티플랫폼 전략을 모두 결합하고, 지속적으로 신작을 내면서 브랜드를 키웁니다. 여기까지 오면 전자책은 단순한 상품이 아니라 <strong>자동화된 수익 머신</strong>이 됩니다.</p>
+<h3 class="section-title">당신이 지금 당장 알아야 할 것</h3>
+<p>이 책을 읽고 있는 당신은 아마도 두 가지 중 하나일 것입니다. 전자책 부업을 시작하려고 알아보는 중이거나, 이미 시도했지만 실패해서 다시 도전하려는 중이거나. 어느 쪽이든 상관없습니다. 중요한 것은 <strong>지금부터 올바른 방법으로 시작하느냐</strong>입니다.</p>
+<p>전자책 부업은 결코 쉬운 돈벌이가 아닙니다. 그러나 <strong>데이터 기반으로 접근하고, 검증된 전략을 따르면</strong> 월 100만원 이상의 수익은 충분히 가능합니다. 이 책은 저자 개인의 성공담을 늘어놓는 자기계발서가 아닙니다. 실제 시장 데이터와 탑셀러들의 검증된 사례를 분석한 리서치 보고서입니다.</p>
+<p>다음 장에서는 돈이 되는 카테고리 TOP 7을 구체적인 수치와 함께 공개합니다. 어떤 주제가 실제로 팔리는지, 가격대는 어떻게 설정해야 하는지, 시리즈 확장은 어떻게 하는지 모두 알려드립니다. 그리고 3장에서는 실제로 이 방법으로 돈을 번 사람들의 데이터를 낱낱이 공개합니다. 월 840만원 셀러의 SEO 전략, 하루 3시간으로 월 500만원 버는 리뷰 마케팅, 누적 3,000만원 매출의 시리즈 확장 전략까지.</p>
+<p><strong>당신이 전자책으로 돈을 못 번 이유는 능력이 부족해서가 아닙니다.</strong> 단지 시장이 원하는 것이 무엇인지, 어떻게 접근해야 하는지 몰랐을 뿐입니다. 이제 그 답을 알려드리겠습니다.</p></div>
+  <div class="page-num">03</div>
+</div>
+
+<div class="page">
+  <div class="ch-header">
+    <span class="ch-num">Chapter 02</span>
+    <h2>1장. 당신이 전자책으로 돈을 못 버는 진짜 이유</h2>
+  </div>
+  <div class="ch-body"><h2>1장. 당신이 전자책으로 돈을 못 버는 진짜 이유</h2>
+<h3 class="section-title">80%가 실패하는 3가지 함정</h3>
+<p>전자책을 올리는 사람의 <strong>80%는 월 10만원도 못 벌니다.</strong> 이건 통계가 아니라 현실입니다. 크몽, 리디북스, 알라딘에 전자책을 등록한 사람들의 대부분이 첫 달 판매 0건으로 시작해서 3개월 후에도 여전히 0건입니다. 왜 그럴까요? 글을 못 써서가 아닙니다. 시장을 몰라서입니다.</p>
+<p>첫 번째 함정은 <strong>주제 선정의 실패</strong>입니다. '내가 쓰고 싶은 것'과 '사람들이 돈 내고 사는 것'은 완전히 다릅니다. 당신의 여행 에세이, 시집, 개인적인 성장 스토리는 아무도 사지 않습니다. 냉정하게 말하면 당신의 이야기에 관심 있는 사람은 당신뿐입니다. 시장은 <strong>문제 해결</strong>에만 돈을 냅니다.</p>
+<p>두 번째 함정은 <strong>리뷰 0개의 저주</strong>입니다. 크몽에서 검색했을 때 리뷰가 0개인 전자책과 30개인 전자책이 나란히 있다면 어떤 걸 클릭하시겠습니까? 당연히 30개입니다. 검색 알고리즘도 똑같이 생각합니다. 리뷰가 없으면 검색 결과 3페이지 이후로 밀려나고, 그럼 아무도 발견하지 못합니다. <strong>리뷰가 없으면 존재하지 않는 것과 같습니다.</strong></p>
+<p>세 번째 함정은 <strong>가격 책정의 착각</strong>입니다. 많은 초보자가 '처음이니까 싸게 팔자'라고 생각합니다. 4,900원, 심지어 2,900원에 올립니다. 그런데 역설적이게도 <strong>너무 싼 전자책은 안 팔립니다.</strong> 사람들은 '이 가격이면 별거 아니겠지'라고 판단하기 때문입니다. 커피 한 잔 값인 5,000원짜리 전자책보다 영화 한 편 값인 14,900원짜리가 더 잘 팔립니다.</p>
+<h3 class="section-title">성공하는 1%의 비밀 공식</h3>
+<p>그렇다면 월 100만원 이상 버는 상위 5%는 뭐가 다를까요? <strong>그들은 시스템을 압니다.</strong> 감으로 하지 않습니다. 데이터를 보고, 검증된 공식을 따르고, 시장의 법칙을 존중합니다.</p>
+<p>크몽 탑셀러 끝판왕Kim은 첫 달 330만원에서 시작해 4개월 만에 월 840만원을 달성했습니다. 그의 비밀은 단순합니다. <strong>SEO 키워드 최적화</strong>입니다. 사람들이 실제로 검색하는 단어를 제목과 설명에 넣었습니다. 'AI 글쓰기', '챗GPT 활용법', '부업 시작' 같은 트렌디한 키워드를 사용했고, 크몽 검색창에서 1페이지에 노출되었습니다. 노출되면 클릭되고, 클릭되면 팔립니다.</p>
+<p>박성훈은 <strong>리뷰 마케팅</strong>으로 월 500만원을 안정적으로 벌고 있습니다. 그의 전략은 초반 5건의 리뷰를 확보하는 것입니다. 지인에게 정직한 리뷰를 요청하고, 모든 리뷰에 개인화된 답변을 달았습니다. 리뷰가 쌓이면서 크몽 검색 노출이 올라갔고, 자동 판매 루프가 형성되었습니다. <strong>리뷰 5개가 쌓이는 순간, 게임이 바뀝니다.</strong></p>
+<p>림출판사는 <strong>시리즈 확장 전략</strong>으로 누적 3,000만원을 벌었습니다. 한 주제를 여러 전자책으로 세분화했습니다. 예를 들어 '다크 심리학'이라는 주제를 '심리 조종의 기술', '휘둘리지 않는 법', '설득의 법칙'으로 나눴습니다. 1편을 산 사람의 73%가 2편도 삽니다. 같은 노력으로 수익은 3배가 됩니다.</p>
+<h3 class="section-title">지금 당장 버려야 할 3가지 착각</h3>
+<p><strong>착각 1: 글을 잘 써야 한다.</strong> 아닙니다. 전자책은 문학이 아닙니다. 정보를 정리하고 전달하는 능력이면 충분합니다. 실제로 베스트셀러 전자책 중 상당수는 기존 유튜브 콘텐츠를 정리하거나, 해외 원서를 재가공한 것입니다. 글솜씨가 아니라 <strong>리서치 능력과 구조화 능력</strong>이 핵심입니다.</p>
+<p><strong>착각 2: 경험이 있어야 한다.</strong> 아닙니다. 전자책 주제의 70%는 리서치만으로 충분합니다. 다크 심리학 전자책을 쓴 사람이 심리학 박사일까요? 아닙니다. 관련 책 10권을 읽고 정리한 것입니다. AI 활용법 전자책을 쓴 사람이 AI 개발자일까요? 아닙니다. ChatGPT를 한 달 동안 써보고 정리한 것입니다. <strong>경험보다 정리 능력이 중요합니다.</strong></p>
+<p><strong>착각 3: 많이 팔려면 마케팅 비용이 필요하다.</strong> 아닙니다. 전자책은 0원 마케팅이 가능한 몇 안 되는 부업입니다. 블로그에 무료 콘텐츠를 올리고, 더 알고 싶으면 전자책으로 유도하는 구조만 있으면 됩니다. 크몽 자체 검색 알고리즘이 광고를 대신해줍니다. <strong>광고비 0원으로 월 100만원은 충분히 가능합니다.</strong></p></div>
+  <div class="page-num">04</div>
+</div>
+
+<div class="page">
+  <div class="ch-header">
+    <span class="ch-num">Chapter 03</span>
+    <h2>4장. 수익 내는 전자책 시스템 — 6단계 공식</h2>
+  </div>
+  <div class="ch-body"><h2>4장. 수익 내는 전자책 시스템 — 6단계 공식</h2>
+<h3 class="section-title">단계 1: 돈 되는 주제를 데이터로 선택하라</h3>
+<p>전자책으로 돈을 버는 첫 번째 단계는 <strong>주제 선정</strong>입니다. 이건 감이 아니라 과학입니다. 시장에서 검증된 7개 카테고리 중 하나를 선택하세요. 다크심리학, 부업과 N잡, 연애와 매력, AI 활용법, 재테크와 주식, 글쓰기와 퍼스널 브랜딩, 습관과 루틴입니다.</p>
+<p><strong>왜 이 7개인가?</strong> 첫째, 수요가 큽니다. 크몽과 리디북스에서 검색량이 월 1만 건 이상입니다. 둘째, 가격 수용도가 높습니다. 사람들이 14,900원 이상을 기꺼이 냅니다. 셋째, 시리즈 확장이 가능합니다. 한 주제로 3권 이상 만들 수 있습니다. 넷째, 텍스트만으로 충분합니다. 영상이나 이미지가 필수가 아닙니다.</p>
+<p>구체적으로 어떻게 선택할까요? <strong>크몽 검색창에 키워드를 넣어보세요.</strong> '다크 심리학'을 검색하면 관련 전자책이 몇 개 나오는지, 리뷰가 얼마나 달렸는지 확인할 수 있습니다. 리뷰 30개 이상인 전자책이 3개 이상 있다면 그 주제는 검증된 것입니다. 반대로 리뷰가 0~5개뿐이라면 수요가 없는 주제입니다.</p>
+<p><strong>경쟁 전자책 3권을 구매하세요.</strong> 이건 투자입니다. 4만원 정도 쓰면 시장 리서치가 끝납니다. 구매한 전자책을 읽으면서 다음을 체크하세요. 분량은 몇 페이지인가? 챕터 구조는 어떤가? 어떤 사례를 사용했는가? 가격은 얼마인가? 리뷰에서 사람들이 어떤 점을 좋아했는가? 이 정보가 당신의 전자책 설계도가 됩니다.</p>
+<h3 class="section-title">단계 2: 30~50페이지 골든 구조를 따라라</h3>
+<p>분량은 <strong>30~50페이지</strong>가 스위트스팟입니다. 20페이지 미만은 너무 얇아서 가치가 없어 보이고, 100페이지 이상은 전자책치고 너무 길어서 읽기 부담스럽습니다. 30~50페이지면 핵심만 담으면서도 충분히 두툼한 느낌을 줍니다.</p>
+<p><strong>챕터는 6개 구조</strong>를 추천합니다. 1장은 문제 제기(왜 이게 중요한가), 2장은 원리 설명(어떻게 작동하는가), 3장은 핵심 방법론(구체적으로 뭘 하는가), 4장은 실전 사례(누가 어떻게 성공했는가), 5장은 FAQ와 반박(흔한 질문과 오해), 6장은 실행 계획(지금 당장 뭘 할 것인가)입니다. 이 구조는 심리학적으로 검증된 설득 공식입니다.</p>
+<p>각 챕터는 <strong>5~8페이지</strong>가 적당합니다. 챕터당 3~4개의 소제목을 만들고, 소제목마다 2~3개의 문단을 씁니다. 문단은 3~5문장으로 구성합니다. 이렇게 하면 구조가 명확하고 읽기 쉬운 전자책이 완성됩니다.</p>
+<p><strong>AI 도구를 활용하세요.</strong> ChatGPT나 Claude에게 '다크 심리학 전자책의 1장 초안을 써줘. 주제는 첫인상 조작 기술이야'라고 요청하면 5분 만에 초안이 나옵니다. 이걸 그대로 쓰면 안 되고, 본인의 경험과 사례를 추가해서 재가공하세요. AI는 리서치 도우미지 대필 작가가 아닙니다. <strong>AI 30% + 본인 리서치 40% + 사례 30%</strong> 비율이 이상적입니다.</p>
+<h3 class="section-title">단계 3: 자극적 제목 공식을 적용하라</h3>
+<p>제목이 클릭을 결정하고, 클릭이 매출을 결정합니다. <strong>제목 공식은 간단합니다.</strong> [대상] + [결과] + [숫자] + [비밀/법칙/공식] 구조입니다. 예를 들어 '직장인이 월 100만원 버는 7가지 부업 공식', '연애 초보가 30일 만에 고백 성공하는 심리 법칙', 'AI 몰라도 하루 3시간 만에 전자책 쓰는 5단계 비밀'입니다.</p>
+<p><strong>금지된 단어들</strong>도 있습니다. '비밀', '조종', '법칙', '공식', '금지된', '숨겨진' 같은 단어는 호기심을 자극합니다. 숫자는 구체성을 줍니다. '여러 가지'보다 '7가지'가 3배 더 클릭됩니다. 대상을 명확히 하면 타겟팅이 됩니다. '사람들'보다 '직장인'이 훨씬 강력합니다.</p>
+<p>크몽 탑셀러들의 제목을 분석했습니다. 상위 10개 전자책 중 9개가 이 공식을 사용했습니다. '챗GPT로 월 500만원 버는 완전 자동화 시스템', '심리 조종의 기술 - 상대를 내 편으로 만드는 48가지 법칙', '하루 1시간 글쓰기로 평생 월세 받는 전자책 부업 공식'입니다. <strong>제목만 바꿔도 클릭률이 2배 올라갑니다.</strong></p>
+<h3 class="section-title">단계 4: 표지는 Canva 3분이면 충분하다</h3>
+<p>전자책 표지는 디자이너 없이 만들 수 있습니다. <strong>Canva 무료 버전</strong>으로 충분합니다. 검색창에 'ebook cover'를 치면 수백 개의 템플릿이 나옵니다. 마음에 드는 걸 선택하고, 제목과 부제만 바꾸면 끝입니다. 3분이면 완성됩니다.</p>
+<p><strong>표지 디자인 원칙 3가지</strong>를 기억하세요. 첫째, 제목이 크고 명확해야 합니다. 썸네일로 봐도 읽힐 정도로 글자 크기를 키우세요. 둘째, 색상은 2~3가지로 제한합니다. 빨강+검정, 파랑+흰색 같은 대비가 강한 조합이 좋습니다. 셋째, 이미지는 최소화합니다. 복잡한 이미지보다 단순한 아이콘이 전문적으로 보입니다.</p>
+<p>크몽에서 판매되는 전자책 표지를 20개 분석했습니다. 공통점은 <strong>미니멀리즘</strong>이었습니다. 화려한 디자인보다 깔끔하고 읽기 쉬운 표지가 더 잘 팔렸습니다. 전자책은 종이책이 아닙니다. 표지 디자인에 일주일 쓰지 마세요. Canva 3분이면 충분합니다.</p>
+<h3 class="section-title">단계 5: 크몽 등록과 SEO 최적화</h3>
+<p>크몽에 전자책을 등록하는 건 10분이면 끝납니다. 카테고리는 'IT·프로그래밍 > 전자책'을 선택하세요. 제목, 설명, 가격, PDF 파일을 업로드하면 됩니다. <strong>핵심은 설명란입니다.</strong> 여기에 SEO 키워드를 최대한 넣으세요.</p>
+<p><strong>SEO 키워드 리스트</strong>를 만드세요. 사람들이 실제로 검색하는 단어를 찾아야 합니다. 크몽 검색창에 키워드를 입력하면 자동완성이 뜹니다. '전자책'을 치면 '전자책 만들기', '전자책 쓰는 법', '전자책 부업'이 나옵니다. 이 단어들을 설명란에 자연스럽게 넣으세요.</p>
+<p><strong>가격은 14,900원에서 시작하세요.</strong> 너무 싸면 가치가 없어 보이고, 너무 비싸면 초보자가 사기 어렵습니다. 14,900원은 심리적 스위트스팟입니다. 커피 3잔 값, 영화 1편 값이라는 프레이밍이 가능합니다. 리뷰가 쌓이면 19,900원으로 올리세요.</p>
+<p>등록 후 <strong>24시간 이내에 첫 판매</strong>가 나오는지 확인하세요. 안 나오면 제목이나 설명을 수정해야 합니다. 크몽은 실시간 테스트가 가능한 플랫폼입니다. 일주일에 한 번씩 제목을 A/B 테스트하세요. 어떤 제목이 더 클릭되는지 데이터로 확인할 수 있습니다.</p>
+<h3 class="section-title">단계 6: 리뷰 5개 확보 — 게임 체인저</h3>
+<p>리뷰 5개가 쌓이는 순간, <strong>검색 노출이 폭발합니다.</strong> 크몽 알고리즘은 리뷰 수와 별점을 가장 중요하게 봅니다. 리뷰 0개는 검색 3페이지 이후, 리뷰 5개는 1페이지 상단에 노출됩니다. 이게 80%와 5%를 가르는 분기점입니다.</p>
+<p><strong>초기 리뷰 확보 전략 3가지</strong>를 소개합니다. 첫째, 지인 5명에게 정직한 리뷰를 요청하세요. 돈을 받고 파는 게 아니라 무료로 주고 솔직한 피드백을 받으세요. 둘째, 할인 쿠폰을 발행하세요. 정가 14,900원을 7,900원에 판매하고 리뷰를 요청하세요. 셋째, 크몽 커뮤니티에서 리뷰 교환을 제안하세요. 다른 셀러와 서로의 전자책을 구매하고 리뷰를 남기는 방식입니다.</p>
+<p><strong>모든 리뷰에 답변하세요.</strong> 긍정 리뷰든 부정 리뷰든 24시간 이내에 개인화된 답변을 다세요. '리뷰 감사합니다'가 아니라 '00님이 말씀하신 3장의 사례가 도움이 되셨다니 기쁩니다'처럼 구체적으로 쓰세요. 이게 추가 구매로 이어집니다.</p>
+<p>박성훈은 모든 리뷰에 답변을 달았고, 리뷰 작성자의 40%가 두 번째 전자책을 구매했습니다. <strong>리뷰는 마케팅 채널입니다.</strong> 리뷰 5개가 쌓이면 자동 판매 루프가 시작됩니다. 이후로는 손 안 대도 매일 판매가 일어납니다.</p></div>
+  <div class="page-num">05</div>
+</div>
+
+<!-- Ending -->
+<div class="page ending">
+  <h2>감사합니다</h2>
+  <p>2026 전자책 부업 완전 분석</p>
+  <p>전자책 수익 연구소</p>
+  <div class="brand">METAPRESS &middot; AI 전자책 생성 엔진</div>
+</div>
+
+</body>
+</html>

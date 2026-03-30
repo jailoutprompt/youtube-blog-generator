@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>상대의 마음을 읽는 7가지 다크 심리 법칙 — 맛보기</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#f0f0f0;color:#1a1a1a;line-height:1.85;-webkit-font-smoothing:antialiased}
+.page{width:210mm;min-height:297mm;margin:0 auto 20px;padding:55px 60px;background:#fff;box-shadow:0 4px 30px rgba(0,0,0,.12);position:relative;page-break-after:always;overflow:hidden}
+@media print{body{background:#fff}.page{box-shadow:none;margin:0;padding:40px 50px}}
+.cover{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(135deg,#0a0a0a,#1a1a2e,#1a1a2e);color:#fff;padding:80px 60px}
+.cover .ebook-label{font-size:13px;color:#e94560;font-weight:700;letter-spacing:4px;text-transform:uppercase;padding:8px 24px;border:2px solid #e9456040;border-radius:30px;display:inline-block}
+.cover .accent-line{width:80px;height:4px;background:linear-gradient(90deg,#e94560,#e9456099);margin:35px auto;border-radius:2px}
+.cover h1{font-size:44px;font-weight:900;letter-spacing:-1px;line-height:1.3;max-width:600px}
+.cover .subtitle{font-size:19px;font-weight:300;margin-top:18px;color:#bbb;max-width:500px;line-height:1.6}
+.cover .author-name{font-size:17px;font-weight:500;margin-top:45px;color:#e94560;letter-spacing:1px}
+.cover .bottom-info{position:absolute;bottom:50px;font-size:12px;color:#555;letter-spacing:1px}
+.cover .free-badge{margin-top:30px;padding:6px 20px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.4);border-radius:20px;font-size:12px;color:#10b981;font-weight:600}
+.toc-header{font-size:30px;font-weight:900;color:#1a1a2e;margin-bottom:8px}
+.section-bar{width:60px;height:4px;background:linear-gradient(90deg,#e94560,#e9456099);margin-bottom:35px;border-radius:2px}
+.toc-item{display:flex;align-items:baseline;padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px;gap:10px}
+.toc-label{color:#e94560;font-weight:700;font-size:12px;letter-spacing:1px;min-width:85px}
+.toc-title{font-weight:500;color:#333;flex-shrink:0}
+.toc-dots{flex:1;border-bottom:2px dotted #ddd;margin:0 8px;min-width:20px;align-self:flex-end;margin-bottom:3px}
+.toc-page{color:#e94560;font-weight:700;font-size:15px;min-width:24px;text-align:right}
+.page-num{position:absolute;bottom:30px;right:60px;font-size:12px;color:#999;font-weight:500}
+.chapter-header{background:linear-gradient(135deg,#1a1a2e,#1a1a2e);color:#fff;padding:28px 30px;border-radius:16px;margin-bottom:28px;position:relative;overflow:hidden}
+.chapter-header::after{content:'';position:absolute;top:0;right:0;width:120px;height:120px;background:#e9456015;border-radius:0 0 0 120px}
+.chapter-header .ch-num{font-size:12px;color:#e94560;font-weight:700;letter-spacing:3px;text-transform:uppercase}
+.chapter-header h2{font-size:26px;font-weight:900;margin-top:8px;line-height:1.3}
+.chapter-header .ch-sub{font-size:13px;color:#999;margin-top:8px;font-weight:400}
+.text-section{margin:16px 0}
+.text-section p{font-size:14.5px;margin-bottom:14px;color:#333;line-height:1.85}
+.text-section p strong{color:#1a1a2e;font-weight:700}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}
+.stat-card{background:linear-gradient(135deg,#f8f9fa,#fff);border:2px solid #f0f0f0;border-radius:14px;padding:22px 16px;text-align:center}
+.stat-num{font-size:30px;font-weight:900;color:#e94560;line-height:1.2;letter-spacing:-1px}
+.stat-label{font-size:12px;color:#888;margin-top:8px;font-weight:500;line-height:1.4}
+.bullet-list{list-style:none;padding:0;margin:16px 0}
+.bullet-list li{position:relative;padding-left:22px;margin-bottom:12px;font-size:14px;color:#444;line-height:1.7}
+.bullet-list li::before{content:'';position:absolute;left:0;top:9px;width:8px;height:8px;background:#e94560;border-radius:50%}
+.quote-box{background:linear-gradient(135deg,#e9456015,#e9456030);border-left:4px solid #e94560;border-radius:0 16px 16px 0;padding:28px 30px;margin:22px 0}
+.quote-mark{font-size:48px;color:#e94560;opacity:.4;line-height:1;margin-bottom:5px;font-family:Georgia,serif}
+.quote-text{font-size:16px;font-weight:600;color:#222;line-height:1.7;margin:0}
+.quote-author{font-size:13px;color:#e94560;font-weight:700;text-align:right;margin-top:12px}
+.table-wrap{margin:20px 0;border-radius:12px;overflow:hidden;border:1px solid #e8e8e8}
+.table-wrap table{width:100%;border-collapse:collapse;font-size:13px}
+.table-wrap th{background:#1a1a2e;color:#fff;padding:12px 16px;text-align:left;font-weight:600;font-size:12px}
+.table-wrap td{padding:11px 16px;border-bottom:1px solid #f0f0f0;color:#444}
+.table-wrap tr.stripe{background:#f9fafb}
+.timeline{border-left:3px solid #e94560;margin:22px 0 22px 16px;padding-left:28px}
+.tl-item{margin-bottom:22px;position:relative}
+.tl-dot{position:absolute;left:-36px;top:4px;width:14px;height:14px;background:#e94560;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #e94560}
+.tl-content h4{font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:4px}
+.tl-content p{font-size:13px;color:#555;line-height:1.7;margin:0}
+.comparison-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:22px 0}
+.comp-side{border-radius:14px;padding:22px}
+.comp-left{background:#f8f9fa;border:2px solid #e9456040}
+.comp-left h4{color:#e94560;font-size:15px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #e9456030}
+.comp-right{background:#f8f9fa;border:2px solid #1a1a2e40}
+.comp-right h4{color:#1a1a2e;font-size:15px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #1a1a2e30}
+.comp-side .bullet-list{margin:0}
+.comp-side .bullet-list li{font-size:13px;margin-bottom:8px}
+.locked-page{position:relative}
+.lock-overlay{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;opacity:0.6}
+.lock-icon{font-size:64px;margin-bottom:16px}
+.lock-text{font-size:16px;color:#999;font-weight:500}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="page cover">
+<div>
+<span class="ebook-label">E-BOOK</span>
+<div class="accent-line"></div>
+<h1>상대의 마음을 읽는 7가지 다크 심리 법칙</h1>
+<p class="subtitle">상대의 숨겨진 의도를 읽고 대화의 주도권을 장악하는 다크심리학 실전 가이드</p>
+<div class="accent-line"></div>
+<p class="author-name">심리전략연구소</p>
+<div class="free-badge">FREE PREVIEW · 맛보기</div>
+</div>
+<p class="bottom-info">2026 Edition · Made with MetaPress</p>
+</div>
+
+<!-- TOC -->
+<div class="page">
+<h2 class="toc-header">목차</h2>
+<div class="section-bar"></div>
+<div class="toc-item"><span class="toc-label">Chapter 01</span><span class="toc-title">1장. 당신은 매일 심리전에서 지고 있다</span><span class="toc-dots"></span><span class="toc-page">03</span></div>
+<div class="toc-item"><span class="toc-label">Chapter 02</span><span class="toc-title">2장. 심리전 승자들의 3가지 공통점</span><span class="toc-dots"></span><span class="toc-page">04</span></div>
+<div class="toc-item"><span class="toc-label">Chapter 03</span><span class="toc-title">3장. 한 번의 대화로 관계를 뒤집은 사람들</span><span class="toc-dots"></span><span class="toc-page">05</span></div>
+<div class="toc-item"><span class="toc-label">Chapter 04</span><span class="toc-title">4장. 상대를 읽는 5단계 시스템</span><span class="toc-dots"></span><span class="toc-page">06</span></div>
+<div class="toc-item"><span class="toc-label">Chapter 05</span><span class="toc-title">5장. 숫자로 증명된 심리 기법의 위력</span><span class="toc-dots"></span><span class="toc-page">07</span></div>
+<div class="toc-item"><span class="toc-label">Chapter 06</span><span class="toc-title">6장. 오늘부터 써먹는 심리전 체크리스트</span><span class="toc-dots"></span><span class="toc-page">08</span></div>
+<span class="page-num">02</span>
+</div>
+
+<!-- Ch.1 FULL -->
+<div class="page">
+<div class="chapter-header">
+<div class="ch-num">CHAPTER 01</div>
+<h2>1장. 당신은 매일 심리전에서 지고 있다</h2>
+<p class="ch-sub">눈치채지 못한 채 조종당하는 일상의 함정들</p>
+</div>
+<div class="text-section"><p>오늘 아침 회의에서 당신은 또 밀렸습니다. 분명 더 좋은 아이디어였는데, 왜 팀장은 동료의 제안을 선택했을까요? 점심 약속을 잡을 때도 상대가 원하는 식당으로 갔고, 저녁에는 배우자와의 대화에서 또 지쳤습니다. 이것은 우연이 아닙니다. 당신은 하루 종일 보이지 않는 심리전을 치르고 있으며, 대부분의 순간 패배하고 있습니다. 더 무서운 사실은 당신이 지고 있다는 것조차 인식하지 못한다는 점입니다. 심리학 연구에 따르면 일반인은 하루 평균 27번의 중요한 의사결정 순간을 맞이하는데, 그중 19번은 타인의 영향 아래 이루어집니다. 당신의 선택이라고 믿었던 것들이 사실은 누군가의 심리 전략에 의해 유도된 결과였다면 어떻겠습니까? 지금 이 순간에도 당신은 조종당하고 있을지 모릅니다.</p></div>
+<div class="stat-grid"><div class="stat-card"><div class="stat-num">73%</div><div class="stat-label">직장인이 회의에서 자신의 의견을 관철시키지 못하는 비율</div></div><div class="stat-card"><div class="stat-num">8.4초</div><div class="stat-label">첫 만남에서 상대가 당신을 판단하는 데 걸리는 평균 시간</div></div><div class="stat-card"><div class="stat-num">92%</div><div class="stat-label">비언어적 신호가 대화 결과에 미치는 영향력</div></div></div>
+<ul class="bullet-list"><li>회의 시작 3분 안에 발언권을 빼앗기는 순간 - 상대는 이미 앵커링 효과로 논의의 틀을 장악했습니다</li><li>협상 테이블에서 먼저 가격을 묻는 순간 - 질문하는 사람이 아니라 답하는 사람이 주도권을 쥡니다</li><li>상대의 칭찬에 무방비로 기뻐하는 순간 - 호감 전술의 첫 단계에 걸려든 것입니다</li><li>"모두가 그렇게 한다"는 말에 동조하는 순간 - 군중심리 조종의 고전적 함정입니다</li><li>상대의 분노나 눈물 앞에서 즉시 양보하는 순간 - 감정 무기화 전략에 무너진 것입니다</li></ul>
+<div class="quote-box">
+<div class="quote-mark">“</div>
+<p class="quote-text">협상은 말을 많이 하는 사람이 아니라, 상대의 심리를 읽는 사람이 이긴다. 나는 30년간 인질범을 설득하며 이 진리를 몸으로 배웠다.</p>
+<p class="quote-author">— 크리스 보스, 전 FBI 수석 인질 협상가</p>
+</div>
+<div class="text-section"><p>심리전은 특별한 상황에서만 벌어지는 것이 아닙니다. 카페에서 메뉴를 고를 때, 온라인 쇼핑을 할 때, 심지어 엘리베이터에서 층수 버튼을 누를 때도 우리는 미묘한 심리적 영향을 주고받습니다. 백화점이 왜 가장 비싼 상품을 먼저 보여줄까요? 앵커링 효과로 이후 가격을 합리적으로 느끼게 만들기 위해서입니다. 상사가 왜 중요한 요청을 점심 직후에 할까요? 식후 혈당 상승으로 판단력이 흐려지는 시간대를 노린 것입니다. 연인이 왜 싸운 후 선물을 줄까요? 보상 심리를 활용해 부정적 감정을 중화시키려는 무의식적 전략입니다. 이 모든 것이 심리학적으로 설계된 행동 패턴입니다. 문제는 대부분의 사람들이 이런 메커니즘을 모른 채 반응만 한다는 것입니다.</p></div>
+<div class="comparison-grid">
+<div class="comp-side comp-left">
+<h4>심리전을 모르는 사람</h4>
+<ul class="bullet-list"><li>상대의 말을 액면 그대로 받아들인다</li><li>감정에 즉각 반응한다</li><li>자신의 약점을 쉽게 드러낸다</li><li>상대의 페이스에 끌려간다</li><li>결과에 대해 "운이 나빴다"고 생각한다</li></ul>
+</div>
+<div class="comp-side comp-right">
+<h4>심리전을 아는 사람</h4>
+<ul class="bullet-list"><li>말 뒤의 의도와 맥락을 읽는다</li><li>감정을 인식하되 전략적으로 대응한다</li><li>정보를 선택적으로 공개한다</li><li>대화의 흐름을 의도적으로 설계한다</li><li>결과를 예측하고 준비한다</li></ul>
+</div>
+</div>
+<div class="text-section"><p>심리를 읽는 능력은 타고나는 것이 아닙니다. 이것은 학습 가능한 기술이며, 체계적인 훈련으로 누구나 습득할 수 있습니다. FBI 협상 전문가들도 처음부터 심리전의 달인은 아니었습니다. 그들은 수백 시간의 훈련과 실전 경험을 통해 상대의 미세한 신호를 읽고, 대화의 주도권을 잡고, 원하는 결과를 이끌어내는 기술을 익혔습니다. 당신도 마찬가지입니다. 지금부터 올바른 프레임워크를 배우고 일상에서 적용한다면, 3개월 후 당신의 대인관계는 완전히 달라져 있을 것입니다. 더 이상 밀리지 않는 회의, 원하는 조건을 얻어내는 협상, 관계의 주도권을 쥔 대화. 이 모든 것이 가능해집니다. 첫 번째 단계는 당신이 지금까지 심리전에서 졌다는 사실을 인정하는 것입니다. 인정하는 순간, 변화가 시작됩니다.</p></div>
+<span class="page-num">03</span>
+</div>
+
+<!-- LOCKED Ch.2~6 -->
+
+<div class="page locked-page">
+<div class="chapter-header">
+<div class="ch-num">CHAPTER 02</div>
+<h2>2장. 심리전 승자들의 3가지 공통점</h2>
+<p class="ch-sub">FBI 협상가부터 글로벌 CEO까지, 그들이 쓰는 비밀 무기</p>
+</div>
+<div class="lock-overlay">
+<div class="lock-icon">🔒</div>
+<p class="lock-text">풀버전에서 읽을 수 있습니다</p>
+</div>
+<span class="page-num">04</span>
+</div>
+
+<div class="page locked-page">
+<div class="chapter-header">
+<div class="ch-num">CHAPTER 03</div>
+<h2>3장. 한 번의 대화로 관계를 뒤집은 사람들</h2>
+<p class="ch-sub">미러링 하나로 100억 계약을 따낸 실제 사례</p>
+</div>
+<div class="lock-overlay">
+<div class="lock-icon">🔒</div>
+<p class="lock-text">풀버전에서 읽을 수 있습니다</p>
+</div>
+<span class="page-num">05</span>
+</div>
+
+<div class="page locked-page">
+<div class="chapter-header">
+<div class="ch-num">CHAPTER 04</div>
+<h2>4장. 상대를 읽는 5단계 시스템</h2>
+<p class="ch-sub">미세표정-음성-단어-맥락-의도 분석 프레임워크</p>
+</div>
+<div class="lock-overlay">
+<div class="lock-icon">🔒</div>
+<p class="lock-text">풀버전에서 읽을 수 있습니다</p>
+</div>
+<span class="page-num">06</span>
+</div>
+
+<div class="page locked-page">
+<div class="chapter-header">
+<div class="ch-num">CHAPTER 05</div>
+<h2>5장. 숫자로 증명된 심리 기법의 위력</h2>
+<p class="ch-sub">앵커링 효과 87%, 미러링 성공률 73%의 과학적 근거</p>
+</div>
+<div class="lock-overlay">
+<div class="lock-icon">🔒</div>
+<p class="lock-text">풀버전에서 읽을 수 있습니다</p>
+</div>
+<span class="page-num">07</span>
+</div>
+
+<div class="page locked-page">
+<div class="chapter-header">
+<div class="ch-num">CHAPTER 06</div>
+<h2>6장. 오늘부터 써먹는 심리전 체크리스트</h2>
+<p class="ch-sub">출근길부터 퇴근 후까지, 24시간 실전 적용 가이드</p>
+</div>
+<div class="lock-overlay">
+<div class="lock-icon">🔒</div>
+<p class="lock-text">풀버전에서 읽을 수 있습니다</p>
+</div>
+<span class="page-num">08</span>
+</div>
+
+</body>
+</html>

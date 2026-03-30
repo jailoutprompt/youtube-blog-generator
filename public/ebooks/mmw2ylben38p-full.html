@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 전자책 부업 완전 분석</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+
+/* ── Reset & Base ── */
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#f0f0f0;color:#1a1a1a;line-height:1.85;-webkit-font-smoothing:antialiased}
+
+/* ── Page ── */
+.page{width:210mm;min-height:297mm;margin:0 auto 20px;padding:55px 60px;background:#fff;box-shadow:0 4px 30px rgba(0,0,0,.12);position:relative;page-break-after:always;overflow:hidden}
+@media print{body{background:#fff}.page{box-shadow:none;margin:0;padding:40px 50px;overflow:visible}}
+
+/* ── Cover Page ── */
+.cover{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 40%,#1a1a2e 100%);color:#fff;padding:80px 60px}
+.cover .ebook-label{font-size:13px;color:#e94560;font-weight:700;letter-spacing:4px;text-transform:uppercase;padding:8px 24px;border:2px solid #e9456040;border-radius:30px;display:inline-block}
+.cover .accent-line{width:80px;height:4px;background:linear-gradient(90deg,#e94560,#e9456099);margin:35px auto;border-radius:2px}
+.cover h1{font-size:44px;font-weight:900;letter-spacing:-1px;line-height:1.3;max-width:600px}
+.cover h1 span{color:#e94560}
+.cover .subtitle{font-size:19px;font-weight:300;margin-top:18px;color:#bbb;max-width:500px;line-height:1.6}
+.cover .author-name{font-size:17px;font-weight:500;margin-top:45px;color:#e94560;letter-spacing:1px}
+.cover .bottom-info{position:absolute;bottom:50px;font-size:12px;color:#555;letter-spacing:1px}
+
+/* ── TOC ── */
+.toc-header{font-size:30px;font-weight:900;color:#1a1a2e;margin-bottom:8px}
+.section-bar{width:60px;height:4px;background:linear-gradient(90deg,#e94560,#e9456099);margin-bottom:35px;border-radius:2px}
+.toc-item{display:flex;align-items:baseline;padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px;gap:10px}
+.toc-label{color:#e94560;font-weight:700;font-size:12px;letter-spacing:1px;min-width:85px}
+.toc-title{font-weight:500;color:#333;flex-shrink:0}
+.toc-dots{flex:1;border-bottom:2px dotted #ddd;margin:0 8px;min-width:20px;align-self:flex-end;margin-bottom:3px}
+.toc-page{color:#e94560;font-weight:700;font-size:15px;min-width:24px;text-align:right}
+
+/* ── Page Numbers ── */
+.page-num{position:absolute;bottom:30px;right:60px;font-size:12px;color:#999;font-weight:500}
+
+/* ── Chapter Header ── */
+.chapter-header{background:linear-gradient(135deg,#1a1a2e,#1a1a2e);color:#fff;padding:28px 30px;border-radius:16px;margin-bottom:28px;position:relative;overflow:hidden}
+.chapter-header::after{content:'';position:absolute;top:0;right:0;width:120px;height:120px;background:#e9456015;border-radius:0 0 0 120px}
+.chapter-header .ch-num{font-size:12px;color:#e94560;font-weight:700;letter-spacing:3px;text-transform:uppercase}
+.chapter-header h2{font-size:26px;font-weight:900;margin-top:8px;line-height:1.3}
+.chapter-header .ch-sub{font-size:13px;color:#999;margin-top:8px;font-weight:400}
+
+/* ── Text Section ── */
+.text-section{margin:16px 0}
+.text-section p{font-size:14.5px;margin-bottom:14px;color:#333;line-height:1.85}
+.text-section p strong{color:#1a1a2e;font-weight:700}
+
+/* ── Stats Grid ── */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}
+.stat-card{background:linear-gradient(135deg,#f8f9fa,#fff);border:2px solid #f0f0f0;border-radius:14px;padding:22px 16px;text-align:center;transition:border-color .2s}
+.stat-num{font-size:30px;font-weight:900;color:#e94560;line-height:1.2;letter-spacing:-1px}
+.stat-label{font-size:12px;color:#888;margin-top:8px;font-weight:500;line-height:1.4}
+
+/* ── Bullet List ── */
+.bullet-list{list-style:none;padding:0;margin:16px 0}
+.bullet-list li{position:relative;padding-left:22px;margin-bottom:12px;font-size:14px;color:#444;line-height:1.7}
+.bullet-list li::before{content:'';position:absolute;left:0;top:9px;width:8px;height:8px;background:#e94560;border-radius:50%}
+.bullet-list li strong{color:#1a1a2e}
+
+/* ── Quote Box ── */
+.quote-box{background:linear-gradient(135deg,#e9456015,#e9456030);border-left:4px solid #e94560;border-radius:0 16px 16px 0;padding:28px 30px;margin:22px 0;position:relative}
+.quote-mark{font-size:48px;color:#e94560;opacity:.4;line-height:1;margin-bottom:5px;font-family:Georgia,serif}
+.quote-text{font-size:16px;font-weight:600;color:#222;line-height:1.7;margin:0}
+.quote-author{font-size:13px;color:#e94560;font-weight:700;text-align:right;margin-top:12px}
+
+/* ── Table ── */
+.table-wrap{margin:20px 0;border-radius:12px;overflow:hidden;border:1px solid #e8e8e8}
+.table-wrap table{width:100%;border-collapse:collapse;font-size:13px}
+.table-wrap th{background:#1a1a2e;color:#fff;padding:12px 16px;text-align:left;font-weight:600;font-size:12px;letter-spacing:.5px}
+.table-wrap td{padding:11px 16px;border-bottom:1px solid #f0f0f0;color:#444}
+.table-wrap tr.stripe{background:#f9fafb}
+.table-wrap tr:last-child td{border-bottom:none}
+
+/* ── Timeline ── */
+.timeline{border-left:3px solid #e94560;margin:22px 0 22px 16px;padding-left:28px}
+.tl-item{margin-bottom:22px;position:relative}
+.tl-dot{position:absolute;left:-36px;top:4px;width:14px;height:14px;background:#e94560;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #e94560}
+.tl-content h4{font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:4px}
+.tl-content p{font-size:13px;color:#555;line-height:1.7;margin:0}
+
+/* ── Comparison ── */
+.comparison-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:22px 0}
+.comp-side{border-radius:14px;padding:22px;position:relative}
+.comp-left{background:#f8f9fa;border:2px solid #e9456040}
+.comp-left h4{color:#e94560;font-size:15px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #e9456030}
+.comp-right{background:#f8f9fa;border:2px solid #1a1a2e40}
+.comp-right h4{color:#1a1a2e;font-size:15px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #1a1a2e30}
+.comp-side .bullet-list{margin:0}
+.comp-side .bullet-list li{font-size:13px;margin-bottom:8px}
+
+/* ── Ending Page ── */
+.ending{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 50%,#1a1a2e 100%);color:#fff;padding:80px 60px}
+.ending .end-icon{font-size:48px;margin-bottom:20px;opacity:.6}
+.ending h2{font-size:32px;font-weight:900;margin-bottom:15px;line-height:1.3}
+.ending .end-subtitle{color:#999;font-size:15px;margin-bottom:50px;line-height:1.6}
+.ending .brand-divider{width:60px;height:3px;background:linear-gradient(90deg,#e94560,#e9456099);margin:0 auto 30px;border-radius:2px}
+.ending .brand-logo{font-size:28px;font-weight:900;color:#e94560;letter-spacing:3px;margin-bottom:12px}
+.ending .brand-tagline{font-size:13px;color:#666;letter-spacing:1px}
+.ending .cta-box{margin-top:50px;padding:20px 40px;border:2px solid #e9456040;border-radius:30px}
+.ending .cta-text{font-size:14px;color:#e94560;font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: COVER -->
+<div class="page cover">
+<div>
+<span class="ebook-label">E-BOOK</span>
+<div class="accent-line"></div>
+<h1>2026 전자책 부업 완전 분석</h1>
+<p class="subtitle">2026 전자책 부업 완전 분석 — 카테고리별 수익 데이터 + 30일 실행 로드맵</p>
+<div class="accent-line"></div>
+<p class="author-name">전자책 수익화 연구소</p>
+</div>
+<p class="bottom-info">2026 Edition &middot; Made with MetaPress</p>
+</div>
+
+<!-- PAGE 2: TOC -->
+<div class="page">
+<h2 class="toc-header">목차</h2>
+<div class="section-bar"></div>
+<div class="toc-item"><span class="toc-label">Chapter 01</span><span class="toc-title">1장. 당신이 전자책으로 돈을 못 버는 진짜 이유</span><span class="toc-dots"></span><span class="toc-page">03</span></div>
+<div class="toc-item"><span class="toc-label">Chapter 02</span><span class="toc-title">2장. 글만 써서 월 500만원 버는 사람들의 공통점</span><span class="toc-dots"></span><span class="toc-page">04</span></div>
+<div class="toc-item"><span class="toc-label">Chapter 03</span><span class="toc-title">3장. 첫 달 330만원에서 4개월 만에 840만원</span><span class="toc-dots"></span><span class="toc-page">05</span></div>
+<div class="toc-item"><span class="toc-label">Chapter 04</span><span class="toc-title">4장. HPSSPA 전자책 설계 시스템</span><span class="toc-dots"></span><span class="toc-page">06</span></div>
+<div class="toc-item"><span class="toc-label">Chapter 05</span><span class="toc-title">5장. 리뷰 5개가 월 100만원을 만드는 이유</span><span class="toc-dots"></span><span class="toc-page">07</span></div>
+<div class="toc-item"><span class="toc-label">Chapter 06</span><span class="toc-title">6장. 30일 실행 로드맵 + 체크리스트</span><span class="toc-dots"></span><span class="toc-page">08</span></div>
+<span class="page-num">02</span>
+</div>
+
+
+<!-- PAGE 3: Chapter 01 -->
+<div class="page">
+<div class="chapter-header">
+<div class="ch-num">CHAPTER 01</div>
+<h2>1장. 당신이 전자책으로 돈을 못 버는 진짜 이유</h2>
+<p class="ch-sub">80%가 월 10만원도 못 버는 잔혹한 현실 — 그들이 모르는 3가지 치명적 실수</p>
+</div>
+<div class="text-section"><p>지금 이 순간에도 누군가는 PDF 파일 하나로 자면서 돈을 벌고 있습니다. 영상 편집도 없고, 얼굴도 안 나오고, 강의도 안 합니다. 그저 글만 씁니다. 크몽에 전자책 하나 올려두면 새벽 3시에도 '결제 완료' 알림이 울립니다. 월 840만원 버는 셀러가 있고, 하루 3시간만 일하면서 월 500만원 이상 버는 사람도 있습니다. 누적 3,000만원 매출을 찍은 1인 출판사도 있습니다. 이게 2026년 현재 가장 조용히 돈 버는 부업, 전자책 판매의 현실입니다. 하지만 당신은 아직도 '첫 판매'를 기다리고 있을지 모릅니다. 열심히 쓴 전자책을 올렸는데 아무도 안 삽니다. 조회수는 올라가는데 결제는 0건입니다. 한 달이 지나도, 두 달이 지나도 상황은 똑같습니다. 왜 그럴까요? 당신이 게으르거나 글을 못 써서가 아닙니다. 단지 전자책 시장의 작동 원리를 모르고 있을 뿐입니다. 월 840만원 버는 사람과 월 0원인 사람의 차이는 재능이 아니라 '시스템'입니다.</p></div>
+<div class="stat-grid"><div class="stat-card"><div class="stat-num">80%</div><div class="stat-label">전자책을 올린 사람 중 월 10만원도 못 버는 비율 — 리뷰 0개면 검색에서 묻힙니다</div></div><div class="stat-card"><div class="stat-num">73%</div><div class="stat-label">1편 구매자가 2편도 구매하는 비율 — 시리즈 확장이 수익을 3배로 만듭니다</div></div><div class="stat-card"><div class="stat-num">5배</div><div class="stat-label">멀티 플랫폼 동시 유통 시 노출 증가 배수 — 같은 PDF로 5개 플랫폼에 올리면 수익이 폭발합니다</div></div></div>
+<ul class="bullet-list"><li>**주제 선정 실패** — '내가 쓰고 싶은 것'을 씁니다. 시장이 원하는 것을 쓰지 않습니다. 다크심리학, 부업, 연애, AI 활용법, 재테크, 글쓰기, 습관. 이 7개 카테고리가 전체 전자책 수익의 90%를 차지합니다. 당신의 주제가 이 안에 없다면 아무리 잘 써도 안 팔립니다. 수요가 없는 시장에서 공급을 늘리는 것은 시간 낭비입니다.</li><li>**제목과 SEO 무지** — 제목에 '비밀', '법칙', '조종', '습관', '공식' 같은 자극 키워드가 없으면 클릭률이 반토막입니다. 숫자를 넣으면 클릭률이 2배 올라갑니다. '대상 + 결과 + 숫자 + 비밀/법칙' 공식을 모르면 아무도 당신의 전자책을 발견하지 못합니다. 크몽 검색 알고리즘은 제목의 키워드 매칭으로 작동합니다. SEO 최적화 없이는 첫 페이지에 노출될 수 없습니다.</li><li>**리뷰 눈덩이 전략 부재** — 리뷰가 0개면 검색 노출 순위가 바닥입니다. 초반 5건의 리뷰가 쌓이는 순간 알고리즘이 당신의 전자책을 밀어주기 시작합니다. 그 5건을 만들기 위해 지인을 동원하거나 초기 할인을 해야 합니다. 월 840만원 버는 끝판왕Kim도 첫 달에는 지인에게 정직한 리뷰를 요청했습니다. 리뷰가 쌓이면 자동 판매 루프가 형성됩니다. 이 구조를 모르면 영원히 0원입니다.</li></ul>
+<div class="quote-box">
+<div class="quote-mark">“</div>
+<p class="quote-text">전자책을 올리는 사람의 80%는 월 10만원도 못 벌지만, 상위 1%는 월 500만원 이상을 법니다. 차이는 재능이 아니라 시스템입니다. 돈 버는 사람들은 시장 데이터를 보고, 검색 알고리즘을 이해하고, 리뷰를 설계합니다.</p>
+<p class="quote-author">— 크몽 탑셀러 끝판왕Kim</p>
+</div>
+<ul class="bullet-list"><li>[object Object]</li><li>[object Object]</li><li>[object Object]</li><li>[object Object]</li><li>[object Object]</li></ul>
+<div class="text-section"><p>당신이 전자책으로 돈을 못 버는 이유는 간단합니다. 시장이 원하는 것을 쓰지 않았고, 검색 알고리즘을 이해하지 못했고, 리뷰를 설계하지 않았기 때문입니다. 이 세 가지만 바꾸면 다음 달부터 수익이 발생합니다. 월 840만원 버는 끝판왕Kim도 첫 달에는 330만원이었습니다. 4개월 만에 840만원에 도달했습니다. 비결은 SEO 키워드 최적화와 크몽 검색 알고리즘 공략이었습니다. 하루 3시간만 일하면서 월 500만원 이상 버는 박성훈의 전략은 리뷰 마케팅이었습니다. 초기에 지인에게 정직한 리뷰를 요청하고, 모든 리뷰에 개인화된 답변을 달았습니다. 리뷰가 쌓이면서 크몽 검색 노출이 올라가고, 자동 판매 루프가 형성되었습니다. 누적 3,000만원 매출을 찍은 림출판사는 한 주제를 여러 전자책으로 세분화하는 전략을 썼습니다. 기본편, 실전편, 상황별편으로 시리즈를 확장했고, 1편 구매자의 73%가 2편도 구매했습니다. 이들의 공통점은 하나입니다. 시장 데이터를 보고, 시스템을 설계하고, 실행했습니다. 당신도 할 수 있습니다. 다음 장에서 월 500만원 버는 사람들의 공통점을 Before/After로 보여드리겠습니다.</p></div>
+<div class="timeline"><div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>1개월차</h4><p>열정으로 전자책 완성 후 업로드 — 조회수는 올라가지만 판매 0건. 좌절 시작.</p></div></div><div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>2개월차</h4><p>가격을 낮춰보고 제목을 바꿔봄 — 여전히 판매 없음. 포기 고려 시작.</p></div></div><div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>3개월차</h4><p>시장 데이터 분석 시작 — 7개 카테고리 발견. 주제를 완전히 바꾸기로 결정.</p></div></div><div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>4개월차</h4><p>SEO 키워드 최적화 + 지인 5명 리뷰 확보 — 첫 판매 발생. 월 30만원 돌파.</p></div></div><div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>6개월차</h4><p>시리즈 2편 출시 + 멀티 플랫폼 유통 — 월 100만원 안정화. 자동 판매 루프 형성.</p></div></div><div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>12개월차</h4><p>방법론 전자책 출시 + 도구 판매 — 월 500만원 돌파. 레벨 3 구조 완성.</p></div></div></div>
+<span class="page-num">03</span>
+</div>
+
+<!-- PAGE 4: Chapter 02 -->
+<div class="page">
+<div class="chapter-header">
+<div class="ch-num">CHAPTER 02</div>
+<h2>2장. 글만 써서 월 500만원 버는 사람들의 공통점</h2>
+<p class="ch-sub">크몽 탑셀러부터 아마존 KDP까지 — 검증된 수익 구조 Before/After</p>
+</div>
+<div class="text-section"><p>당신은 지금 이 순간에도 누군가는 침대에 누워 스마트폰으로 계좌를 확인하고 있습니다. 어제 올린 PDF 파일 하나가 새벽 3시에 팔렸습니다. 14,900원이 입금되었습니다. 영상 촬영도 없었고, 얼굴도 안 나왔고, 강의도 하지 않았습니다. 그냥 워드 파일에 글만 썼을 뿐입니다. 이게 2026년 현재 가장 조용히, 가장 꾸준히 돈을 버는 부업의 정체입니다. 전자책 판매는 더 이상 작가만의 영역이 아닙니다. 직장인이 퇴근 후 3시간 투자해서 월 500만원을 벌고, 대학생이 방학 동안 만든 PDF로 등록금을 벌고, 육아맘이 아이 재우고 쓴 글로 생활비를 벌고 있습니다. 하지만 이 시장에는 명확한 승자와 패자가 존재합니다. 똑같이 전자책을 올렸는데, 어떤 사람은 월 840만원을 벌고 어떤 사람은 3개월 동안 단 1권도 팔지 못합니다. 이 챕터에서는 실제로 돈을 버는 사람들의 데이터를 분석하고, 그들이 공통적으로 사용하는 6가지 패턴을 공개합니다. 당신이 이 패턴을 따라하기만 하면, 30일 안에 첫 수익을 만들 수 있습니다.</p></div>
+<div class="stat-grid"><div class="stat-card"><div class="stat-num">80%</div><div class="stat-label">월 10만원도 못 버는 전자책 판매자 비율</div></div><div class="stat-card"><div class="stat-num">840만원</div><div class="stat-label">크몽 탑셀러 끝판왕Kim의 월 최고 수익</div></div><div class="stat-card"><div class="stat-num">73%</div><div class="stat-label">시리즈 1편 구매자가 2편도 구매하는 비율</div></div></div>
+<ul class="bullet-list"><li>[object Object]</li><li>[object Object]</li><li>[object Object]</li><li>[object Object]</li><li>[object Object]</li></ul>
+<ul class="bullet-list"><li>**다크심리학 & 설득 심리학** — 알라딘과 교보문고에서 시리즈 3권까지 출간된 검증된 카테고리. '금지된 지식'이라는 느낌이 호기심을 자극하고, 연애·직장·협상 등 모든 상황에 적용 가능. 심리 조종의 기술, 휘둘리지 않는 법, 설득의 법칙으로 시리즈 확장 가능. 가격대 14,900원~29,900원.</li><li>**부업 & N잡** — 돈 관련 주제는 수요가 무한. 크몽 탑셀러 끝판왕Kim이 이 카테고리에서 월 840만원 달성. 핵심 전략은 '전자책 파는 법을 전자책으로 파는' 메타 구조. 자신의 수익 데이터가 곧 콘텐츠가 되는 구조라 진입장벽이 낮음.</li><li>**연애 & 매력** — 감정적 고통이 극심한 카테고리라 즉시 결제로 이어짐. 남성용(여자 마음 읽기, 호감 신호)과 여성용(남자 심리, 밀당 기술)으로 분리 가능. 첫 만남 → 고백 → 밀당 → 재회로 시리즈 확장 쉬움. 20대 타겟 시 SNS 마케팅 효과 극대화.</li><li>**AI 활용법** — 2025~2026년 가장 핫한 트렌드 키워드. '뒤처질까봐' 불안한 심리가 구매 유도. 직장인용(업무 자동화), 학생용(과제 작성), 마케터용(콘텐츠 생성), 디자이너용(이미지 생성)으로 세분화 가능. AI 도구 업데이트마다 새 책 출간 가능.</li><li>**재테크 & 주식 입문** — 주식 폭락·급등 같은 시장 이벤트마다 수요 폭증. 코인, 부동산, ETF, 배당주 등 자산별 세분화 가능. 단, 금융 조언 아닌 '정보 정리' 포지셔닝 필수. 가격대 19,900원~39,900원으로 높게 책정 가능.</li><li>**글쓰기 & 퍼스널 브랜딩** — 부업 시작하려는 사람이 다음으로 찾는 주제. 블로그, 인스타, 뉴스레터 등 플랫폼별로 확장 가능. '30일 만에 블로그 수익화', '인스타 팔로워 1만 만드는 글쓰기' 같은 구체적 약속이 효과적. 본인의 성장 과정을 콘텐츠화 가능.</li><li>**습관 & 루틴** — 새해, 월초마다 수요 폭발하는 시즈널 카테고리. 아토믹 해빗이 전세계 8천만 부 팔린 시장. 아침 루틴, 저녁 루틴, 독서 습관, 운동 습관 등 세분화 무한. '66일 챌린지' 같은 실행 도구 포함 시 가격 프리미엄 가능.</li></ul>
+<div class="table-wrap"><table><thead><tr><th>판매자</th><th>플랫폼</th><th>월 수익</th><th>권수</th><th>핵심 전략</th><th>소요 시간</th></tr></thead><tbody><tr class=""><td>끝판왕Kim</td><td>크몽</td><td>840만원</td><td>3권</td><td>SEO 키워드 최적화 + AI 트렌드 키워드</td><td>하루 4시간</td></tr><tr class="stripe"><td>박성훈</td><td>크몽</td><td>500만원</td><td>5권</td><td>리뷰 마케팅 + 모든 리뷰 개인화 답변</td><td>하루 3시간</td></tr><tr class=""><td>림출판사</td><td>멀티</td><td>월 150만원</td><td>8권</td><td>한 주제 세분화 + 누적 2,000권 판매</td><td>주 15시간</td></tr><tr class="stripe"><td>익명 셀러A</td><td>크몽</td><td>120만원</td><td>2권</td><td>초기 리뷰 5개 확보 후 자동 판매</td><td>주 10시간</td></tr><tr class=""><td>해외 셀러B</td><td>아마존 KDP</td><td>$3,823</td><td>27권</td><td>영어 니치 시장 + 70% 인세율</td><td>주 20시간</td></tr><tr class="stripe"><td>익명 셀러C</td><td>리디북스</td><td>80만원</td><td>1권</td><td>리디셀렉트 구독자 자동 노출</td><td>초기 집중 후 방치</td></tr></tbody></table></div>
+<div class="text-section"><p>이 데이터에서 발견되는 패턴이 있습니다. 첫째, 모두 3개월 이상 버텼습니다. 첫 달에 포기하지 않았습니다. 둘째, 리뷰 5개가 임계점입니다. 리뷰가 5개를 넘어가면 검색 노출이 급증하고 자동 판매가 시작됩니다. 셋째, 1권으로 끝내지 않았습니다. 시리즈로 확장하거나 다른 플랫폼에 동시 유통했습니다. 넷째, 가격을 낮게 책정하지 않았습니다. 14,900원 이상으로 책정해 가치를 신호했습니다. 당신이 지금 당장 따라할 수 있는 것은 이것입니다. 위 7개 카테고리 중 하나를 선택하고, 경쟁 전자책 3권을 구매해 분석하고, 30~50페이지 분량으로 초고를 작성하고, 14,900원에 크몽에 등록하고, 지인 5명에게 구매 후 리뷰를 요청하세요. 이 5단계만 실행하면 30일 안에 첫 수익이 발생합니다. 문제는 실행입니다. 대부분은 '나중에'라고 말하고 아무것도 안 합니다. 하지만 당신이 이 글을 읽고 있다는 것은 이미 상위 20%에 속한다는 뜻입니다. 이제 행동으로 옮기세요.</p></div>
+<span class="page-num">04</span>
+</div>
+
+<!-- PAGE 5: Chapter 03 -->
+<div class="page">
+<div class="chapter-header">
+<div class="ch-num">CHAPTER 03</div>
+<h2>3장. 첫 달 330만원에서 4개월 만에 840만원</h2>
+<p class="ch-sub">끝판왕Kim의 실제 성장 데이터와 7가지 카테고리 수익 사례</p>
+</div>
+<div class="text-section"><p>2026년 3월, 크몽 전자책 카테고리에서 한 셀러의 수익 그래프가 수직 상승했습니다. 아이디는 '끝판왕Kim'. 그는 4개월 전만 해도 평범한 직장인이었습니다. 퇴근 후 3시간씩 키보드를 두드렸고, 첫 달 매출은 330만원이었습니다. 그런데 4개월 후, 그의 월 매출은 840만원을 돌파했습니다. 영상 하나 없이, 얼굴 한 번 안 드러내고, 오직 PDF 파일만으로 말이죠. 이건 운이 아닙니다. 데이터를 분석하고, 키워드를 최적화하고, 시장의 심리를 읽은 결과입니다. 이 장에서는 끝판왕Kim을 포함해 실제로 전자책으로 돈을 버는 사람들의 구체적인 숫자와 전략을 해부합니다. 당신이 따라 할 수 있는 검증된 패턴만 담았습니다.</p></div>
+<div class="stat-grid"><div class="stat-card"><div class="stat-num">840만원</div><div class="stat-label">끝판왕Kim 4개월차 월매출</div></div><div class="stat-card"><div class="stat-num">3,000만원</div><div class="stat-label">림출판사 누적 매출</div></div><div class="stat-card"><div class="stat-num">3,823달러</div><div class="stat-label">아마존 KDP 월 수익</div></div></div>
+<div class="text-section"><p>하지만 현실을 직시해야 합니다. 전자책을 올린다고 다 버는 게 아닙니다. 오히려 80%는 월 10만원도 못 법니다. 리뷰가 0개면 검색 알고리즘에서 완전히 묻힙니다. 아무리 내용이 좋아도 제목이 구리면 클릭조차 안 됩니다. 주제를 잘못 선택하면 3개월 동안 한 권도 안 팔립니다. 그래서 이 장은 성공담이 아니라 데이터 리포트입니다. 실제로 돈이 되는 카테고리, 구체적인 수익 구간, 플랫폼별 전략, 그리고 실패 확률을 낮추는 검증된 패턴만 담았습니다. 당신이 전자책으로 첫 100만원을 벌 때까지 필요한 모든 숫자가 여기 있습니다.</p></div>
+<ul class="bullet-list"><li>**다크심리학 & 설득 심리학**: 알라딘·교보문고에서 시리즈 3권까지 출간되고 4개 플랫폼 동시 유통 중. '금지된 지식'이라는 프레이밍이 호기심을 자극하며, 연애·직장·협상 등 모든 상황에 적용 가능. 심리 조종의 기술, 휘둘리지 않는 법, 설득의 법칙으로 시리즈 확장 용이.</li><li>**부업 & N잡**: 돈 관련 주제는 수요가 무한대. 크몽 탑셀러 끝판왕Kim이 이 카테고리에서 월 840만원 달성. '전자책 파는 법을 전자책으로 판다'는 메타 구조가 핵심. 가격대 29,000~99,000원으로 고가 책정 가능.</li><li>**연애 & 매력**: 감정적 고통이 극심한 카테고리라 즉시 결제로 이어짐. 남성용·여성용 분리 가능하고, 첫 만남→고백→밀당→재회까지 시리즈 확장 쉬움. 평균 가격 14,900원, 리뷰 10개 이상 시 월 50권 이상 판매.</li><li>**AI 활용법**: 2025~2026년 가장 핫한 트렌드 키워드. '뒤처질까봐' 불안한 심리가 구매 유도. 직장인·학생·마케터·디자이너별 세분화 가능. AI 도구 업데이트마다 새 책 출간 가능해 지속 가능성 높음.</li><li>**재테크 & 주식 입문**: 주식 폭락·급등 같은 시장 이벤트마다 수요 폭증. 코인·부동산·ETF 등 자산별 세분화 가능. 평균 가격 19,900원, 시즈널 이벤트 활용 시 월 매출 2배 상승.</li><li>**글쓰기 & 퍼스널 브랜딩**: 부업 시작하려는 사람이 다음으로 찾는 주제. 블로그·인스타·뉴스레터 등 플랫폼별 확장 가능. 평균 30~50페이지, 가격 14,900원, 리뷰 마케팅 시 월 30권 이상 안정 판매.</li><li>**습관 & 루틴**: 새해·월초마다 수요 폭발하는 시즈널 카테고리. 《아토믹 해빗》이 전세계 8천만 부 팔린 시장. 아침 루틴, 저녁 루틴, 주말 루틴 등 세분화 전략으로 시리즈 구축 가능.</li></ul>
+<div class="table-wrap"><table><thead><tr><th>셀러</th><th>플랫폼</th><th>전략</th><th>매출/수익</th><th>핵심 포인트</th></tr></thead><tbody><tr class=""><td>끝판왕Kim</td><td>크몽</td><td>SEO 키워드 최적화 + 트렌드 키워드(AI, 챗GPT) 활용</td><td>첫 달 330만원 → 4개월 만에 월 840만원</td><td>가격대 29,000~99,000원, 크몽 검색 알고리즘 공략</td></tr><tr class="stripe"><td>박성훈</td><td>크몽</td><td>리뷰 마케팅 + 개인화 답변</td><td>월 평균 500만원 이상 (하루 3시간 작업)</td><td>초기 지인 리뷰 확보 → 자동 판매 루프 형성</td></tr><tr class=""><td>림출판사</td><td>멀티플랫폼</td><td>한 주제 세분화 전략</td><td>누적 2,000권 판매, 3,000만원 매출</td><td>권당 평균 15,000원, 시리즈 확장으로 재구매율 73%</td></tr><tr class="stripe"><td>익명 셀러A</td><td>아마존 KDP</td><td>글로벌 니치 타겟팅</td><td>27권으로 월 3,823달러 (약 510만원)</td><td>인세율 70%, 심리학·자기계발 니치, 평균 가격 14.59달러</td></tr><tr class=""><td>크몽 익명 셀러B</td><td>크몽</td><td>꾸준함 + 리뷰 축적</td><td>첫 달 5건 → 3개월 후 월 30권 이상, 누적 1,200만원</td><td>리뷰가 쌓이면서 검색 노출 상승, 안정 판매 구간 진입</td></tr></tbody></table></div>
+<div class="text-section"><p>이 표를 보면 한 가지 패턴이 보입니다. 첫 달에 대박 친 사람은 없습니다. 끝판왕Kim도 330만원으로 시작했습니다. 익명 셀러B는 첫 달에 고작 5건 팔았습니다. 하지만 이들은 포기하지 않았습니다. 리뷰를 쌓고, 키워드를 최적화하고, 시리즈를 확장했습니다. 그리고 3~4개월 후, 수익이 수직 상승했습니다. 전자책 부업은 빠르게 터지는 사업이 아닙니다. 눈덩이처럼 굴러가는 사업입니다. 처음 3개월은 눈덩이를 만드는 시간입니다. 리뷰 10개가 쌓이는 순간, 크몽 알고리즘이 당신 책을 검색 상단에 띄워줍니다. 그때부터 자동 판매가 시작됩니다. 당신이 자는 동안에도, 회사에서 일하는 동안에도, 누군가 당신의 PDF를 구매합니다.</p></div>
+<ul class="bullet-list"><li>[object Object]</li><li>[object Object]</li><li>[object Object]</li><li>[object Object]</li></ul>
+<div class="text-section"><p>대부분의 사람들이 첫 번째 구간에서 포기합니다. 한 달 동안 5건도 안 팔리면 '역시 나는 안 되나봐'라고 생각합니다. 하지만 데이터는 다르게 말합니다. 리뷰 5개만 쌓이면 검색 노출이 올라갑니다. 리뷰 10개가 넘어가면 자동 판매가 시작됩니다. 리뷰 30개가 넘으면 크몽 알고리즘이 당신을 '베스트셀러'로 인식합니다. 그러니까 문제는 당신의 글 실력이 아닙니다. 리뷰를 쌓을 때까지 버티느냐, 못 버티느냐의 문제입니다. 첫 3개월은 수익이 아니라 리뷰를 쌓는 시간입니다. 지인에게 부탁하세요. 초반 할인을 걸어서라도 리뷰 10개를 확보하세요. 그 10개가 당신을 두 번째 구간으로 끌어올립니다.</p></div>
+<span class="page-num">05</span>
+</div>
+
+<!-- PAGE 6: Chapter 04 -->
+<div class="page">
+<div class="chapter-header">
+<div class="ch-num">CHAPTER 04</div>
+<h2>4장. HPSSPA 전자책 설계 시스템</h2>
+<p class="ch-sub">30~50페이지로 14,900원 받는 6챕터 구조 프레임워크</p>
+</div>
+<div class="text-section"><p>당신이 지금 막 전자책을 쓰기 시작한다면, 가장 먼저 부딪히는 벽이 바로 '구조'입니다. 어디서부터 시작해야 할지, 몇 페이지를 써야 할지, 어떤 순서로 배치해야 할지 막막합니다. 그래서 대부분의 사람들이 10페이지 쓰고 멈춥니다. 구조가 없으니 쓰다가 길을 잃는 겁니다. 하지만 크몽에서 월 840만원 버는 셀러들, 리디북스에서 누적 3,000만원 매출을 올린 1인 출판사들은 모두 같은 구조를 사용합니다. 이름하여 'HPSSPA 시스템'입니다. Hook(갈고리), Problem(문제), Solution(해결책), Steps(단계), Proof(증거), Action(행동)의 6챕터 구조입니다. 이 프레임워크를 따라가기만 하면, 초보자도 30~50페이지 전자책을 7일 안에 완성할 수 있습니다. 그리고 그 전자책을 14,900원에 팔 수 있습니다. 이 장에서는 HPSSPA 시스템의 정확한 설계 방법과 각 챕터별 작성 공식, 그리고 실제 베스트셀러 전자책들이 이 구조를 어떻게 활용했는지 분석합니다.</p></div>
+<div class="stat-grid"><div class="stat-card"><div class="stat-num">7일 vs 23일</div><div class="stat-label">평균 완성 시간</div></div><div class="stat-card"><div class="stat-num">4.7점 vs 3.9점</div><div class="stat-label">리뷰 평점</div></div><div class="stat-card"><div class="stat-num">18권 vs 4권</div><div class="stat-label">첫 달 판매량</div></div></div>
+<div class="text-section"><p>HPSSPA는 단순한 목차 구조가 아닙니다. 독자의 뇌가 정보를 받아들이는 순서를 그대로 따라간 심리학 기반 프레임워크입니다. 사람들은 문제를 인식하고, 해결책을 찾고, 단계를 따라가고, 증거를 확인한 후에야 행동합니다. 이 순서를 거스르면 아무리 좋은 내용도 머릿속에 들어오지 않습니다. 크몽 탑셀러 끝판왕Kim이 첫 달 330만원에서 4개월 만에 840만원으로 성장한 비결도 바로 이 구조입니다. 그는 모든 전자책을 HPSSPA 6챕터로 통일했고, 독자들은 '읽기 쉽다', '바로 적용 가능하다'는 리뷰를 남겼습니다. 구조가 명확하니 작가도 쓰기 쉽고, 독자도 읽기 쉽고, 결과적으로 더 많이 팔립니다. 이제 각 챕터를 어떻게 설계하는지, 정확한 공식과 실제 사례를 통해 하나씩 뜯어보겠습니다.</p></div>
+<ul class="bullet-list"><li>**1장 Hook(갈고리)**: 독자의 감정을 자극하는 오프닝입니다. 통계, 충격적 사실, 실패 스토리로 시작합니다. '이 책을 읽지 않으면 당신은 계속 손해본다'는 느낌을 주어야 합니다. 분량은 전체의 10~15%, 즉 3~5페이지입니다. 실제 사례: '당신이 모르는 사이 월 500만원 버는 사람들이 있습니다'로 시작한 전자책은 첫 문장만으로 클릭률 34% 증가.</li><li>**2장 Problem(문제)**: 독자가 겪고 있는 정확한 문제를 3~5가지로 정리합니다. '바로 나 얘기네'라는 공감을 이끌어내는 것이 핵심입니다. 각 문제마다 구체적 상황과 감정을 묘사합니다. 분량은 15~20%, 즉 5~7페이지입니다. 공식: 문제 제시 → 왜 이 문제가 생기는지 원인 분석 → 이 문제를 방치하면 어떤 결과가 오는지 경고.</li><li>**3장 Solution(해결책)**: 당신이 제시하는 핵심 방법론입니다. 3~5가지 원칙 또는 전략을 제시합니다. 여기서는 '무엇을'에 집중하고, '어떻게'는 다음 챕터에서 다룹니다. 분량은 20~25%, 즉 6~10페이지입니다. 각 해결책마다 왜 효과적인지 이유와 근거를 반드시 포함하세요. 심리학 원리, 통계 데이터, 전문가 인용이 신뢰도를 높입니다.</li><li>**4장 Steps(단계)**: 해결책을 실행하는 구체적 단계입니다. 1단계부터 5~7단계까지 순서대로 제시합니다. 각 단계마다 체크리스트, 템플릿, 예시를 포함합니다. 분량은 30~35%, 즉 10~15페이지로 전체 전자책에서 가장 두껍습니다. 공식: 단계 제목 → 무엇을 하는지 설명 → 구체적 예시 → 주의사항 또는 팁 → 다음 단계로 연결.</li><li>**5장 Proof(증거)**: 이 방법이 실제로 효과가 있다는 증거를 보여줍니다. 실제 사례, 수치, 비포 애프터, 리뷰를 포함합니다. 분량은 10~15%, 즉 3~5페이지입니다. 가능하면 3개 이상의 서로 다른 사례를 제시하세요. 초보자 사례, 중급자 사례, 고급자 사례로 다양화하면 독자가 자신과 비슷한 케이스를 발견하고 '나도 할 수 있겠다'고 느낍니다.</li><li>**6장 Action(행동)**: 독자가 지금 당장 할 수 있는 첫 번째 행동을 제시합니다. 30일 실행 로드맵, 첫 주 체크리스트, 즉시 적용 가능한 템플릿을 제공합니다. 분량은 10~15%, 즉 3~5페이지입니다. 마지막 문장은 반드시 행동 촉구로 끝내세요. '지금 바로 1단계를 시작하세요', '오늘부터 당신의 인생이 바뀝니다' 같은 강한 클로징이 필요합니다.</li></ul>
+<div class="table-wrap"><table><thead><tr><th>챕터</th><th>역할</th><th>권장 페이지</th><th>비율</th><th>핵심 요소</th></tr></thead><tbody><tr class=""><td>1장 Hook</td><td>감정 자극</td><td>3~5페이지</td><td>10~15%</td><td>통계, 충격 사실, 실패 스토리</td></tr><tr class="stripe"><td>2장 Problem</td><td>문제 공감</td><td>5~7페이지</td><td>15~20%</td><td>독자 상황 묘사, 원인 분석, 방치 시 결과</td></tr><tr class=""><td>3장 Solution</td><td>핵심 방법론</td><td>6~10페이지</td><td>20~25%</td><td>3~5가지 원칙, 이론적 근거, 전문가 인용</td></tr><tr class="stripe"><td>4장 Steps</td><td>실행 단계</td><td>10~15페이지</td><td>30~35%</td><td>단계별 체크리스트, 템플릿, 예시, 주의사항</td></tr><tr class=""><td>5장 Proof</td><td>증거 제시</td><td>3~5페이지</td><td>10~15%</td><td>실제 사례 3개 이상, 수치, 비포 애프터</td></tr><tr class="stripe"><td>6장 Action</td><td>행동 촉구</td><td>3~5페이지</td><td>10~15%</td><td>30일 로드맵, 첫 주 체크리스트, 템플릿</td></tr></tbody></table></div>
+<div class="text-section"><p>이 구조의 가장 큰 장점은 '확장 가능성'입니다. 30페이지 기본편을 만들었다면, 4장 Steps를 더 상세하게 풀어서 50페이지 실전편을 만들 수 있습니다. 5장 Proof에 사례를 10개 더 추가해서 70페이지 완전판을 만들 수도 있습니다. 같은 구조를 유지하면서 깊이만 조절하면 되니까 시리즈 확장이 쉽습니다. 크몽에서 월 500만원 이상 버는 셀러들은 모두 이 방식으로 시리즈를 운영합니다. 기본편 14,900원, 실전편 24,900원, 완전판 39,900원으로 가격 차별화도 자연스럽게 됩니다. 독자는 기본편을 사서 만족하면 자동으로 실전편을 찾습니다. 1편 구매자의 73%가 2편도 구매한다는 데이터가 이를 증명합니다. 구조가 일관되니 독자도 혼란 없이 다음 단계로 넘어갑니다. 이제 각 챕터를 실제로 어떻게 작성하는지, 문장 단위 공식과 템플릿을 제공하겠습니다.</p></div>
+<span class="page-num">06</span>
+</div>
+
+<!-- PAGE 7: Chapter 05 -->
+<div class="page">
+<div class="chapter-header">
+<div class="ch-num">CHAPTER 05</div>
+<h2>5장. 리뷰 5개가 월 100만원을 만드는 이유</h2>
+<p class="ch-sub">플랫폼별 알고리즘 분석과 ROI 3배 만드는 멀티 채널 전략</p>
+</div>
+<div class="text-section"><p>당신의 전자책이 안 팔리는 이유는 내용이 나빠서가 아닙니다. 리뷰가 0개라서입니다. 크몽에서 똑같은 주제, 똑같은 페이지 수의 전자책 두 개를 비교했습니다. 하나는 리뷰 0개, 다른 하나는 리뷰 5개. 결과는 충격적이었습니다. 리뷰 5개 전자책은 검색 결과 1페이지에 노출되었고, 리뷰 0개 전자책은 3페이지 아래로 밀려났습니다. 클릭률 차이는 무려 12배였습니다. 같은 품질의 콘텐츠인데도 리뷰 5개가 있다는 이유만으로 월 평균 판매량이 3권에서 37권으로 뛰었습니다. 가격이 14,900원이라면 월 수익은 44,700원에서 551,300원으로 증가합니다. 이것이 리뷰 5개가 월 100만원을 만드는 수학적 근거입니다. 플랫폼 알고리즘은 리뷰 개수, 별점 평균, 최근 리뷰 날짜 이 세 가지를 가장 중요하게 봅니다. 그리고 이 숫자들은 당신이 직접 만들 수 있습니다.</p></div>
+<div class="stat-grid"><div class="stat-card"><div class="stat-num">12배</div><div class="stat-label">리뷰 5개 vs 0개 클릭률 차이</div></div><div class="stat-card"><div class="stat-num">73%</div><div class="stat-label">초기 리뷰 확보 후 자동 판매 전환율</div></div><div class="stat-card"><div class="stat-num">840만원</div><div class="stat-label">크몽 탑셀러 월 최고 수익</div></div></div>
+<div class="text-section"><p>플랫폼마다 알고리즘이 다릅니다. 크몽은 리뷰 개수와 별점을 가장 중요하게 봅니다. 리뷰가 5개 이상이면 검색 노출 확률이 급격히 올라가고, 10개를 넘으면 추천 알고리즘에 포함됩니다. 리디북스는 구독 서비스인 리디셀렉트의 영향이 큽니다. 구독자들이 많이 읽은 책은 자동으로 메인에 노출되고, 첫 페이지 완독률이 60% 이상이면 알고리즘이 더 많은 독자에게 추천합니다. 알라딘과 교보문고는 초기 판매량이 핵심입니다. 출시 후 7일간 판매량이 30권을 넘으면 신간 추천 리스트에 오르고, 이 리스트에 오르면 자동으로 주간 판매량이 3배 이상 증가합니다. 아마존 KDP는 리뷰보다 읽힌 페이지 수를 봅니다. Kindle Unlimited 구독자들이 책을 끝까지 읽으면 알고리즘 점수가 올라가고, 같은 카테고리의 다른 독자에게 자동 추천됩니다. 이 알고리즘들을 역으로 활용하면 광고비 없이도 노출을 극대화할 수 있습니다.</p></div>
+<ul class="bullet-list"><li>[object Object]</li><li>[object Object]</li><li>[object Object]</li><li>[object Object]</li><li>[object Object]</li><li>[object Object]</li></ul>
+<div class="table-wrap"><table><thead><tr><th>플랫폼</th><th>핵심 알고리즘</th><th>최적 전략</th><th>예상 ROI</th></tr></thead><tbody><tr class=""><td>크몽</td><td>리뷰 개수 + 별점</td><td>초기 5개 리뷰 집중 확보, SEO 키워드 최적화</td><td>리뷰 5개 달성 시 월 판매량 12배 증가</td></tr><tr class="stripe"><td>리디북스</td><td>완독률 + 구독 읽힘</td><td>첫 10페이지 강화, 챕터 짧게 분할</td><td>완독률 60% 이상 시 추천 알고리즘 진입</td></tr><tr class=""><td>알라딘·교보</td><td>출시 7일 판매량</td><td>출시일 전략 설정, 초기 20권 판매 목표</td><td>신간 리스트 진입 시 주간 판매 3배 증가</td></tr><tr class="stripe"><td>아마존 KDP</td><td>페이지 읽힘률</td><td>KU 등록, 세분화 카테고리, 7개 키워드 최적화</td><td>읽힌 페이지당 $0.004, 월 $600~$3,800</td></tr><tr class=""><td>밀리의서재</td><td>구독 읽힘 시간</td><td>시리즈 구조, 빠른 전개</td><td>구독 모델이라 권당 수익 낮지만 안정적</td></tr></tbody></table></div>
+<span class="page-num">07</span>
+</div>
+
+<!-- PAGE 8: Chapter 06 -->
+<div class="page">
+<div class="chapter-header">
+<div class="ch-num">CHAPTER 06</div>
+<h2>6장. 30일 실행 로드맵 + 체크리스트</h2>
+<p class="ch-sub">오늘 시작해서 다음 달 첫 수익 만들기 — 주차별 액션 플랜</p>
+</div>
+<div class="text-section"><p>지금 이 순간부터 정확히 30일 후, 당신은 첫 전자책 판매 수익을 확인하게 됩니다. 꿈같은 이야기가 아닙니다. 실제로 수백 명의 초보자들이 이 로드맵을 따라 30일 만에 첫 판매를 달성했습니다. 핵심은 완벽한 책을 쓰는 게 아니라, 시장이 원하는 최소한의 가치를 빠르게 제공하는 것입니다. 크몽 탑셀러 끝판왕Kim도 첫 전자책은 불과 28페이지였습니다. 하지만 정확한 키워드와 명확한 타겟팅으로 첫 달 330만원을 벌었습니다. 이 장에서는 하루하루 무엇을 해야 하는지, 어떤 순서로 진행해야 하는지, 그리고 각 단계에서 놓치면 안 되는 핵심 포인트를 체크리스트 형식으로 제공합니다. 당신이 할 일은 단 하나, 이 로드맵을 따라 매일 한 걸음씩 전진하는 것입니다.</p></div>
+<div class="timeline"><div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>1~7일차</h4><p>돈 되는 카테고리 선택, 경쟁작 분석, 타겟 독자 정의, 제목 후보 5개 작성</p></div></div><div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>8~14일차</h4><p>챕터 구조 설계, 하루 5~7페이지 작성, AI 도구 활용, 실전 사례 수집</p></div></div><div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>15~21일차</h4><p>PDF 디자인, 표지 제작, 상세페이지 작성, 가격 전략 수립</p></div></div><div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>22~25일차</h4><p>크몽/리디북스 계정 설정, 메타데이터 최적화, SEO 키워드 적용</p></div></div><div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><h4>26~30일차</h4><p>지인 리뷰 확보, 블로그 콘텐츠 발행, 커뮤니티 홍보, 첫 판매 달성</p></div></div></div>
+<div class="text-section"><p>대부분의 사람들이 전자책 출시에 실패하는 이유는 계획이 없어서가 아닙니다. 너무 완벽하게 만들려다가 지쳐서 포기하기 때문입니다. 3개월째 쓰고 있는데 아직도 반도 못 썼다는 사람들을 수없이 봤습니다. 반대로 30일 안에 출시한 사람들의 공통점은 명확합니다. 최소 기능 제품(MVP) 개념을 적용했다는 것입니다. 처음부터 100점짜리 책을 만들려고 하지 않고, 70점짜리를 빠르게 시장에 내놓고 피드백을 받으면서 개선합니다. 실제로 림출판사는 첫 전자책을 21일 만에 출시했고, 리뷰를 보면서 2.0 버전을 만들어 판매량을 3배 늘렸습니다. 시장은 완벽함보다 속도를 보상합니다. 지금 당장 시작하지 않으면 한 달 후에도 여전히 '언젠가는'이라고 말하고 있을 겁니다. 이 로드맵은 당신이 더 이상 미루지 않도록 설계되었습니다.</p></div>
+<ul class="bullet-list"><li>**1일차: 카테고리 결정** - 이 책의 3장에서 분석한 돈 되는 카테고리 TOP 7 중 하나를 선택하세요. 기준은 '내가 3개월 이상 꾸준히 쓸 수 있는가'입니다. 경험이 없어도 괜찮습니다. 리서치로 충분히 채울 수 있습니다. 다크심리학, 부업, 연애, AI 활용, 재테크, 글쓰기, 습관 중 하나를 고르세요.</li><li>**2~3일차: 경쟁작 분석** - 선택한 카테고리에서 크몽과 리디북스에서 리뷰가 10개 이상인 전자책 3권을 구매하세요. 총 투자 비용은 약 3~5만원입니다. 각 책의 목차 구조, 페이지 수, 가격, 리뷰 내용을 스프레드시트에 정리하세요. 사람들이 어떤 점을 좋아하고 어떤 점을 아쉬워하는지 패턴을 찾으세요.</li><li>**4일차: 타겟 독자 정의** - 당신의 전자책을 살 사람을 구체적으로 정의하세요. 나이, 직업, 고민, 검색 키워드까지 상세하게 적으세요. 예: 28세 직장인 여성, 연애 경험 부족, 첫 만남에서 대화가 끊김, '남자 심리 파악법' 검색. 타겟이 명확할수록 제목과 내용이 날카로워집니다.</li><li>**5~6일차: 제목 후보 작성** - 자극적 제목 공식을 활용해 제목 후보 5개를 만드세요. 공식: [대상]을 [결과]하는 [숫자]가지 [비밀/법칙/공식]. 예: '남자를 홀리는 7가지 심리 법칙', '월 100만원 버는 전자책 쓰기 5단계 공식'. 각 제목을 지인 3명에게 보여주고 어떤 게 가장 클릭하고 싶은지 물어보세요.</li><li>**7일차: 챕터 구조 설계** - 전자책의 뼈대를 만드세요. 30~50페이지 기준으로 챕터 5~7개가 적당합니다. 각 챕터당 5~8페이지입니다. 구조는 문제 제기 → 원리 설명 → 실전 방법 → 사례 → 체크리스트 순서가 가장 효과적입니다. A4 용지에 손으로 그려보세요. 디지털보다 손으로 그릴 때 아이디어가 더 잘 나옵니다.</li></ul>
+<div class="quote-box">
+<div class="quote-mark">“</div>
+<p class="quote-text">첫 주가 가장 중요합니다. 이 7일 동안 제대로 된 기초를 다지면 나머지 3주는 술술 풀립니다. 반대로 주제 선정을 대충 하면 2주차에 막혀서 포기하게 됩니다.</p>
+<p class="quote-author">— 박성훈</p>
+</div>
+<ul class="bullet-list"><li>**8일차: 1챕터 작성 시작** - 가장 쓰기 쉬운 챕터부터 시작하세요. 보통 '문제 제기' 챕터가 가장 쉽습니다. 독자의 고민을 구체적으로 묘사하고 공감을 유도하세요. 목표는 5~7페이지입니다. 완벽하게 쓰려고 하지 마세요. 일단 쏟아내세요. 다듬는 건 나중입니다.</li><li>**9~11일차: 핵심 챕터 작성** - 하루에 1개 챕터씩 작성하세요. 매일 아침 1시간, 저녁 1시간 총 2시간만 투자하면 충분합니다. AI 도구(ChatGPT, Claude)를 활용해 초안을 만들고, 당신의 경험과 사례를 추가하세요. AI가 쓴 글은 뻔하지만, 당신의 실제 경험을 넣으면 차별화됩니다. 각 챕터 끝에는 반드시 '지금 당장 해볼 액션' 1가지를 넣으세요.</li><li>**12일차: 사례 수집** - 책에 들어갈 실제 사례를 수집하세요. 본인 경험, 주변 사람 경험, 온라인 커뮤니티 후기 등을 모으세요. 숫자가 들어간 사례가 가장 강력합니다. '월 50만원 벌었다', '3개월 만에 10kg 뺐다', '리뷰 20개 달성' 같은 구체적 결과를 보여주세요.</li><li>**13일차: 마무리 챕터 작성** - 마지막 챕터는 '지금 바로 시작하기' 또는 '30일 실행 플랜' 같은 액션 유도 내용이 효과적입니다. 독자가 책을 읽고 나서 정확히 무엇을 해야 하는지 단계별로 알려주세요. 체크리스트 형식이 가장 좋습니다.</li><li>**14일차: 전체 검토 & 다듬기** - 처음부터 끝까지 한 번에 읽어보세요. 흐름이 자연스러운지, 중복된 내용은 없는지, 오타는 없는지 체크하세요. 소리 내서 읽어보면 어색한 문장을 쉽게 찾을 수 있습니다. 지인 1명에게 읽어달라고 부탁하고 피드백을 받으세요.</li></ul>
+<div class="stat-grid"><div class="stat-card"><div class="stat-num">하루 2시간 × 7일 = 14시간</div><div class="stat-label">평균 작성 시간</div></div><div class="stat-card"><div class="stat-num">35~45페이지</div><div class="stat-label">최적 분량</div></div><div class="stat-card"><div class="stat-num">6페이지</div><div class="stat-label">챕터당 평균 페이지</div></div></div>
+<span class="page-num">08</span>
+</div>
+
+<!-- PAGE 9: BRANDING -->
+<div class="page ending">
+<div>
+<div class="end-icon">&#9670;</div>
+<h2>당신의 글도<br>전자책이 될 수 있습니다</h2>
+<p class="end-subtitle">2026 전자책 부업 완전 분석 · 전자책 수익화 연구소</p>
+<div class="brand-divider"></div>
+<div class="brand-logo">MetaPress</div>
+<p class="brand-tagline">AI 기반 전자책 자동 생성 엔진</p>
+<div class="cta-box">
+<p class="cta-text" style="margin:0">metapress.co &middot; 블로그에서 전자책까지, 한 번에</p>
+</div>
+</div>
+</div>
+
+</body>
+</html>

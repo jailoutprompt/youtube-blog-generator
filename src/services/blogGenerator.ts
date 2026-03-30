@@ -145,7 +145,7 @@ export async function generateFromTranscript(
   options: GenerateOptions = {}
 ): Promise<BlogData> {
   const tone = options.tone || 'informative';
-  const model = options.model || 'gpt-4o-mini';
+  const model = options.model || 'gemini-2.0-flash';
   const template = options.template || 'general';
   const trimmed = truncateTranscript(transcript);
 

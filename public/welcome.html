@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:transparent;font-family:-apple-system,'Pretendard',sans-serif;overflow:hidden}
+.bg{position:fixed;inset:0;background:rgba(0,0,0,0.88);display:flex;align-items:center;justify-content:center}
+canvas{position:absolute;inset:0;pointer-events:none}
+.card{position:relative;z-index:1;width:440px;max-width:92vw;background:rgba(14,14,22,0.97);border:1px solid rgba(139,92,246,0.2);border-radius:24px;padding:40px 36px;text-align:center;opacity:0;transform:perspective(800px) rotateX(12deg) scale(0.75) translateY(50px);transition:all 0.8s cubic-bezier(0.16,1,0.3,1);box-shadow:0 0 60px rgba(139,92,246,0.15),0 0 120px rgba(6,182,212,0.08)}
+.card.show{opacity:1;transform:perspective(800px) rotateX(0) scale(1) translateY(0)}
+
+.step{display:none}
+.step.active{display:block}
+
+/* Step 1 */
+.obj-canvas{margin:0 auto 20px;display:block}
+.title{font-size:1.5em;font-weight:900;background:linear-gradient(135deg,#f1f5f9 30%,#a78bfa);-webkit-background-clip:text;color:transparent;margin-bottom:8px;opacity:0;transform:translateY(15px);transition:all 0.6s cubic-bezier(0.16,1,0.3,1) 0.6s}
+.sub{font-size:0.88em;color:#8892b0;line-height:1.7;margin-bottom:28px;opacity:0;transform:translateY(15px);transition:all 0.6s cubic-bezier(0.16,1,0.3,1) 0.8s}
+.btn-main{padding:15px 44px;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#06b6d4);border:none;color:white;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:0.5px;opacity:0;transform:translateY(10px);transition:all 0.5s cubic-bezier(0.16,1,0.3,1) 1s;box-shadow:0 6px 28px rgba(139,92,246,0.35)}
+.btn-main:hover{transform:scale(1.06) translateY(-2px)!important;box-shadow:0 8px 36px rgba(139,92,246,0.5)}
+.card.show .title,.card.show .sub,.card.show .btn-main{opacity:1;transform:translateY(0)}
+
+/* Step 2 */
+.briefing-label{font-size:0.65em;color:#5a6480;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
+.stat-box{padding:16px 10px;border-radius:14px;text-align:center}
+.stat-box .num{font-size:2em;font-weight:900;line-height:1}
+.stat-box .label{font-size:0.68em;color:#5a6480;margin-top:4px}
+.briefing-msg{font-size:0.85em;color:#8892b0;line-height:1.7;margin-bottom:22px}
+
+/* Step 3 */
+.pick-label{font-size:0.65em;color:#5a6480;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+.pick-title{font-size:1.15em;font-weight:800;color:#f1f5f9;margin-bottom:16px}
+.project-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:22px}
+.proj-btn{padding:10px 16px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:#ccd6f6;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.25s}
+.proj-btn:hover{border-color:rgba(139,92,246,0.5);background:rgba(139,92,246,0.12);transform:translateY(-2px)}
+.btn-skip{padding:13px 36px;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#06b6d4);border:none;color:white;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(139,92,246,0.3);transition:all 0.2s}
+.btn-skip:hover{transform:scale(1.05);box-shadow:0 6px 28px rgba(139,92,246,0.45)}
+
+/* Fade transitions */
+.fade-out{opacity:0;transition:opacity 0.25s ease}
+.fade-in > *{opacity:0;transform:translateY(12px);transition:all 0.4s cubic-bezier(0.16,1,0.3,1)}
+.fade-in.go > *:nth-child(1){opacity:1;transform:translateY(0);transition-delay:0.05s}
+.fade-in.go > *:nth-child(2){opacity:1;transform:translateY(0);transition-delay:0.15s}
+.fade-in.go > *:nth-child(3){opacity:1;transform:translateY(0);transition-delay:0.25s}
+.fade-in.go > *:nth-child(4){opacity:1;transform:translateY(0);transition-delay:0.35s}
+.fade-in.go > *:nth-child(5){opacity:1;transform:translateY(0);transition-delay:0.45s}
+</style>
+</head>
+<body>
+<div class="bg">
+  <canvas id="particles"></canvas>
+  <div class="card" id="card">
+    <!-- Step 1: 웰커밍 -->
+    <div class="step active" id="step1">
+      <canvas class="obj-canvas" id="obj3d" width="180" height="180"></canvas>
+      <div class="title" id="msgTitle"></div>
+      <div class="sub" id="msgSub"></div>
+      <button class="btn-main" onclick="goStep(2)">LET'S GO →</button>
+    </div>
+    <!-- Step 2: 브리핑 -->
+    <div class="step fade-in" id="step2">
+      <div class="briefing-label">TODAY'S BRIEFING</div>
+      <div class="stats-grid">
+        <div class="stat-box" style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.15)">
+          <div class="num" style="color:#a78bfa" id="statArtifacts">0</div>
+          <div class="label">아티팩트</div>
+        </div>
+        <div class="stat-box" style="background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.15)">
+          <div class="num" style="color:#22d3ee" id="statProjects">0</div>
+          <div class="label">프로젝트</div>
+        </div>
+        <div class="stat-box" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.15)">
+          <div class="num" style="color:#fbbf24">∞</div>
+          <div class="label">가능성</div>
+        </div>
+      </div>
+      <div class="briefing-msg">매일 쌓이는 아티팩트가<br>내일의 자산이 된다.</div>
+      <button class="btn-main" onclick="goStep(3)">뭐부터 할까? →</button>
+    </div>
+    <!-- Step 3: 프로젝트 선택 -->
+    <div class="step fade-in" id="step3">
+      <div class="pick-label">PICK YOUR PROJECT</div>
+      <div class="pick-title">오늘 뭐부터?</div>
+      <div class="project-grid" id="projGrid"></div>
+      <button class="btn-skip" onclick="done()">그냥 둘러볼게 👀</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 데이터는 parent에서 전달
+const data = window.parent._welcomeData || {artifacts:0,projects:0,cats:[]};
+document.getElementById('statArtifacts').textContent = data.artifacts;
+document.getElementById('statProjects').textContent = data.projects;
+
+// 메시지
+const msgs = [
+  {t:'사주아이 배포하면 건당 990원',s:'하루 100명 × 30일 = 월 297만원. 아직 0원.'},
+  {t:'1B$ company within 2026',s:'목표는 그대로다. 오늘 뭐 하나 더 쌓았냐가 중요.'},
+  {t:'자동으로 돈 버는 구조',s:'네가 자는 동안에도 돌아가는 시스템. 하나씩 만들어.'},
+  {t:'뇌울림 190매장, 와디즈 23억',s:'이미 증명했다. 다음 성을 쌓아.'},
+  {t:'배포 안 하면 영원히 0원',s:'완성된 거 쌓아두지 마. 세상에 내놔.'},
+  {t:'프로젝트 '+data.artifacts+'개',s:'만든 건 많다. 돈 되는 건 몇 개?'},
+  {t:'오늘 뭐 만들었냐',s:'매일 하나씩. 복리로 쌓인다.'},
+];
+const msg = msgs[new Date().getDay()];
+document.getElementById('msgTitle').textContent = msg.t;
+document.getElementById('msgSub').textContent = msg.s;
+
+// 프로젝트 버튼
+const grid = document.getElementById('projGrid');
+data.cats.forEach(c => {
+  const btn = document.createElement('button');
+  btn.className = 'proj-btn';
+  btn.textContent = c.icon + ' ' + c.label;
+  btn.onclick = () => { window.parent._welcomeSelect(c.key); };
+  grid.appendChild(btn);
+});
+
+// 파티클
+const cv = document.getElementById('particles');
+const cx = cv.getContext('2d');
+cv.width = innerWidth; cv.height = innerHeight;
+const pts = [];
+for(let i=0;i<50;i++) pts.push({x:Math.random()*cv.width,y:Math.random()*cv.height,r:Math.random()*2.5+0.5,vx:(Math.random()-0.5)*0.6,vy:-Math.random()*1.2-0.3,c:['#8b5cf6','#06b6d4','#ec4899','#f59e0b','#22c55e'][i%5],a:Math.random()*0.4+0.15});
+function drawPt(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  pts.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.y<-5){p.y=cv.height+5;p.x=Math.random()*cv.width;}
+    cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fillStyle=p.c;cx.globalAlpha=p.a;cx.fill();
+    cx.beginPath();cx.arc(p.x,p.y,p.r*2.5,0,Math.PI*2);cx.fillStyle=p.c;cx.globalAlpha=p.a*0.1;cx.fill();
+  });
+  cx.globalAlpha=1;
+  requestAnimationFrame(drawPt);
+}
+drawPt();
+
+// 3D 오브젝트
+const c3 = document.getElementById('obj3d');
+const g = c3.getContext('2d');
+const W=180,H=180,mx=W/2,my=H/2;
+const types=['coin','rocket','diamond','cube','ring','star','coin'];
+const ot=types[new Date().getDay()];
+let tt=0;
+function draw3d(){
+  tt+=0.025;g.clearRect(0,0,W,H);
+  if(ot==='coin'){
+    const sx=Math.cos(tt*1.5);
+    const gr=g.createLinearGradient(mx-30*Math.abs(sx),my-30,mx+30*Math.abs(sx),my+30);
+    gr.addColorStop(0,'#ffd700');gr.addColorStop(0.5,'#ffec80');gr.addColorStop(1,'#daa520');
+    g.save();g.translate(mx,my);g.scale(Math.abs(sx)*0.9+0.1,1);
+    g.beginPath();g.arc(0,0,42,0,Math.PI*2);g.fillStyle=gr;g.fill();
+    g.strokeStyle='#b8860b';g.lineWidth=2.5;g.stroke();
+    if(Math.abs(sx)>0.3){g.fillStyle='rgba(184,134,11,0.5)';g.font='bold 26px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('₩',0,2);}
+    g.restore();
+    const gg=g.createRadialGradient(mx,my,20,mx,my,65);gg.addColorStop(0,'rgba(255,215,0,0.12)');gg.addColorStop(1,'rgba(255,215,0,0)');g.fillStyle=gg;g.fillRect(0,0,W,H);
+  } else if(ot==='rocket'){
+    g.save();g.translate(mx,my);g.rotate(Math.sin(tt)*0.08);
+    const by=Math.sin(tt*2)*4;
+    for(let i=0;i<6;i++){g.beginPath();g.arc((Math.random()-0.5)*10,28+Math.random()*18+by,2+Math.random()*3,0,Math.PI*2);g.fillStyle=['rgba(255,100,0,0.5)','rgba(255,200,0,0.4)','rgba(255,50,0,0.3)'][i%3];g.fill();}
+    g.beginPath();g.moveTo(0,-38+by);g.bezierCurveTo(-14,-18+by,-14,22+by,0,32+by);g.bezierCurveTo(14,22+by,14,-18+by,0,-38+by);
+    const rg=g.createLinearGradient(-14,0,14,0);rg.addColorStop(0,'#8b5cf6');rg.addColorStop(1,'#06b6d4');g.fillStyle=rg;g.fill();
+    g.beginPath();g.arc(0,-8+by,6,0,Math.PI*2);g.fillStyle='rgba(255,255,255,0.8)';g.fill();
+    g.beginPath();g.arc(0,-8+by,4,0,Math.PI*2);g.fillStyle='#22d3ee';g.fill();
+    g.restore();
+  } else if(ot==='diamond'){
+    g.save();g.translate(mx,my);g.rotate(Math.sin(tt*0.8)*0.12);
+    const ds=1+Math.sin(tt*1.5)*0.04;g.scale(ds,ds);
+    g.beginPath();g.moveTo(0,-42);g.lineTo(-28,-8);g.lineTo(0,42);g.lineTo(28,-8);g.closePath();
+    const dg=g.createLinearGradient(-28,-42,28,42);dg.addColorStop(0,'#06b6d4');dg.addColorStop(0.4,'#a78bfa');dg.addColorStop(0.7,'#22d3ee');dg.addColorStop(1,'#8b5cf6');g.fillStyle=dg;g.fill();
+    g.beginPath();g.moveTo(-28,-8);g.lineTo(28,-8);g.strokeStyle='rgba(255,255,255,0.25)';g.lineWidth=1;g.stroke();
+    g.beginPath();g.arc(-6,-22,2.5,0,Math.PI*2);g.fillStyle='rgba(255,255,255,'+(0.4+Math.sin(tt*4)*0.4)+')';g.fill();
+    g.restore();
+  } else {
+    g.save();g.translate(mx,my);
+    const fs=[{z:Math.cos(tt),c:'#8b5cf6'},{z:Math.cos(tt+Math.PI/2),c:'#06b6d4'}];
+    fs.sort((a,b)=>a.z-b.z);
+    fs.forEach(f=>{g.save();g.rotate(tt*0.5);const s=28+f.z*10;g.scale(s,s);g.beginPath();g.rect(-1,-1,2,2);g.fillStyle=f.c;g.globalAlpha=0.35+f.z*0.3;g.fill();g.strokeStyle='rgba(255,255,255,0.2)';g.lineWidth=0.04;g.stroke();g.restore();});
+    g.restore();
+  }
+  requestAnimationFrame(draw3d);
+}
+draw3d();
+
+// 카드 등장
+setTimeout(()=>document.getElementById('card').classList.add('show'),100);
+
+// 스텝 전환
+function goStep(n){
+  const cur = document.querySelector('.step.active');
+  cur.classList.add('fade-out');
+  setTimeout(()=>{
+    cur.classList.remove('active','fade-out');
+    const next = document.getElementById('step'+n);
+    next.classList.add('active','fade-in');
+    setTimeout(()=>next.classList.add('go'),50);
+  },250);
+}
+
+function done(){
+  window.parent._welcomeClose();
+}
+</script>
+</body>
+</html>
