@@ -818,21 +818,39 @@ app.post('/api/artifacts/move', (req, res) => {
   res.json({ success: true, newHref: `/artifacts/${to !== '_root' ? to + '/' : ''}${file}` });
 });
 
-// 아티팩트 삭제 API (archive/로 이동)
+// 아티팩트 삭제 API (아카이브/로 이동)
 app.post('/api/artifacts/delete', (req, res) => {
   const { file, from } = req.body as { file: string; from: string };
   if (!file) return res.status(400).json({ error: 'file 필수' });
   const baseDir = path.join(__dirname, '..', 'public', 'artifacts');
   const fromDir = from && from !== '_root' ? path.join(baseDir, from) : baseDir;
-  const archiveDir = path.join(baseDir, 'archive');
+  // 한글 폴더 우선, 없으면 영문 폴더 사용
+  const archiveDirKo = path.join(baseDir, '아카이브');
+  const archiveDirEn = path.join(baseDir, 'archive');
+  const archiveDir = fs.existsSync(archiveDirKo) ? archiveDirKo : archiveDirEn;
   const srcPath = path.join(fromDir, file);
-  if (!fs.existsSync(srcPath)) return res.status(404).json({ error: '파일 없음' });
-  if (!fs.existsSync(archiveDir)) fs.mkdirSync(archiveDir, { recursive: true });
-  const destPath = path.join(archiveDir, file);
-  // 같은 이름이 archive에 있으면 타임스탬프 붙임
-  const finalDest = fs.existsSync(destPath) ? destPath.replace('.html', `-${Date.now()}.html`) : destPath;
-  fs.renameSync(srcPath, finalDest);
-  res.json({ success: true });
+  console.log(`[delete] 시작: file=${file}, from=${from || '_root'}, src=${srcPath}`);
+  try {
+    if (!fs.existsSync(srcPath)) {
+      console.error(`[delete] 파일 없음: ${srcPath}`);
+      return res.status(404).json({ error: '파일 없음' });
+    }
+    if (!fs.existsSync(archiveDir)) fs.mkdirSync(archiveDir, { recursive: true });
+    const destPath = path.join(archiveDir, file);
+    // 같은 이름이 아카이브에 있으면 타임스탬프 붙임
+    const ext = path.extname(file);
+    const base = path.basename(file, ext);
+    const finalDest = fs.existsSync(destPath)
+      ? path.join(archiveDir, `${base}-${Date.now()}${ext}`)
+      : destPath;
+    fs.renameSync(srcPath, finalDest);
+    console.log(`[delete] 성공: ${srcPath} → ${finalDest}`);
+    res.json({ success: true });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error(`[delete] 실패: ${msg}`);
+    res.status(500).json({ error: `삭제 실패: ${msg}` });
+  }
 });
 
 app.use('/', generateRouter);
